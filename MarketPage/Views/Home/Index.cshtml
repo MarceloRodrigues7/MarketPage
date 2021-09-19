@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container ">
+    <div class="row mt-3">
+        <h4 class="text-center text-warning ml-3 mb-1 mt-3">Destaques<i class="fas fa-star pl-2"></i></h4>
+    </div>
+    @foreach (var categoria in @ViewBag.Categorias)
+    {
+        <div class="row">
+            <h5 class="text-left text-secondary ml-3 mb-3 mt-3">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
+        </div>
+        <div class="card-deck">
+            @foreach (var item in @ViewBag.Itens)
+            {
+                @if (item.IdCategoria == categoria.Id)
+                {
+                    <div class="col-md-3 col-sm-6 mt-2">
+                        <div class="card">
+                            <div class="container h-100 d-flex justify-content-center">
+                                @{
+                                    var base64 = Convert.ToBase64String(item.Img);
+                                    var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                                }
+                                <img class="mt-3" src='@imgSrc' style="width:150px; height:150px;" />
+                            </div>
+                            <div class="content ml-3 mr-3 mb-3">
+                                <h5 class="text-body mb-1"><a class="text-secondary" href="#">@item.Nome</a></h5>
+                                <div class="text-body" style="font-size:16px;"><strong>R$ @item.Valor</strong></div>
+                                <a class="text-primary" href="#">Ver mais</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    <br />
+
+</div>
