@@ -1,4 +1,5 @@
-﻿@{
+﻿@model MessageContato
+@{
     ViewData["Title"] = "Contato";
 }
 <section class="page-section about-heading">
@@ -35,7 +36,7 @@
                                 </p>
                             </div>
                             <div class="col-6">
-                                @using (Html.BeginForm("PostMessage", "Message", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+                                @using (Html.BeginForm("PostMessageContato", "Home", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
                                 {
                                     @Html.ValidationSummary()
                                     @Html.AntiForgeryToken()
@@ -59,15 +60,7 @@
                                                         <div class="input-group-prepend">
                                                             <div class="input-group-text"><i class="fa fa-user text-secondary"></i></div>
                                                         </div>
-                                                        @if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
-                                                        {
-                                                            <input type="text" class="form-control" id="nome" name="nome" value="@ViewBag.Usuario.Nome" required>
-                                                        }
-                                                        else
-                                                        {
-                                                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome" required>
-                                                        }
-
+                                                        @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @required = true })
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -75,15 +68,7 @@
                                                         <div class="input-group-prepend">
                                                             <div class="input-group-text"><i class="fa fa-envelope text-secondary"></i></div>
                                                         </div>
-                                                        @if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
-                                                        {
-                                                            <input type="email" class="form-control" id="email" name="email" value="@ViewBag.Usuario.Email" required>
-                                                        }
-                                                        else
-                                                        {
-                                                            <input type="email" class="form-control" id="email" name="email" placeholder="exemple@email.com" required>
-                                                        }
-
+                                                        @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @required = true })
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -91,7 +76,7 @@
                                                         <div class="input-group-prepend">
                                                             <div class="input-group-text"><i class="fa fa-comment text-secondary"></i></div>
                                                         </div>
-                                                        <textarea class="form-control" placeholder="Texto da mensagem..." required></textarea>
+                                                        @Html.TextAreaFor(model => model.Texto, new { @type = "text", @class = "form-control", @id = "txtTexto", @placeholder = "Texto da mensagem...", @required = true })
                                                     </div>
                                                 </div>
                                                 <div class="text-center">

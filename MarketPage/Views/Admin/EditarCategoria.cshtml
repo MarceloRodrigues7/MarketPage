@@ -1,0 +1,73 @@
+﻿@model Categoria
+@{
+    ViewData["Title"] = "Editar Categoria";
+}
+
+<div class="row d-flex justify-content-center align-items-center">
+    <div class="card col-6 mt-2">
+        <div class="card-subtitle ml-4 mt-3">
+            <div class="text-center">
+                <h4 class="text-secondary"><i class="fas fa-tasks mr-2"></i>Editar Categoria</h4>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row d-flex justify-content-center align-items-center">
+                @using (Html.BeginForm("PutCategoria", "Admin", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+                {
+                    @Html.ValidationSummary()
+                    @Html.AntiForgeryToken()
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["Message"].ToString()
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-2">
+                            <label for="lblId" class="text-body">Cod</label>
+                            @Html.TextBoxFor(model => model.Id, new { @type = "text", @class = "form-control", @id = "txtId", @readonly="true"})
+                        </div>
+                        <div class="col">
+                            <label for="lblNome" class="text-body">Nome</label>
+                            @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @required = true })
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-4">
+                            <label for="lblData" class="text-body">Data Adição</label>
+                            <input type="text" class="form-control text-center" ,id="txtData" value="@Model.DataAdicao.ToString("dd/MM/yyyy")" readonly />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label"></label>
+                            <div class="form-outline form-control mt-2">
+                                @Html.CheckBoxFor(m => m.Ativo, new { @class = "form-check-input", @type = "checkbox", @checked = "true" })
+                                <label class="form-label">Ativo</label>
+                            </div>
+                        </div>
+                        <div class="col mt-4 text-right">
+                            <button type="submit" class="btn btn-primary btn-sm mt-2" id="btnEnviar">Editar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

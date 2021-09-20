@@ -3,13 +3,21 @@
 }
 
 <div class="container ">
-    <div class="row mt-3">
+    <div class="row mt-1 justify-content-center">
         <h4 class="text-center text-warning ml-3 mb-1 mt-3">Destaques<i class="fas fa-star pl-2"></i></h4>
+    </div>
+    <div class="row justify-content-center">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info" role="alert">
+                @TempData["Message"].ToString()
+            </div>
+        }
     </div>
     @foreach (var categoria in @ViewBag.Categorias)
     {
-        <div class="row">
-            <h5 class="text-left text-secondary ml-3 mb-3 mt-3">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
+        <div class="row ml-3 mb-2 mt-5">
+            <h5 class="text-secondary">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
         </div>
         <div class="card-deck">
             @foreach (var item in @ViewBag.Itens)
@@ -28,7 +36,7 @@
                             <div class="content ml-3 mr-3 mb-3">
                                 <h5 class="text-body mb-1"><a class="text-secondary" href="#">@item.Nome</a></h5>
                                 <div class="text-body" style="font-size:16px;"><strong>R$ @item.Valor</strong></div>
-                                <a class="text-primary" href="#">Ver mais</a>
+                                <a class="text-primary" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">Ver mais</a>
                             </div>
                         </div>
                     </div>

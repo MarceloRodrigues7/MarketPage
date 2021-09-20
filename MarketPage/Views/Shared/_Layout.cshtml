@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MarketPage</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css" rel="stylesheet" />
+    @*<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css" rel="stylesheet" />*@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -42,6 +42,8 @@
                                     </svg>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Usuario"><i class="fas fa-user mr-2"></i>Usuario</a>
+                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
                                     @if (User.IsInRole("Usuario_Admin"))
                                     {
                                         <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
@@ -78,7 +80,7 @@
             &copy; 2021 - MarketPage - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
