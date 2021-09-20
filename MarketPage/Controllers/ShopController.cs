@@ -20,7 +20,7 @@ namespace MarketPage.Controllers
             return View(data);
         }
 
-        private List<Item> GetItems()
+        private static List<Item> GetItems()
         {
             using (var context = new ContextEF())
             {
@@ -28,7 +28,7 @@ namespace MarketPage.Controllers
             };
         }
 
-        private List<ImgItem> GetImgs()
+        private static List<ImgItem> GetImgs()
         {
             using (var context = new ContextEF())
             {
@@ -36,7 +36,7 @@ namespace MarketPage.Controllers
             };
         }
 
-        private List<ItemViewShop> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
+        private static List<ItemViewShop> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
         {
             var lista = new List<ItemViewShop>();
             foreach (var item in items)

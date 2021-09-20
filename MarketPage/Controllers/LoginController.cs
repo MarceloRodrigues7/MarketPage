@@ -82,6 +82,19 @@ namespace MarketPage.Controllers
             }
         }
 
+        public IActionResult Usuario()
+        {
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            {
+                using (var context = new ContextEF())
+                {
+                    var data = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).First();
+                    return View(data);
+                };
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         private void GeraIdentity(Usuario usuario)
         {
             var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };        

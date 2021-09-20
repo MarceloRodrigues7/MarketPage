@@ -21,32 +21,21 @@ namespace MarketPage.Controllers
                 return View(context.Categorias.ToList());
             };
         }
-
         [Authorize]
         public IActionResult AdicionarCategoria()
         {
             return View();
         }
-
         [Authorize]
-        public IActionResult Produto()
+        public IActionResult EditarCategoria(Categoria item)
         {
-            using (var context = new ContextEF())
-            {
-                return View(context.Itens.ToList());
-            };
+            return View(item);
         }
-
         [Authorize]
-        public IActionResult AdicionarProduto()
+        public IActionResult DeletarCategoria(Categoria item)
         {
-            using (var context = new ContextEF())
-            {
-                ViewBag.Categorias = context.Categorias.ToList();
-                return View();
-            };
-        }
-
+            return View(item);
+        }        
         [Authorize]
         public IActionResult PostCategoria(Categoria categoria)
         {
@@ -67,7 +56,67 @@ namespace MarketPage.Controllers
             }
 
         }
+        [Authorize]
+        public IActionResult PutCategoria(Categoria categoria)
+        {
+            try
+            {
+                using (var context = new ContextEF())
+                {
+                    categoria.DataAdicao = DateTime.Now;
+                    context.Categorias.Update(categoria);
+                    context.SaveChanges();
+                    return RedirectToAction("Categoria", "Admin");
+                };
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("EditarCategoria", "Admin", categoria);
+            }
 
+        }
+        [Authorize]
+        public IActionResult DeleteCategoria(Categoria categoria)
+        {
+            try
+            {
+                using (var context = new ContextEF())
+                {
+                    context.Itens.RemoveRange(context.Itens.Where(i => i.IdCategoria == categoria.Id));
+                    context.Categorias.Remove(categoria);
+                    context.SaveChanges();
+                    return RedirectToAction("Categoria", "Admin");
+                };
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("DeleteCategoria", "Admin");
+            }
+
+        }
+
+        [Authorize]
+        public IActionResult Produto()
+        {
+            using (var context = new ContextEF())
+            {
+                var categorias = context.Categorias.ToList();
+                var itens = context.Itens.ToList();
+                var data = NovoItemViewAdmin(itens, categorias);
+                return View(data);
+            };
+        }
+        [Authorize]
+        public IActionResult AdicionarProduto()
+        {
+            using (var context = new ContextEF())
+            {
+                ViewBag.Categorias = context.Categorias.ToList();
+                return View();
+            };
+        }
         [Authorize]
         public IActionResult PostProduto(ItemImagem produto)
         {
@@ -133,6 +182,25 @@ namespace MarketPage.Controllers
                 context.ImagensItem.Add(imgItem);
                 context.SaveChanges();
             };
+        }
+        private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
+        {
+            List<ItemViewAdmin> list = new();
+            foreach (var i in item)
+            {
+                list.Add(new ItemViewAdmin
+                {
+                    Id = i.Id,
+                    Nome = i.Nome,
+                    Descricao = i.Descricao,
+                    Valor = i.Valor,
+                    Quantidade = i.Quantidade,
+                    Destaque = i.Destaque,
+                    DataAdicao = i.DataAdicao,
+                    Categoria = categoria.Where(c => c.Id == i.IdCategoria).First().Nome
+                });
+            }
+            return list;
         }
 
 

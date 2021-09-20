@@ -37,7 +37,12 @@ namespace MarketPage.Controllers
                 {
                     usuario = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).FirstOrDefault();
                 };
-                ViewBag.Usuario = usuario;
+                MessageContato message = new()
+                {
+                    Nome=usuario.Nome,
+                    Email=usuario.Email
+                };
+                return View(message);
             }
             return View();
         }
@@ -89,6 +94,19 @@ namespace MarketPage.Controllers
                 lista.Add(itemViewShop);
             }
             return lista;
+        }
+
+        public IActionResult PostMessageContato(MessageContato message)
+        {
+            using (var context = new ContextEF())
+            {
+                message.DataEnvio = DateTime.Now;
+                message.Visualizado = false;
+                context.MessagesContato.Add(message);
+                context.SaveChanges();
+                TempData["Message"] = "Mensagem enviada com sucesso, aguarde retorno.";
+                return RedirectToAction("Index");
+            };
         }
     }
 }
