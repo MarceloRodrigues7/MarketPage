@@ -43,7 +43,7 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Usuario"><i class="fas fa-user mr-2"></i>Usuario</a>
-                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
+                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Carrinho"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
                                     @if (User.IsInRole("Usuario_Admin"))
                                     {
                                         <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
@@ -75,12 +75,84 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - MarketPage - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <footer class="text-center text-lg-start bg-light text-muted">
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <div class="me-5 d-none d-lg-block">
+                <span class="mr-2">Conecte-se conosco nas redes sociais:</span>
+                <a href="https://www.facebook.com/patricia.moraesteixeira" class="me-4 text-reset">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/patriciamoraessemijoias/" class="me-4 text-reset">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://wa.me/5519991392232" class="me-4 text-reset">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </section>
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            💎Patrícia Moraes Semijoias
+                        </h6>
+                        <p>
+                            Semijoias para mulheres que buscam sua melhor versão.
+                            <br />
+                            Entregas para todo o Brasil.
+                        </p>
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Produtos
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">Angular</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">React</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Vue</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Laravel</a>
+                        </p>
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Paginas
+                        </h6>
+                        <p>
+                            <a asp-area="" asp-controller="Login" asp-action="Usuario" class="text-reset">Usuário</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Login" asp-action="Carrinho" class="text-reset">Carrinho</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Pedidos</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Shop" asp-action="Index" class="text-reset">Shop</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Contato
+                        </h6>
+                        <p><i class="fas fa-home me-3"></i> Vargem Grande do Sul - SP , BR</p>
+                        <p>
+                            <i class="fas fa-envelope me-3"></i>
+                            pat.mt@hotmail.com
+                        </p>
+                        <p><i class="fas fa-phone me-3"></i> +55 19 99139-2232</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </footer>
-    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>*@
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

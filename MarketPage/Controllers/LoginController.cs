@@ -116,5 +116,10 @@ namespace MarketPage.Controllers
                 return context.Usuarios.Where(l => l.Username == username).Any();
             };
         }
+
+        public IActionResult Carrinho()
+        {
+            return View();
+        }
     }
 }
