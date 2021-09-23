@@ -1,37 +1,50 @@
 ﻿@model ItemViewProduto
 @{
     ViewData["Title"] = Model.Nome;
+    Model.Quantidade = 0;
 }
 
-<div class="container col-8">
-    <div class="card ml-2 mr-2 mt-2 mb-2">
-        <div class="container-fluid">
-            <div class="wrapper row">
-                <div class="col-md-6 text-center">
-                    <div class="card-img">
-                        @{
-                            var base64 = Convert.ToBase64String(Model.Img);
-                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                        }
-                        <img class="img-fluid mt-3 mb-3" src='@imgSrc'/>
-                    </div>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <h3 class="modal-title">@Model.Nome</h3>
-                    <p class="details">@Model.Descricao</p>
-                    <h5 class="text-capitalize">Preço: <span>R$ @Model.Valor</span></h5>
-
-                    <div class="mt-4">
-                        <div class="mb-3">
-                            <button class="btn btn-outline-success" type="button">comprar<i class="fas fa-cash-register ml-2"></i></button>
-                        </div>
-                        <div class="mb-3">
-                            <button class="btn btn-outline-secondary" type="button">Add Carrinho<i class="fas fa-cart-plus ml-2"></i></button>
+@using (Html.BeginForm("PostItemCarrinho", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Valor)
+    <div class="container col-8">
+        <div class="card ml-2 mr-2 mt-2 mb-2">
+            <div class="container-fluid">
+                <div class="wrapper row">
+                    <div class="col-md-6 text-center">
+                        <div class="card-img">
+                            @{
+                                var base64 = Convert.ToBase64String(Model.Img);
+                                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                            }
+                            <img class="img-fluid mt-3 mb-3" src='@imgSrc' />
                         </div>
                     </div>
-
+                    <div class="col-md-6 mt-3">
+                        <h4 class="modal-title">@Model.Nome</h4>
+                        <p class="details">@Model.Descricao</p>
+                        <h6 class="text-capitalize">Preço: <span>R$ @Model.Valor</span></h6>
+                        <p></p>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Quantidade:</span>
+                            </div>
+                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control col-3", @id = "txtQuantidade", @required = true })
+                        </div>
+                        <div class="mt-4">
+                            <div class="mb-3">
+                                <button class="btn btn-outline-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-outline-secondary" type="submit">Add Carrinho<i class="fas fa-cart-plus ml-2"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}

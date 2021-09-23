@@ -36,23 +36,30 @@
                     {
                         <ul class="navbar-nav text-right">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-button-fill" viewBox="0 0 16 16">
-                                        <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v2A1.5 1.5 0 0 0 1.5 5h8A1.5 1.5 0 0 0 11 3.5v-2A1.5 1.5 0 0 0 9.5 0h-8zm5.927 2.427A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0l-.396-.396zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
-                                    </svg>
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                                    <i class="fas fa-bars"></i>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Usuario"><i class="fas fa-user mr-2"></i>Usuario</a>
-                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
-                                    @if (User.IsInRole("Usuario_Admin"))
-                                    {
-                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
-                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="fas fa-tags mr-2"></i>Produtos</a>
-                                    }
+                                    <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Carrinho"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Logout"><i class="fas fa-sign-out-alt mr-2"></i>Sair</a>
                                 </div>
                             </li>
                         </ul>
+                        @if (User.IsInRole("Usuario_Admin"))
+                        {
+                            <ul class="navbar-nav text-right">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Admin Menu">
+                                        <i class="fas fa-user-shield"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
+                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="fas fa-tags mr-2"></i>Produtos</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        }
                     }
                     else
                     {
@@ -75,12 +82,70 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - MarketPage - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+
+
+
+    <footer class="text-center text-lg-start bg-light text-muted">
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <div class="me-5 d-none d-lg-block">
+                <span class="mr-2">Conecte-se conosco nas redes sociais:</span>
+                <a href="https://www.facebook.com/patricia.moraesteixeira" class="me-4 text-reset">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/patriciamoraessemijoias/" class="me-4 text-reset">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://wa.me/5519991392232" class="me-4 text-reset">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </section>
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            💎Patrícia Moraes Semijoias
+                        </h6>
+                        <p>
+                            Semijoias para mulheres que buscam sua melhor versão.
+                            <br />
+                            Entregas para todo o Brasil.
+                        </p>
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Paginas
+                        </h6>
+                        <p>
+                            <a asp-area="" asp-controller="Login" asp-action="Usuario" class="text-reset">Usuário</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Login" asp-action="Carrinho" class="text-reset">Carrinho</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Pedidos</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Shop" asp-action="Index" class="text-reset">Shop</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Contato
+                        </h6>
+                        <p><i class="fas fa-home me-3"></i> Vargem Grande do Sul - SP , BR</p>
+                        <p>
+                            <i class="fas fa-envelope me-3"></i>
+                            pat.mt@hotmail.com
+                        </p>
+                        <p><i class="fas fa-phone me-3"></i> +55 19 99139-2232</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </footer>
-    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>*@
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

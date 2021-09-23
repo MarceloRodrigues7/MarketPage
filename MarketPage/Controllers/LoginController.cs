@@ -97,7 +97,7 @@ namespace MarketPage.Controllers
 
         private void GeraIdentity(Usuario usuario)
         {
-            var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };        
+            var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };
             var identidadeDeUsuario = new ClaimsIdentity(claims, "Login");
             ClaimsPrincipal claimPrincipal = new(identidadeDeUsuario);
             var propriedadesDeAutenticacao = new AuthenticationProperties
@@ -115,6 +115,64 @@ namespace MarketPage.Controllers
             {
                 return context.Usuarios.Where(l => l.Username == username).Any();
             };
+        }
+
+        public IActionResult Carrinho()
+        {
+            var carrinho = GetItensCarrinho();
+            return View(carrinho);
+        }
+
+        public IActionResult PostItemCarrinho(ItemViewProduto item)
+        {
+            using (var context = new ContextEF())
+            {
+                var i = new Carrinho
+                {
+                    IdItem = item.Id,
+                    IdUsuario = int.Parse(User.Identity.Name),
+                    Quantidade = item.Quantidade,
+                    Valor = item.Valor,
+                    DataHora = DateTime.Now
+                };
+                context.CarrinhoItem.Add(i);
+                context.SaveChanges();
+                return RedirectToAction("Carrinho");
+            };
+        }
+
+        public IActionResult DeleteItemCarrinho(long item)
+        {
+            using (var context = new ContextEF())
+            {
+                context.CarrinhoItem.Remove(context.CarrinhoItem.Where(c=>c.Id==item).First());
+                context.SaveChanges();
+                return RedirectToAction("Carrinho");
+            };
+        }
+
+        public List<ItemViewProduto> GetItensCarrinho()
+        {
+            var data = new List<Carrinho>();
+            var lista = new List<ItemViewProduto>();
+
+            using (var context = new ContextEF())
+            {
+                data = context.CarrinhoItem.Where(c => c.IdUsuario == int.Parse(User.Identity.Name)).ToList();
+                foreach (var item in data)
+                {
+                    lista.Add(new ItemViewProduto
+                    {
+                        Id=item.Id,
+                        Nome=context.Itens.Where(i=>i.Id==item.IdItem).First().Nome,
+                        Descricao= context.Itens.Where(i => i.Id == item.IdItem).First().Descricao,
+                        Valor=item.Valor,
+                        Quantidade=item.Quantidade,
+                        Img = context.ImagensItem.Where(i=>i.IdItem==item.IdItem).First().Img
+                    });
+                }
+            };
+            return lista;
         }
     }
 }
