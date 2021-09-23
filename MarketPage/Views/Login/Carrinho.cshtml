@@ -1,15 +1,23 @@
-﻿@{
+﻿@model List<ItemViewProduto>
+@{
     ViewData["Title"] = "Carrinho";
+
+    var list = new List<decimal>();
+    foreach (var i in Model)
+    {
+        var t = i.Quantidade * i.Valor;
+        list.Add(t);
+    };
 }
 
 <div class="card mt-3">
     <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-10 col-md-offset-1">
+        <div class="col-sm-12 col-md-12 col-md-offset-1">
             <table class="table">
                 <thead>
                     <tr>
                         <th class="text-secondary">Produto</th>
-                        <th class="text-secondary">Qtd.</th>
+                        <th class="text-secondary text-center">Qtd.</th>
                         <th class="text-secondary text-center">Preço Un.</th>
                         <th class="text-secondary text-center">Preço Total</th>
                         <th> </th>
@@ -17,42 +25,45 @@
                 </thead>
                 <tbody>
                     @*Itens*@
-                    <tr>
-                        <td class="col-sm-8 col-md-6">
-                            <div class="media">
-                                <img class="media-object" src="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-2/72/product-icon.png" style="width: 72px; height: 72px;">
-                                <div class="media-body">
-                                    <h4 class="media-heading ml-2 text-secondary">Product name</h4>
-                                    <h6 class="media-heading ml-2 text-secondary">Tam.: <strong>Brand name</strong></h6>
+                    @foreach (var item in Model)
+                    {
+                        var total = item.Valor * item.Quantidade;
+
+
+                        <tr>
+                            <td class="col-sm-8 col-md-6">
+                                <div class="media">
+                                    @{
+                                        var base64 = Convert.ToBase64String(item.Img);
+                                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                                    }
+                                    <img class="media-object" src='@imgSrc' style="width: 72px; height: 72px;" />
+                                    <div class="media-body">
+                                        <h4 class="media-heading ml-2 text-secondary">@item.Nome</h4>
+                                        <h6 class="media-heading ml-2 text-secondary">Tam.: <strong>Brand name</strong></h6>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="col-sm-1 col-md-1">
-                            <input type="text" class="form-control text-center" value="3" readonly>
-                        </td>
-                        <td class="col-sm-1 col-md-1 text-center"><strong>R$ 4.87</strong></td>
-                        <td class="col-sm-1 col-md-1 text-center"><strong>R$ 14.61</strong></td>
-                        <td class="col-sm-1 col-md-1">
-                            <button type="button" class="btn btn-danger">
-                                <span class="glyphicon glyphicon-remove"></span> Remove
-                            </button>
-                        </td>
-                    </tr>
-                    @*Subtotal*@
-                    <tr>
-                        <td>   </td>
-                        <td>   </td>
-                        <td>   </td>
-                        <td><h6>Subtotal</h6></td>
-                        <td class="text-right"><h6><strong>$24.59</strong></h6></td>
-                    </tr>
+                            </td>
+                            <td class="col-sm-1 col-md-1">
+                                <input type="text" class="form-control text-center" value="@item.Quantidade" readonly>
+                            </td>
+                            <td class="col-sm-1 col-md-1 text-center"><strong>@item.Valor</strong></td>
+
+                            <td class="col-sm-1 col-md-1 text-center"><strong>@total</strong></td>
+                            <td class="col-sm-1 col-md-1">
+                                <button type="button" class="btn btn-outline-danger" title="Remover" onclick="location.href='@Url.Action("DeleteItemCarrinho","Login",new { item = item.Id })'">
+                                    <span><i class="fas fa-trash-alt"></i></span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
                     @*Total*@
                     <tr>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td><h5>Total</h5></td>
-                        <td class="text-right"><h5><strong>$31.53</strong></h5></td>
+                        <td class="text-right"><h5><strong>$ @list.Sum()</strong></h5></td>
                     </tr>
                     <tr>
                         <td></td>
@@ -64,13 +75,13 @@
                 </tbody>
             </table>
             @* Botões *@
-            <div class="float-right mb-4">
-                <button type="button" class="btn btn-secondary">
-                    Voltar <i class="fas fa-shopping-cart ml-2"></i>
-                </button>
-                <button type="button" class="btn btn-success">
-                    Finalizar <i class="fas fa-shopping-cart ml-2"></i>
-                </button>
+            <div class="float-right mb-4 mr-2">
+                <a type="button" class="btn btn-secondary" href="javascript:history.back()">
+                    <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                </a>
+                <a type="button" class="btn btn-success" href="">
+                    <i class="fas fa-shopping-cart mr-2"></i>Finalizar
+                </a>
             </div>
         </div>
     </div>

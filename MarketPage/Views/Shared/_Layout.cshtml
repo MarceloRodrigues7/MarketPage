@@ -36,23 +36,30 @@
                     {
                         <ul class="navbar-nav text-right">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-menu-button-fill" viewBox="0 0 16 16">
-                                        <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v2A1.5 1.5 0 0 0 1.5 5h8A1.5 1.5 0 0 0 11 3.5v-2A1.5 1.5 0 0 0 9.5 0h-8zm5.927 2.427A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0l-.396-.396zM0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2H1zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2h14zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
-                                    </svg>
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Menu">
+                                    <i class="fas fa-bars"></i>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Usuario"><i class="fas fa-user mr-2"></i>Usuario</a>
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Carrinho"><i class="fas fa-shopping-cart mr-2"></i>Carrinho</a>
-                                    @if (User.IsInRole("Usuario_Admin"))
-                                    {
-                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
-                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="fas fa-tags mr-2"></i>Produtos</a>
-                                    }
                                     <a class="dropdown-item text-secondary" asp-area="" asp-controller="Login" asp-action="Logout"><i class="fas fa-sign-out-alt mr-2"></i>Sair</a>
                                 </div>
                             </li>
                         </ul>
+                        @if (User.IsInRole("Usuario_Admin"))
+                        {
+                            <ul class="navbar-nav text-right">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Admin Menu">
+                                        <i class="fas fa-user-shield"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Categoria"><i class="fas fa-tasks mr-2"></i>Categorias</a>
+                                        <a class="dropdown-item text-secondary" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="fas fa-tags mr-2"></i>Produtos</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        }
                     }
                     else
                     {
@@ -74,6 +81,9 @@
             @RenderBody()
         </main>
     </div>
+
+
+
 
     <footer class="text-center text-lg-start bg-light text-muted">
         <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
@@ -101,23 +111,6 @@
                             Semijoias para mulheres que buscam sua melhor versão.
                             <br />
                             Entregas para todo o Brasil.
-                        </p>
-                    </div>
-                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                        <h6 class="text-uppercase fw-bold mb-4">
-                            Produtos
-                        </h6>
-                        <p>
-                            <a href="#!" class="text-reset">Angular</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">React</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Vue</a>
-                        </p>
-                        <p>
-                            <a href="#!" class="text-reset">Laravel</a>
                         </p>
                     </div>
                     <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">

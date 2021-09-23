@@ -18,5 +18,6 @@ namespace MarketPage.Context
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<ImgItem> ImagensItem { get; set; }
         public DbSet<MessageContato> MessagesContato { get; set; }
+        public DbSet<Carrinho> CarrinhoItem { get; set; }
     }
 }
