@@ -52,7 +52,7 @@
                             }
                             <td class="text-center">@item.DataAdicao</td>
                             <td class="col-3 text-center">
-                                <a class="btn btn-warning btn-sm col-5" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="fas fa-edit mr-1"></i>Editar</a>
+                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("EditarProduto", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Editar</a>
                                 <a class="btn btn-danger btn-sm col-5" asp-area="" asp-controller="Admin" asp-action="Produto"><i class="far fa-trash-alt  mr-1"></i>Deletar</a>
                             </td>
                         </tr>

@@ -24,25 +24,45 @@
                         </div>
                     </div>
                     <div class="col-md-6 mt-3">
-                        <h4 class="modal-title">@Model.Nome</h4>
-                        <p class="details">@Model.Descricao</p>
-                        <h6 class="text-capitalize">Preço: <span>R$ @Model.Valor</span></h6>
-                        <p></p>
-                        <div class="input-group mb-3">
+                        <div class="ml-3">
+                            <h5 class="modal-title">@Model.Nome</h5>
+                            <br />
+                        </div>
+                        <div class="input-group mb-3 col-8">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">Preço(R$):</span>
+                            </div>
+                            @Html.TextBoxFor(model => model.Valor, new { @type = "text", @class = "form-control", @id = "txtValor", @readonly=true})
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Tamanhos))
+                        {
+                            <div class="input-group mb-3 col-8">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">Tamanho:</span>
+                                </div>
+                                @Html.DropDownListFor(m => m.Tamanhos,
+                                     new SelectList(Model.Tamanhos.Split(';')),
+                                     "", new { @class = "form-control", @title = "Selecione o tamanho" })
+
+                            </div>
+                        }
+                        <div class="input-group ml-0 mb-3 col-8">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">Quantidade:</span>
                             </div>
-                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control col-3", @id = "txtQuantidade", @required = true })
+                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @required = true })
                         </div>
                         <div class="mt-4">
-                            <div class="mb-3">
+                            <div class="mb-3 ml-3">
                                 <button class="btn btn-outline-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
-                            </div>
-                            <div class="mb-3">
                                 <button class="btn btn-outline-secondary" type="submit">Add Carrinho<i class="fas fa-cart-plus ml-2"></i></button>
                             </div>
                         </div>
                     </div>
+                    <article class="ml-5 mr-5 mt-3">
+                        <p class="details"><strong>Descrição: </strong>@Model.Descricao</p>
+                    </article>
+                    
                 </div>
             </div>
         </div>
