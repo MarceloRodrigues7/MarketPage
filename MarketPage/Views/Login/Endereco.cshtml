@@ -1,0 +1,76 @@
+﻿@model Endereco
+@{
+    ViewData["Title"] = "Endenreço";
+}
+<div class="row d-flex justify-content-center align-items-center mt-3">
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center">
+                <h4 class="text-secondary">Endereço<i class="fas fa-map-marked-alt ml-2"></i></h4>
+            </div>
+            <div class="row d-flex justify-content-center align-items-center">
+                @using (Html.BeginForm("PostEndereco", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+                {
+                    @Html.ValidationSummary()
+                    @Html.AntiForgeryToken()
+                    <div class="container ml-1 mr-1">
+                        @if (TempData["Message"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["Message"].ToString()
+                            </div>
+                        }
+                        <div class="row mb-2 mt-1">
+                            <div class="col-6">
+                                <label for="lblPais" class="text-body text-secondary">País</label>
+                                @Html.TextBoxFor(model => model.Pais, new { @type = "text", @class = "form-control", @id = "txtPais", @required = true })
+                            </div>
+                            <div class="col-6">
+                                <label for="lblEstado" class="text-body text-secondary">Estado</label>
+                                @Html.TextBoxFor(model => model.Estado, new { @type = "text", @class = "form-control", @id = "txtEstado", @required = true })
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label for="lblCidade" class="text-body text-secondary">Cidade</label>
+                                @Html.TextBoxFor(model => model.Cidade, new { @type = "text", @class = "form-control", @id = "txtCidade", @required = true })
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-9">
+                                <label for="lblBairro" class="text-body text-secondary">Bairro</label>
+                                @Html.TextBoxFor(model => model.Bairro, new { @type = "text", @class = "form-control", @id = "txtBairro", @required = true })
+                            </div>
+                            <div class="col-3">
+                                <label for="lblNumero" class="text-body text-secondary">Nº</label>
+                                @Html.TextBoxFor(model => model.Numero, new { @type = "number", @class = "form-control", @id = "txtNumero", @required = true })
+                            </div>
+                        </div>
+                        <div class="text-center mb-3 mt-3">
+                            <a type="button" class="btn btn-secondary" href="javascript:history.back()"><i class="fas fa-arrow-circle-left mr-2"></i>Voltar</a>
+                            <button type="submit" class="btn btn-primary" id="btnEnviar"><i class="fas fa-shopping-cart mr-2"></i>Salvar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

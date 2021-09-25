@@ -14,6 +14,7 @@ namespace MarketPage.Models
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public decimal Valor { get; set; }
+        public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public bool Destaque { get; set; }
         public DateTime DataAdicao { get; set; }
@@ -26,6 +27,7 @@ namespace MarketPage.Models
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public decimal Valor { get; set; }
+        public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public bool Destaque { get; set; }
         public int Categoria { get; set; }
@@ -39,6 +41,7 @@ namespace MarketPage.Models
         public long Id { get; set; }
         public string Nome { get; set; }
         public decimal Valor { get; set; }
+        public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public byte[] Img { get; set; }
         public int IdCategoria { get; set; }
@@ -51,6 +54,7 @@ namespace MarketPage.Models
         public string Descricao { get; set; }
         public decimal Valor { get; set; }
         public int Quantidade { get; set; }
+        public string Tamanhos { get; set; }
         public int IdCategoria { get; set; }
         public byte[] Img { get; set; }
     }
@@ -61,6 +65,7 @@ namespace MarketPage.Models
         public int IdUsuario { get; set; }
         public long IdItem { get; set; }
         public decimal Valor { get; set; }
+        public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataHora { get; set; }
     }

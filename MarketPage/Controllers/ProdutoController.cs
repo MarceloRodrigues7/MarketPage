@@ -35,6 +35,7 @@ namespace MarketPage.Controllers
                 Nome = item.Nome,
                 Descricao = item.Descricao,
                 Valor = item.Valor,
+                Tamanhos=item.Tamanhos,
                 Quantidade=item.Quantidade,
                 IdCategoria=item.IdCategoria,
                 Img=img.Img

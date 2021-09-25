@@ -12,6 +12,7 @@ namespace MarketPage.Models
         public long IdItem { get; set; }
         public byte[] Img { get; set; }
         public bool Principal { get; set; }
+        public string Tamanhos { get; set; }
         public DateTime DataAdicao { get; set; }
     }
 }

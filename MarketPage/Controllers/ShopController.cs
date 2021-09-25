@@ -46,6 +46,7 @@ namespace MarketPage.Controllers
                     Id = item.Id,
                     Nome = item.Nome,
                     Valor = item.Valor,
+                    Tamanhos=item.Tamanhos,
                     Img = imgs.First(i => i.IdItem == item.Id).Img
                 };
                 lista.Add(itemViewShop);

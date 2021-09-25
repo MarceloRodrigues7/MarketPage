@@ -2,6 +2,7 @@
 using MarketPage.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,15 @@ namespace MarketPage.Controllers
             return View();
         }
 
+        [Authorize]
+        public IActionResult Endereco()
+        {
+            using (var context = new ContextEF())
+            {
+                var data = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
+                return View(data);
+            };
+        }
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
@@ -59,6 +69,39 @@ namespace MarketPage.Controllers
             }
         }
 
+        public IActionResult PostEndereco(Endereco endereco)
+        {
+            try
+            {
+                using (var context = new ContextEF())
+                {
+                    endereco.IdUsuario = int.Parse(User.Identity.Name);
+                    var res = context.EnderecosUsuario.Where(u => u.IdUsuario == endereco.IdUsuario).FirstOrDefault();
+                    if (res==null)
+                    {
+                        context.EnderecosUsuario.Add(endereco);
+                    }
+                    else
+                    {
+                        res.Pais = endereco.Pais;
+                        res.Estado = endereco.Estado;
+                        res.Cidade = endereco.Cidade;
+                        res.Bairro = endereco.Bairro;
+                        res.Numero = endereco.Numero;
+                        context.EnderecosUsuario.Update(res);
+                    }
+                    context.SaveChanges();
+                    return RedirectToAction("Usuario");
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + ex.Message;
+                return View("Endereco");
+            }
+        }
+
         public IActionResult AutenticacaoUsuario(Usuario usuario)
         {
             try
@@ -82,6 +125,7 @@ namespace MarketPage.Controllers
             }
         }
 
+        [Authorize]
         public IActionResult Usuario()
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
@@ -89,6 +133,7 @@ namespace MarketPage.Controllers
                 using (var context = new ContextEF())
                 {
                     var data = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).First();
+                    ViewBag.Endereco = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
                     return View(data);
                 };
             }
@@ -117,6 +162,7 @@ namespace MarketPage.Controllers
             };
         }
 
+        [Authorize]
         public IActionResult Carrinho()
         {
             var carrinho = GetItensCarrinho();
@@ -132,6 +178,7 @@ namespace MarketPage.Controllers
                     IdItem = item.Id,
                     IdUsuario = int.Parse(User.Identity.Name),
                     Quantidade = item.Quantidade,
+                    Tamanhos = item.Tamanhos,
                     Valor = item.Valor,
                     DataHora = DateTime.Now
                 };
@@ -145,7 +192,7 @@ namespace MarketPage.Controllers
         {
             using (var context = new ContextEF())
             {
-                context.CarrinhoItem.Remove(context.CarrinhoItem.Where(c=>c.Id==item).First());
+                context.CarrinhoItem.Remove(context.CarrinhoItem.Where(c => c.Id == item).First());
                 context.SaveChanges();
                 return RedirectToAction("Carrinho");
             };
@@ -163,12 +210,13 @@ namespace MarketPage.Controllers
                 {
                     lista.Add(new ItemViewProduto
                     {
-                        Id=item.Id,
-                        Nome=context.Itens.Where(i=>i.Id==item.IdItem).First().Nome,
-                        Descricao= context.Itens.Where(i => i.Id == item.IdItem).First().Descricao,
-                        Valor=item.Valor,
-                        Quantidade=item.Quantidade,
-                        Img = context.ImagensItem.Where(i=>i.IdItem==item.IdItem).First().Img
+                        Id = item.Id,
+                        Nome = context.Itens.Where(i => i.Id == item.IdItem).First().Nome,
+                        Descricao = context.Itens.Where(i => i.Id == item.IdItem).First().Descricao,
+                        Valor = item.Valor,
+                        Tamanhos = item.Tamanhos,
+                        Quantidade = item.Quantidade,
+                        Img = context.ImagensItem.Where(i => i.IdItem == item.IdItem).First().Img
                     });
                 }
             };

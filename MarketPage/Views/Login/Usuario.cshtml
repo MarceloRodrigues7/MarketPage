@@ -1,6 +1,11 @@
 ﻿@model Usuario
 @{
     ViewData["Title"] = "Cadastro";
+    var endereco = ViewBag.Endereco;
+    if (endereco==null)
+    {
+        endereco = new Endereco();
+    }
 }
 <div class="row d-flex justify-content-center align-items-center">
     <div class="card shadow border-left-primary mt-2">
@@ -12,37 +17,66 @@
                 </div>
             }
             <div class="row">
-                <div class="col text-secondary text-center mt-3">
-                    <h4><i class="fas fa-user mr-2"></i>Cadastro</h4>
-                </div>
+                
             </div>
         </div>
         <div class="card-body">
             <div class="container">
-                <div class="row mb-2">
+                <strong class="text-secondary"><i class="fas fa-user mr-2"></i>Cadastro</strong>
+                <div class="row mb-2 ml-1 mt-2">
                     <div class="col-4">
-                        <label for="lblNome" class="text-body">Nome</label>
+                        <label for="lblNome" class="text-body text-secondary">Nome</label>
                         @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @readonly = true })
                     </div>
                     <div class="col-5">
-                        <label for="lblSobrenome" class="text-body">Sobrenome</label>
+                        <label for="lblSobrenome" class="text-body text-secondary">Sobrenome</label>
                         @Html.TextBoxFor(model => model.Sobrenome, new { @type = "text", @class = "form-control", @id = "txtSobrenome", @readonly = true })
                     </div>
                     <div class="col-3">
-                        <label for="lblDataNascimento">Data Nascimento</label>
+                        <label for="lblDataNascimento" class="text-body text-secondary">Data Nascimento</label>
                         <input type="text" class="form-control text-center" ,id="txtDataNascimento" value="@Model.DataNascimento.ToString("dd/MM/yyyy")" readonly />
                     </div>
                 </div>
-                <div class="row mb-2">
+                <div class="row mb-2 ml-2">
                     <div class="col">
-                        <label for="lblEmail" class="text-body">Email</label>
+                        <label for="lblEmail" class="text-body text-secondary">Email</label>
                         @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @readonly = true })
                     </div>
                 </div>
+                <hr>
+                <strong class="text-secondary"><i class="fas fa-map-marked-alt mr-2"></i>Endereço</strong>
+                <div class="row mb-2 ml-1 mt-2">
+                    <div class="col-6">
+                        <label for="lblPais" class="text-body text-secondary">País</label>
+                        <input type="text" class="form-control" id="txtPais" value="@endereco.Pais" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label for="lblEstado" class="text-body text-secondary">Estado</label>
+                        <input type="text" class="form-control" id="txtEstado" value="@endereco.Estado" readonly />
+                    </div>
+                </div>
+                <div class="row mb-2 ml-2">
+                    <div class="col">
+                        <label for="lblCidade" class="text-body text-secondary">Cidade</label>
+                        <input type="text" class="form-control" id="txtCidade" value="@endereco.Cidade"readonly />
+                    </div>
+                </div>
+                <div class="row mb-2 ml-2">
+                    <div class="col-9">
+                        <label for="lblBairro" class="text-body text-secondary">Bairro</label>
+                        <input type="text" class="form-control" id="txtBairro" value="@endereco.Bairro"readonly />
+                    </div>
+                    <div class="col-3">
+                        <label for="lblNumero" class="text-body text-secondary">Nº</label>
+                        <input type="text" class="form-control" id="txtNumero" value="@endereco.Numero"readonly />
+                    </div>
+                </div>
+                <hr>
                 <div class="row justify-content-center mt-4">
-                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnEnviar" onclick="@("window.location.href='" + @Url.Action("Cadastro", "Usuario") + "'");" disabled>Editar Conta</button>
-                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnEnviar" onclick="@("window.location.href='" + @Url.Action("Cadastro", "Usuario") + "'");" disabled>Pedidos</button>
-                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnEnviar" onclick="@("window.location.href='" + @Url.Action("Cadastro", "Usuario") + "'");" disabled>Carrinho</button>
+                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnAcc" onclick="@("window.location.href='" + @Url.Action("Cadastro", "Usuario") + "'");" disabled>Editar Conta</button>
+                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnEnd" onclick="@("window.location.href='" + @Url.Action("Endereco", "Login") + "'");">Editar Endereço</button>
+                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnPedidos" onclick="@("window.location.href='" + @Url.Action("Cadastro", "Usuario") + "'");" disabled>Pedidos</button>
+                    <button type="submit" class="btn btn-primary ml-1 mr-1" id="btnCarrinho" onclick="@("window.location.href='" + @Url.Action("Carrinho", "Login") + "'");">Carrinho</button>
                 </div>
             </div>
         </div>
