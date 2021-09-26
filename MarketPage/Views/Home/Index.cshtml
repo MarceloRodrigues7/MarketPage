@@ -5,7 +5,7 @@
 
 <div class="container ">
     <div class="row mt-1 justify-content-center">
-        <h4 class="text-center ml-3 mb-1 mt-3" style="color:#4c1130"><i class="fas fa-star pr-2"></i>Destaques<i class="fas fa-star pl-2"></i></h4>
+        <h4 class="text-center ml-3 mb-1 mt-3" style="color:#404040"><i class="fas fa-star pr-2"></i>Destaques<i class="fas fa-star pl-2"></i></h4>
     </div>
     @* Alerta Controller TempData*@
     <div class="row justify-content-center">
@@ -22,7 +22,7 @@
         @if (activeCarousel)
         {
             <div class="row ml-lg-5 mb-2 mt-5">
-                <h5 class="ml-5" style="color:#741b47">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
+                <h5 class="ml-5" style="color:#808080">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
             </div>
             <div class="row justify-content-md-center">
                 <div id="carouselExampleFade" class="carousel slide carousel-fade col-10" data-ride="carousel" style="background-color: white">
@@ -115,7 +115,7 @@
         {
             <div class="ml-lg-5">
                 <div class="row ml-lg-5 mb-2 mt-5">
-                    <h5 style="color:#741b47">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
+                    <h5 style="color:#808080">@categoria.Nome<i class="fas fa-store-alt pl-2"></i></h5>
                 </div>
                 <div class="card-deck ml-1">
                     @foreach (var item in @ViewBag.Itens)

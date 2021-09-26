@@ -140,6 +140,29 @@ namespace MarketPage.Controllers
                 return View();
             };
         }
+
+        public IActionResult DeletarProduto(ItemViewAdmin item)
+        {
+            using (var context = new ContextEF())
+            {
+                var produto = context.Itens.Where(i => i.Id == item.Id).First();
+                var img = context.ImagensItem.Where(i => i.IdItem == item.Id).FirstOrDefault();
+                var itemImg = new ItemImagem
+                {
+                    Id = produto.Id,
+                    Nome = produto.Nome,
+                    Descricao = produto.Descricao,
+                    Valor = produto.Valor,
+                    Tamanhos = produto.Tamanhos,
+                    Quantidade = produto.Quantidade,
+                    Destaque = produto.Destaque,
+                    Categoria = produto.IdCategoria,
+                };
+                ViewBag.Categorias = context.Categorias.ToList();
+                return View();
+            };
+        }
+
         [Authorize]
         public IActionResult PostProduto(ItemImagem produto)
         {
@@ -159,6 +182,17 @@ namespace MarketPage.Controllers
                 return RedirectToAction("AdicionarProduto", "Admin");
             }
 
+        }
+
+        public IActionResult DeleteProduto(ItemViewAdmin item)
+        {
+            using(var context = new ContextEF())
+            {
+                context.ImagensItem.RemoveRange(context.ImagensItem.Where(i => i.IdItem == item.Id));
+                context.Itens.RemoveRange(context.Itens.Where(i => i.Id == item.Id));
+                context.SaveChanges();
+                return RedirectToAction("Produto");
+            };
         }
 
         private static Item NovoProduto(ItemImagem produto)
