@@ -77,7 +77,7 @@ namespace MarketPage.Controllers
                 {
                     endereco.IdUsuario = int.Parse(User.Identity.Name);
                     var res = context.EnderecosUsuario.Where(u => u.IdUsuario == endereco.IdUsuario).FirstOrDefault();
-                    if (res==null)
+                    if (res == null)
                     {
                         context.EnderecosUsuario.Add(endereco);
                     }
@@ -171,21 +171,30 @@ namespace MarketPage.Controllers
 
         public IActionResult PostItemCarrinho(ItemViewProduto item)
         {
-            using (var context = new ContextEF())
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
             {
-                var i = new Carrinho
+                if (item.Quantidade < 1)
                 {
-                    IdItem = item.Id,
-                    IdUsuario = int.Parse(User.Identity.Name),
-                    Quantidade = item.Quantidade,
-                    Tamanhos = item.Tamanhos,
-                    Valor = item.Valor,
-                    DataHora = DateTime.Now
+                    TempData["Message"] = "Atenção, quantidade está [0]!";
+                    return RedirectToAction("Index", "Produto", new { Id = item.Id });
+                }
+                using (var context = new ContextEF())
+                {
+                    var i = new Carrinho
+                    {
+                        IdItem = item.Id,
+                        IdUsuario = int.Parse(User.Identity.Name),
+                        Quantidade = item.Quantidade,
+                        Tamanhos = item.Tamanhos,
+                        Valor = item.Valor,
+                        DataHora = DateTime.Now
+                    };
+                    context.CarrinhoItem.Add(i);
+                    context.SaveChanges();
+                    return RedirectToAction("Carrinho");
                 };
-                context.CarrinhoItem.Add(i);
-                context.SaveChanges();
-                return RedirectToAction("Carrinho");
-            };
+            }
+            return RedirectToAction("Cadastrar");
         }
 
         public IActionResult DeleteItemCarrinho(long item)

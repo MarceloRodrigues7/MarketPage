@@ -13,6 +13,15 @@
     <div class="container col-8">
         <div class="card ml-2 mr-2 mt-2 mb-2">
             <div class="container-fluid">
+                @* Alerta Controller TempData*@
+                <div class="row justify-content-center mt-3">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            @TempData["Message"].ToString()
+                        </div>
+                    }
+                </div>
                 <div class="wrapper row">
                     <div class="col-md-6 text-center">
                         <div class="card-img">
@@ -32,7 +41,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">Preço(R$):</span>
                             </div>
-                            @Html.TextBoxFor(model => model.Valor, new { @type = "text", @class = "form-control", @id = "txtValor", @readonly=true})
+                            @Html.TextBoxFor(model => model.Valor, new { @type = "text", @class = "form-control", @id = "txtValor", @readonly = true })
                         </div>
                         @if (!string.IsNullOrEmpty(Model.Tamanhos))
                         {
@@ -55,14 +64,13 @@
                         <div class="mt-4">
                             <div class="mb-3 ml-3">
                                 <button class="btn btn-outline-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
-                                <button class="btn btn-outline-secondary" type="submit">Add Carrinho<i class="fas fa-cart-plus ml-2"></i></button>
                             </div>
                         </div>
                     </div>
                     <article class="ml-5 mr-5 mt-3">
                         <p class="details"><strong>Descrição: </strong>@Model.Descricao</p>
                     </article>
-                    
+
                 </div>
             </div>
         </div>
