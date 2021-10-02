@@ -1,0 +1,95 @@
+﻿@model List<Pedido>
+@{
+    ViewData["Title"] = "Pedidos";
+}
+<script src="//code.jquery.com/jquery-3.5.1.js"></script>
+<script src="//cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/1.11.1/js/dataTables.bootstrap4.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+<script src="//cdn.datatables.net/buttons/2.0.0/js/buttons.bootstrap4.min.js"></script>
+<script src="//cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+<script src="//cdn.datatables.net/buttons/2.0.0/js/buttons.colVis.min.js"></script>
+
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped table-bordered table-hover" id="myTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col">Cod</th>
+                        <th class="text-center" scope="col">Data Realização</th>
+                        <th class="text-center" scope="col">Valor Pedido</th>
+                        <th class="text-center" scope="col">Status</th>
+                        <th class="text-center col-3" scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@string.Concat(pedido.IdUsuario, pedido.Id)</td>
+                            <td class="text-center">@pedido.DataRealizacao</td>
+                            <td class="text-center">R$@pedido.ValorTotal</td>
+                            @switch (pedido.StatusAtual)
+                            {
+                                case "Pendente":
+                                    <td class="text-center"><i class="fas fa-business-time" title="Pendente"></i></td>
+                                    break;
+                                case "Aprovado":
+                                    <td class="text-center"><i class="fas fa-check-circle" title="Aprovado"></i></td>
+                                    break;
+                                case "Autorizado":
+                                    <td class="text-center"><i class="fas fa-check-circle" title="Autorizado"></i></td>
+                                    break;
+                                case "Em Processo":
+                                    <td class="text-center"><i class="fas fa-business-time" title="Em Processo"></i></td>
+                                    break;
+                                case "Em Mediação":
+                                    <td class="text-center"><i class="fas fa-business-time" title="Em Mediação"></i></td>
+                                    break;
+                                case "Rejeitado":
+                                    <td class="text-center"><i class="fas fa-times-circle" title="Rejeitado"></i></td>
+                                    break;
+                                case "Cancelado":
+                                    <td class="text-center"><i class="fas fa-times-circle" title="Cancelado"></i></td>
+                                    break;
+                                case "Devolvido":
+                                    <td class="text-center"><i class="fas fa-people-carry" title="Devolvido"></i></td>
+                                    break;
+                                case "Cobrado de Volta":
+                                    <td class="text-center"><i class="fas fa-people-carry" title="Cobrado de Volta"></i></td>
+                                    break;
+                            }
+                            <td class="text-center">
+                                <a class="btn btn-info btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("DescPedido", "Login",pedido) + "'");"><i class="fas fa-eye  mr-2"></i>Visualizar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.noConflict();
+        var table = $('#myTable').DataTable({
+            "order": [[0, "asc"]],
+            "language": {
+                "lengthMenu": "Mostrando _MENU_ registros por página",
+                "zeroRecords": "Nada encontrado",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "Nenhum registro disponível",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)"
+            },
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+    });</script>

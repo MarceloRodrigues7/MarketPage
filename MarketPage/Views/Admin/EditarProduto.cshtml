@@ -11,8 +11,9 @@
                 @TempData["Message"].ToString()
             </div>
         }
-        @using (Html.BeginForm("PostProduto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
+        @using (Html.BeginForm("PutProduto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
         {
+            @Html.HiddenFor(m => m.Id);
             <div class="row mb-3">
                 <div class="col">
                     <div class="form-outline">
@@ -40,7 +41,6 @@
                     <div class="form-outline">
                         <label class="form-label">Valor</label>
                         @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", @type = "text" })
-
                     </div>
                 </div>
                 <div class="col">

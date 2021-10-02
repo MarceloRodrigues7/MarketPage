@@ -4,14 +4,16 @@ using MarketPage.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketPage.Migrations
 {
     [DbContext(typeof(ContextEF))]
-    partial class ContextEFModelSnapshot : ModelSnapshot
+    [Migration("20211002150505_up_pedidos02")]
+    partial class up_pedidos02
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

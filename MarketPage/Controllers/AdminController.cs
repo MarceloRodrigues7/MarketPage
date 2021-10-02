@@ -36,7 +36,7 @@ namespace MarketPage.Controllers
         public IActionResult DeletarCategoria(Categoria item)
         {
             return View(item);
-        }        
+        }
         [Authorize]
         public IActionResult PostCategoria(Categoria categoria)
         {
@@ -130,7 +130,7 @@ namespace MarketPage.Controllers
                     Id = produto.Id,
                     Nome = produto.Nome,
                     Descricao = produto.Descricao,
-                    Valor = produto.Valor,
+                    Valor = produto.Valor.ToString(),
                     Tamanhos = produto.Tamanhos,
                     Quantidade = produto.Quantidade,
                     Destaque = produto.Destaque,
@@ -152,7 +152,7 @@ namespace MarketPage.Controllers
                     Id = produto.Id,
                     Nome = produto.Nome,
                     Descricao = produto.Descricao,
-                    Valor = produto.Valor,
+                    Valor = produto.Valor.ToString(),
                     Tamanhos = produto.Tamanhos,
                     Quantidade = produto.Quantidade,
                     Destaque = produto.Destaque,
@@ -186,7 +186,7 @@ namespace MarketPage.Controllers
 
         public IActionResult DeleteProduto(ItemViewAdmin item)
         {
-            using(var context = new ContextEF())
+            using (var context = new ContextEF())
             {
                 context.ImagensItem.RemoveRange(context.ImagensItem.Where(i => i.IdItem == item.Id));
                 context.Itens.RemoveRange(context.Itens.Where(i => i.Id == item.Id));
@@ -195,13 +195,60 @@ namespace MarketPage.Controllers
             };
         }
 
+        public IActionResult PutProduto(ItemImagem produto)
+        {
+            try
+            {
+                AtualizaItem(produto);
+                DeletaItemImg(produto);
+                return RedirectToAction("Produto", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("EditarProduto", "Admin");
+            }
+        }
+
+        private static void DeletaItemImg(ItemImagem produto)
+        {
+            using (var context = new ContextEF())
+            {
+                if (produto.ImageUpload != null)
+                {
+                    var img = context.ImagensItem.Where(i => i.IdItem == produto.Id).FirstOrDefault();
+                    context.ImagensItem.Remove(img);
+                    var novaImagem = NovoImgItem(produto.Nome);
+                    var res = new BinaryReader(produto.ImageUpload.OpenReadStream());
+                    novaImagem.Img = res.ReadBytes((int)produto.ImageUpload.Length);
+                    SalvarNovoImgItem(novaImagem);
+                }
+                context.SaveChanges();
+            };
+        }
+        private static void AtualizaItem(ItemImagem produto)
+        {
+            using (var context = new ContextEF())
+            {
+                var prod = context.Itens.Where(i => i.Id == produto.Id).FirstOrDefault();
+                prod.Nome = produto.Nome;
+                prod.Descricao = produto.Descricao;
+                prod.Valor = decimal.Parse(produto.Valor.Replace(".",","));
+                prod.Tamanhos = produto.Tamanhos;
+                prod.Quantidade = produto.Quantidade;
+                prod.Destaque = produto.Destaque;
+                prod.IdCategoria = produto.Categoria;
+                context.Itens.Update(prod);
+                context.SaveChanges();
+            };
+        }
         private static Item NovoProduto(ItemImagem produto)
         {
             return new Item
             {
                 Nome = produto.Nome,
                 Descricao = produto.Descricao,
-                Valor = produto.Valor,
+                Valor = decimal.Parse(produto.Valor.Replace(".", ",")),
                 Tamanhos = produto.Tamanhos,
                 Quantidade = produto.Quantidade,
                 Destaque = produto.Destaque,

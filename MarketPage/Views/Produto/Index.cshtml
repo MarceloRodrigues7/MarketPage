@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = Model.Nome;
     Model.Quantidade = 0;
+    var valorString = string.Concat("R$", Model.Valor);
 }
 
 @using (Html.BeginForm("PostItemCarrinho", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
@@ -37,29 +38,29 @@
                             <h5 class="modal-title">@Model.Nome</h5>
                             <br />
                         </div>
-                        <div class="input-group mb-3 col-8">
+                        <div class="input-group mb-2 col-9">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">Preço(R$):</span>
+                                <span class="input-group-text" id="basic-addon1">Preço:</span>
                             </div>
-                            @Html.TextBoxFor(model => model.Valor, new { @type = "text", @class = "form-control", @id = "txtValor", @readonly = true })
+                            <input type="text" class="form-control" id="txtValor" value="@valorString" readonly/>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.Tamanhos))
                         {
-                            <div class="input-group mb-3 col-8">
+                            <div class="input-group mb-2 col-9">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="basic-addon1">Tamanho:</span>
                                 </div>
                                 @Html.DropDownListFor(m => m.Tamanhos,
                                      new SelectList(Model.Tamanhos.Split(';')),
-                                     "", new { @class = "form-control", @title = "Selecione o tamanho" })
+                                     "", new { @class = "form-control", @title = "Selecione o tamanho", @required = true})
 
                             </div>
                         }
-                        <div class="input-group ml-0 mb-3 col-8">
+                        <div class="input-group ml-0 mb-2 col-9">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1">Quantidade:</span>
                             </div>
-                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @required = true })
+                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade",@min=1, @required = true })
                         </div>
                         <div class="mt-4">
                             <div class="mb-3 ml-3">
@@ -76,3 +77,20 @@
         </div>
     </div>
 }
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

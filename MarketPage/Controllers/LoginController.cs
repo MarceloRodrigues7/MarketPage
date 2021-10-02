@@ -1,5 +1,8 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
+using MercadoPago.Client.Preference;
+using MercadoPago.Config;
+using MercadoPago.Resource.Preference;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +37,64 @@ namespace MarketPage.Controllers
             using (var context = new ContextEF())
             {
                 var data = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
+                return View(data);
+            };
+        }
+
+        [Authorize]
+        public IActionResult Usuario()
+        {
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            {
+                using (var context = new ContextEF())
+                {
+                    var data = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).First();
+                    ViewBag.Endereco = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
+                    return View(data);
+                };
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        [Authorize]
+        public IActionResult Carrinho()
+        {
+            var carrinho = GetItensCarrinho();
+            return View(carrinho);
+        }
+
+        [Authorize]
+        public IActionResult Pedidos()
+        {
+            using (var context = new ContextEF())
+            {
+                var data = context.PedidosUsuario.Where(p => p.IdUsuario == int.Parse(User.Identity.Name)).ToList();
+                foreach (var item in data)
+                {
+                    if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual!="Aprovado")
+                    {
+                        var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
+                        item.StatusAtual = res.Elements.First().Payments.Last().Status;
+                        item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+                        PutStatusPedido(item);
+                    }
+                }
+                return View(data);
+            };
+        }
+        [Authorize]
+        public IActionResult DescPedido(Pedido pedido)
+        {
+            using (var context = new ContextEF())
+            {
+                var data = context.PedidosUsuario.Where(p => p.Id == pedido.Id).FirstOrDefault();
+                if (data.IdMercadoPago == null)
+                {
+                    ViewBag.IdMp = MercadoPagoRequest(data);
+                }
+                else
+                {
+                    ViewBag.IdMp = data.IdMercadoPago;
+                }
                 return View(data);
             };
         }
@@ -125,21 +186,6 @@ namespace MarketPage.Controllers
             }
         }
 
-        [Authorize]
-        public IActionResult Usuario()
-        {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
-            {
-                using (var context = new ContextEF())
-                {
-                    var data = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).First();
-                    ViewBag.Endereco = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
-                    return View(data);
-                };
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
         private void GeraIdentity(Usuario usuario)
         {
             var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };
@@ -163,10 +209,48 @@ namespace MarketPage.Controllers
         }
 
         [Authorize]
-        public IActionResult Carrinho()
+        public IActionResult PostPedido()
         {
-            var carrinho = GetItensCarrinho();
-            return View(carrinho);
+            Pedido pedido = new()
+            {
+                IdUsuario = int.Parse(User.Identity.Name),
+                DataRealizacao = DateTime.UtcNow.AddHours(-3),
+                StatusAtual = "Pendente"
+            };
+
+            var carrinho = GetCarrinho(pedido.IdUsuario);
+            pedido.ValorTotal = carrinho.Sum(c => c.Valor * c.Quantidade);
+
+            var end = GetEndereco(pedido.IdUsuario);
+            pedido.Pais = end.Pais;
+            pedido.Estado = end.Estado;
+            pedido.Cidade = end.Cidade;
+            pedido.Bairro = end.Bairro;
+            pedido.Numero = end.Numero;
+            var idPedido = AdicionaPedido(pedido);
+            AtualizaItensCarrinhoRealizado(idPedido, carrinho);
+            return RedirectToAction("Pedidos");
+        }
+
+        private static List<Carrinho> GetCarrinho(int idUsuario)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.CarrinhoItem.Where(c => c.IdUsuario == idUsuario && c.IdPedido == null).ToList();
+            };
+        }
+
+        private static void AtualizaItensCarrinhoRealizado(long idPedido, List<Carrinho> carrinho)
+        {
+            using (var context = new ContextEF())
+            {
+                foreach (var item in carrinho)
+                {
+                    item.IdPedido = idPedido;
+                    context.CarrinhoItem.Update(item);
+                }
+                context.SaveChanges();
+            };
         }
 
         public IActionResult PostItemCarrinho(ItemViewProduto item)
@@ -214,7 +298,7 @@ namespace MarketPage.Controllers
 
             using (var context = new ContextEF())
             {
-                data = context.CarrinhoItem.Where(c => c.IdUsuario == int.Parse(User.Identity.Name)).ToList();
+                data = context.CarrinhoItem.Where(c => c.IdUsuario == int.Parse(User.Identity.Name) && c.IdPedido == null).ToList();
                 foreach (var item in data)
                 {
                     lista.Add(new ItemViewProduto
@@ -230,6 +314,99 @@ namespace MarketPage.Controllers
                 }
             };
             return lista;
+        }
+
+        private static Endereco GetEndereco(int idUsuario)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.EnderecosUsuario.Where(e => e.IdUsuario == idUsuario).FirstOrDefault();
+            };
+        }
+
+        private static long AdicionaPedido(Pedido pedido)
+        {
+            using (var context = new ContextEF())
+            {
+                context.PedidosUsuario.Add(pedido);
+                context.SaveChanges();
+                var idPedido = context.PedidosUsuario.Where(p => p.DataRealizacao == pedido.DataRealizacao && p.ValorTotal == pedido.ValorTotal).FirstOrDefault().Id;
+                return idPedido;
+            };
+        }
+
+        private static string MercadoPagoRequest(Pedido pedido)
+        {
+            MercadoPagoConfig.AccessToken = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220";
+            var request = new PreferenceRequest
+            {
+                Items = new List<PreferenceItemRequest>
+                {
+                    new PreferenceItemRequest
+                    {
+                        Title=$"Pedido nº{pedido.IdUsuario}{pedido.Id}",
+                        Quantity=1,
+                        CurrencyId="BRL",
+                        UnitPrice=pedido.ValorTotal,
+                        Id=pedido.Id.ToString()
+                    }
+                }
+            };
+            var client = new PreferenceClient();
+            Preference preference = client.Create(request);
+            PutIdMercadoPago(pedido, preference.Id);
+            return preference.Id;
+        }
+
+        private static void PutIdMercadoPago(Pedido pedido, string mercadoPagoId)
+        {
+            using (var context = new ContextEF())
+            {
+                pedido.IdMercadoPago = mercadoPagoId;
+                context.PedidosUsuario.Update(pedido);
+                context.SaveChanges();
+            };
+        }
+        private static void PutStatusPedido(Pedido pedido)
+        {
+            switch (pedido.StatusAtual)
+            {
+                case "pending":
+                    pedido.StatusAtual = "Pendente";
+                    break;
+                case "approved":
+                    pedido.StatusAtual = "Aprovado";
+                    break;
+                case "authorized":
+                    pedido.StatusAtual = "Autorizado";
+                    break;
+                case "in_process":
+                    pedido.StatusAtual = "Em Processo";
+                    break;
+                case "in_mediation":
+                    pedido.StatusAtual = "Em Mediação";
+                    break;
+                case "rejected":
+                    pedido.StatusAtual = "Rejeitado";
+                    break;
+                case "cancelled":
+                    pedido.StatusAtual = "Cancelado";
+                    break;
+                case "refunded":
+                    pedido.StatusAtual = "Devolvido";
+                    break;
+                case "charged_back":
+                    pedido.StatusAtual = "Cobrado de Volta";
+                    break;
+                default:
+                    pedido.StatusAtual = "Pendente";
+                    break;
+            }
+            using (var context = new ContextEF())
+            {
+                context.PedidosUsuario.Update(pedido);
+                context.SaveChanges();
+            };
         }
     }
 }
