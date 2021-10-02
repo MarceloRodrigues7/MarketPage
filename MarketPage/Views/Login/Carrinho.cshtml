@@ -10,79 +10,83 @@
     };
 }
 
-<div class="card mt-3">
-    <div class="row justify-content-center">
-        <div class="col-sm-10 col-md-10 col-md-offset-1">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="text-secondary">Produto</th>
-                        <th class="text-secondary text-center">Qtd.</th>
-                        <th class="text-secondary text-center">Preço Un.</th>
-                        <th class="text-secondary text-center">Preço Total</th>
-                        <th> </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @*Itens*@
-                    @foreach (var item in Model)
-                    {
-                        var total = item.Valor * item.Quantidade;
-
-
+@using (Html.BeginForm("PostPedido", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+{
+    @Html.ValidationSummary()
+    @Html.AntiForgeryToken()
+    <div class="card mt-3">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-md-10 col-md-offset-1">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td class="col-sm-8 col-md-6">
-                                <div class="media">
-                                    @{
-                                        var base64 = Convert.ToBase64String(item.Img);
-                                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                                    }
-                                    <img class="media-object" src='@imgSrc' style="width: 72px; height: 72px;" />
-                                    <div class="media-body">
-                                        <h4 class="media-heading ml-2 text-secondary">@item.Nome</h4>
-                                        <h6 class="media-heading ml-2 text-secondary">Tam.: <strong>@item.Tamanhos</strong></h6>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-sm-1 col-md-1">
-                                <input type="text" class="form-control text-center" value="@item.Quantidade" readonly>
-                            </td>
-                            <td class="col-sm-1 col-md-1 text-center"><strong>@item.Valor</strong></td>
-
-                            <td class="col-sm-1 col-md-1 text-center"><strong>@total</strong></td>
-                            <td class="col-sm-1 col-md-1">
-                                <button type="button" class="btn btn-outline-danger" title="Remover" onclick="location.href='@Url.Action("DeleteItemCarrinho","Login",new { item = item.Id })'">
-                                    <span><i class="fas fa-trash-alt"></i></span>
-                                </button>
-                            </td>
+                            <th class="text-secondary">Produtos</th>
+                            <th class="text-secondary text-center">Qtd.</th>
+                            <th class="text-secondary text-center">Preço Un.</th>
+                            <th class="text-secondary text-center">Preço Tot.</th>
+                            <th> </th>
                         </tr>
-                    }
-                    @*Total*@
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><h5>Total</h5></td>
-                        <td class="text-right"><h5>R$@list.Sum()</h5></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-            @* Botões *@
-            <div class="float-right mb-4">
-                <a type="button" class="btn btn-secondary" href="javascript:history.back()">
+                    </thead>
+                    <tbody>
+                        @*Itens*@
+                        @foreach (var item in Model)
+                        {
+                            var total = item.Valor * item.Quantidade;
+                            <tr>
+                                <td class="col-sm-8 col-md-6">
+                                    <div class="media">
+                                        @{
+                                            var base64 = Convert.ToBase64String(item.Img);
+                                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                                        }
+                                        <img class="media-object" src='@imgSrc' style="width: 72px; height: 72px;" />
+                                        <div class="media-body">
+                                            <p class="media-heading ml-2 text-secondary" style="font-size:16px"><strong>@item.Nome</strong></p>
+                                            @if (!string.IsNullOrEmpty(item.Tamanhos))
+                                            {
+                                                <h6 class="media-heading ml-2 text-secondary">Tam.: <strong>@item.Tamanhos</strong></h6>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-1" style="text-align: center; vertical-align: middle;">
+                                    <input type="text" class="form-control text-center" value="@item.Quantidade" readonly />
+                                </td>
+                                <td class="col-1" style="text-align: center; vertical-align: middle;">
+                                    <div class="text-center">R$@item.Valor</div>
+                                </td>
+                                <td class="col-1" style="text-align: center; vertical-align: middle;">
+                                    <div class="text-center">R$@total</div>
+                                </td>
+                                <td class="col-1" style="text-align: center; vertical-align: middle;">
+                                    <button type="button" class="btn btn-outline-danger" title="Remover" onclick="location.href='@Url.Action("DeleteItemCarrinho", "Login", new { item = item.Id })'">
+                                        <span><i class="fas fa-trash-alt"></i></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                @*Total*@
+                <div class="row ml-1">
+                    <h5 style="font-size:18px">Total: R$@list.Sum()</h5>
+                </div>
+
+                @* Botões *@
+            <div class="float-right mb-3 mt-1">
+                <a type="button" class="btn btn-secondary mr-1" href="javascript:history.back()">
                     <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
                 </a>
-                <a type="button" class="btn btn-success" href="">
-                    <i class="fas fa-shopping-cart mr-2"></i>Finalizar
-                </a>
+                <button class="btn btn-success" type="submit"><i class="fas fa-shopping-cart mr-2"></i>Finalizar</button>
+            </div>
             </div>
         </div>
     </div>
-</div>
+}

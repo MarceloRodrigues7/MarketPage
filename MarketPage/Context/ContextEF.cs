@@ -20,5 +20,6 @@ namespace MarketPage.Context
         public DbSet<MessageContato> MessagesContato { get; set; }
         public DbSet<Carrinho> CarrinhoItem { get; set; }
         public DbSet<Endereco> EnderecosUsuario { get; set; }
+        public DbSet<Pedido> PedidosUsuario { get; set; }
     }
 }

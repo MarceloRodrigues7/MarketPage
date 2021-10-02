@@ -26,7 +26,7 @@ namespace MarketPage.Models
         public long Id { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
-        public decimal Valor { get; set; }
+        public string Valor { get; set; }
         public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public bool Destaque { get; set; }
@@ -68,6 +68,7 @@ namespace MarketPage.Models
         public string Tamanhos { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataHora { get; set; }
+        public long? IdPedido { get; set; }
     }
 
     public class ItemViewAdmin
@@ -80,6 +81,12 @@ namespace MarketPage.Models
         public bool Destaque { get; set; }
         public DateTime DataAdicao { get; set; }
         public string Categoria { get; set; }
+    }
+
+    public class ItemMercadoPago
+    {
+        public long Id { get; set; }
+        public string IdMp { get; set; }
     }
 
 }
