@@ -21,5 +21,7 @@ namespace MarketPage.Context
         public DbSet<Carrinho> CarrinhoItem { get; set; }
         public DbSet<Endereco> EnderecosUsuario { get; set; }
         public DbSet<Pedido> PedidosUsuario { get; set; }
+        public DbSet<CodPromocao> CodPromocoes { get; set; }
+        public DbSet<FretePedidoUsuario> FretesPedidosUsuarios { get; set; }
     }
 }

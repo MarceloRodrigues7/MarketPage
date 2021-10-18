@@ -2,6 +2,7 @@
 using MarketPage.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +13,28 @@ namespace MarketPage.Controllers
 {
     public class ShopController : Controller
     {
+        private readonly ILogger<ShopController> _logger;
+        private readonly IFunc_Categoria _Categoria;
+
+        public ShopController(ILogger<ShopController> logger, IFunc_Categoria categoria)
+        {
+            _logger = logger;
+            _Categoria = categoria;
+        }
+
+        [HttpGet("Shop")]
         public IActionResult Index()
         {
             var itens = GetItems();
+            var imagens = GetImgs();
+            var data = GeraListaItemImagem(itens, imagens);
+            return View(data);
+        }
+        [HttpGet("Shop/{categoria}")]
+        public IActionResult Index(string categoria)
+        {
+            var idCategoria = _Categoria.GetCategoria(categoria).Id;
+            var itens = GetItems(idCategoria);
             var imagens = GetImgs();
             var data = GeraListaItemImagem(itens, imagens);
             return View(data);
@@ -25,6 +45,13 @@ namespace MarketPage.Controllers
             using (var context = new ContextEF())
             {
                 return context.Itens.ToList();
+            };
+        }
+        private static List<Item> GetItems(int categoria)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.Itens.Where(i=>i.IdCategoria==categoria).ToList();
             };
         }
 
@@ -46,8 +73,8 @@ namespace MarketPage.Controllers
                     Id = item.Id,
                     Nome = item.Nome,
                     Valor = item.Valor,
-                    Tamanhos=item.Tamanhos,
-                    Img = imgs.First(i => i.IdItem == item.Id).Img
+                    Tamanhos = item.Tamanhos,
+                    Img = imgs.First(i => i.IdItem == item.Id && i.Principal == true).Img
                 };
                 lista.Add(itemViewShop);
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MarketPage.Context;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,9 +32,10 @@ namespace MarketPage.Models
         public int Quantidade { get; set; }
         public bool Destaque { get; set; }
         public int Categoria { get; set; }
-
         [DataType(DataType.Upload)]
-        public IFormFile ImageUpload { get; set; }
+        public IFormFile ImageUploadMain { get; set; }
+        [DataType(DataType.Upload)]
+        public IFormFile[] ImageUpload { get; set; }
     }
 
     public class ItemViewShop
@@ -57,6 +59,9 @@ namespace MarketPage.Models
         public string Tamanhos { get; set; }
         public int IdCategoria { get; set; }
         public byte[] Img { get; set; }
+        public List<byte[]> ImgsPadrao { get; set; }
+        public string TipoFrete { get; set; }
+        public string CodPromocional { get; set; }
     }
 
     public class Carrinho

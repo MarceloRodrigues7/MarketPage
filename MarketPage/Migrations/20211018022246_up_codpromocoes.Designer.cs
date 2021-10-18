@@ -4,14 +4,16 @@ using MarketPage.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketPage.Migrations
 {
     [DbContext(typeof(ContextEF))]
-    partial class ContextEFModelSnapshot : ModelSnapshot
+    [Migration("20211018022246_up_codpromocoes")]
+    partial class up_codpromocoes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,30 +135,6 @@ namespace MarketPage.Migrations
                     b.ToTable("EnderecosUsuario");
                 });
 
-            modelBuilder.Entity("MarketPage.Models.FretePedidoUsuario", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long>("IdPedido")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("IdUsuario")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TipoFrete")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("ValorTotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FretesPedidosUsuarios");
-                });
-
             modelBuilder.Entity("MarketPage.Models.ImgItem", b =>
                 {
                     b.Property<int>("Id")
@@ -263,6 +241,9 @@ namespace MarketPage.Migrations
                     b.Property<string>("Cidade")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CodPromocional")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CodRastreio")
                         .HasColumnType("nvarchar(max)");
 
@@ -294,6 +275,9 @@ namespace MarketPage.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusAtual")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoFrete")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ValorTotal")

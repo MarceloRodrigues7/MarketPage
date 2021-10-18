@@ -22,12 +22,13 @@ namespace MarketPage.Controllers
             using (var context = new ContextEF())
             {
                 var item = context.Itens.Where(i => i.Id == idProduto).First();
-                var img = context.ImagensItem.Where(i => i.IdItem == idProduto).First();
-                return NovoItemViewProduto(item, img);
+                var img = context.ImagensItem.Where(i => i.IdItem == idProduto && i.Principal == true).First();
+                var imgsPadrao = context.ImagensItem.Where(i => i.IdItem == idProduto && i.Principal == false).Select(i=>i.Img).Take(4).ToList();
+                return NovoItemViewProduto(item, img, imgsPadrao);
             };
         }
 
-        private static ItemViewProduto NovoItemViewProduto(Item item, ImgItem img)
+        private static ItemViewProduto NovoItemViewProduto(Item item, ImgItem img, List<byte[]> imgsPadrao)
         {
             return new ItemViewProduto
             {
@@ -35,10 +36,11 @@ namespace MarketPage.Controllers
                 Nome = item.Nome,
                 Descricao = item.Descricao,
                 Valor = item.Valor,
-                Tamanhos=item.Tamanhos,
-                Quantidade=item.Quantidade,
-                IdCategoria=item.IdCategoria,
-                Img=img.Img
+                Tamanhos = item.Tamanhos,
+                Quantidade = item.Quantidade,
+                IdCategoria = item.IdCategoria,
+                Img = img.Img,
+                ImgsPadrao=imgsPadrao
             };
         }
     }

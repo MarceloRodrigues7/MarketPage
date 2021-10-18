@@ -5,6 +5,7 @@
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
+        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Editar Produto</strong>
         @if (TempData["Message"] != null)
         {
             <div class="alert alert-danger" role="alert">
@@ -18,14 +19,14 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Nome</label>
-                        @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", @type = "text" })
+                        @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", @type = "text", @required = true })
 
                     </div>
                 </div>
                 <div class="col">
                     <label class="visually-hidden">Categoria</label>
                     @Html.DropDownListFor(m => m.Categoria,
-                                     new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control" })
+                                     new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @required = true })
                 </div>
                 <div class="col-2">
                     <label class="form-label"></label>
@@ -40,7 +41,7 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Valor</label>
-                        @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", @type = "text" })
+                        @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", @type = "text", @required = true })
                     </div>
                 </div>
                 <div class="col">
@@ -52,21 +53,22 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Quantidade</label>
-                        @Html.TextBoxFor(m => m.Quantidade, new { @class = "form-control", @type = "number" })
+                        @Html.TextBoxFor(m => m.Quantidade, new { @class = "form-control", @type = "number", @required = true })
                     </div>
                 </div>
             </div>
 
-            <div class="form-outline mb-3">
-                <label class="form-label">Imagem do Produto</label>
-                <div class="col form-control pt-1">
-                    @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", @class = "form-control-file" })
-                </div>
+            <div class="card mb-3">
+                <label class="form-label ml-1 mt-1">Imagens do Produto</label>
+                <label class="form-label text-secondary ml-2">Principal</label>
+                @Html.TextBoxFor(m => m.ImageUploadMain, new { type = "file", @class = "file ml-2 mb-2" })
+                <label class="form-label text-secondary ml-2">Outras</label>
+                @Html.TextBoxFor(m => m.ImageUpload, new { type = "file", @class = "file ml-2 mb-1", @multiple = true })
             </div>
 
             <div class="form-outline mb-3">
                 <label class="form-label">Descrição</label>
-                @Html.TextAreaFor(m => m.Descricao, new { @class = "form-control", @type = "text", @rows = "4" })
+                @Html.TextAreaFor(m => m.Descricao, new { @class = "form-control", @type = "text", @rows = "4", @required = true })
 
             </div>
 
@@ -74,8 +76,28 @@
                 <a type="button" class="btn btn-secondary mb-3" href="javascript:history.back()">
                     <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
                 </a>
-                <button type="submit" class="btn btn-primary mb-3"><i class="fas fa-edit mr-1"></i>Editar</button>
+                <button type="submit" class="btn btn-primary mb-3">
+                    <i class="fas fa-edit mr-2"></i>Editar
+                </button>
             </div>
         }
     </div>
 </div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

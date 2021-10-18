@@ -5,6 +5,7 @@
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
+        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Deletar Produto</strong>
         @if (TempData["Message"] != null)
         {
             <div class="alert alert-danger" role="alert">
@@ -25,7 +26,7 @@
                 <div class="col">
                     <label class="visually-hidden">Categoria</label>
                     @Html.DropDownListFor(m => m.Categoria,
-                                     new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @readonly = "true", @enabled="false"})
+                                     new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @readonly = "true", @enabled = "false" })
                 </div>
             </div>
 
@@ -52,7 +53,7 @@
 
             <div class="form-outline mb-3">
                 <label class="form-label">Descrição</label>
-                @Html.TextAreaFor(m => m.Descricao, new { @class = "form-control", @type = "text", @rows = "4", @readonly="true" })
+                @Html.TextAreaFor(m => m.Descricao, new { @class = "form-control", @type = "text", @rows = "4", @readonly = "true" })
 
             </div>
 
@@ -60,7 +61,9 @@
                 <a type="button" class="btn btn-secondary mb-3" href="javascript:history.back()">
                     <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
                 </a>
-                <button type="submit" class="btn btn-primary mb-3"><i class="fas fa-edit mr-1"></i>Deletar</button>
+                <button type="submit" class="btn btn-danger mb-3">
+                    <i class="far fa-trash-alt mr-2"></i>Deletar
+                </button>
             </div>
         }
     </div>

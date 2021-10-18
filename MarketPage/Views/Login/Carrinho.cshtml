@@ -74,18 +74,37 @@
                         </tr>
                     </tbody>
                 </table>
-                @*Total*@
                 <div class="row ml-1">
+                    <div class="col d-flex">
+                        <label class="col-form-label mr-3"><b>Tipo do Frete:</b></label>
+                        <div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.First().TipoFrete, "SEDEX - R$20,00", new { @class = "form-check-input", @type = "radio" })
+                            <label class="form-check-label mr-2">SEDEX - R$20,00</label>
+                            @Html.RadioButtonFor(m => m.First().TipoFrete, "PAC - R$15,00", new { @class = "form-check-input", @type = "radio" })
+                            <label class="form-check-label">PAC - R$15,00</label>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row ml-1">
+                    <div class="col d-flex">
+                        <label class="col-form-label mr-3"><b class="mr-1">Cupom Promocional</b>(Opcional)</label>
+                        @Html.TextBoxFor(m => m.First().CodPromocional, new { @class = "form-control col-6", @type = "text" })
+                    </div>
+                </div>
+                <hr />
+                @*Total*@
+                <div class="row ml-1 mt-3">
                     <h5 style="font-size:18px">Total: R$@list.Sum()</h5>
                 </div>
 
                 @* Botões *@
-            <div class="float-right mb-3 mt-1">
-                <a type="button" class="btn btn-secondary mr-1" href="javascript:history.back()">
-                    <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
-                </a>
-                <button class="btn btn-success" type="submit"><i class="fas fa-shopping-cart mr-2"></i>Finalizar</button>
-            </div>
+                <div class="float-right mb-3 mt-1">
+                    <a type="button" class="btn btn-secondary mr-1" href="javascript:history.back()">
+                        <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                    </a>
+                    <button class="btn btn-success" type="submit"><i class="fas fa-shopping-cart mr-2"></i>Finalizar</button>
+                </div>
             </div>
         </div>
     </div>

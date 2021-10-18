@@ -4,6 +4,9 @@
     Model.Quantidade = 0;
     var valorString = string.Concat("R$", Model.Valor);
 }
+<link rel="stylesheet" href="~/css/produto.css" />
+
+
 
 @using (Html.BeginForm("PostItemCarrinho", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
 {
@@ -11,8 +14,8 @@
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.Id)
     @Html.HiddenFor(model => model.Valor)
-    <div class="container col-8">
-        <div class="card ml-2 mr-2 mt-2 mb-2">
+    <div class="container">
+        <div class="card">
             <div class="container-fluid">
                 @* Alerta Controller TempData*@
                 <div class="row justify-content-center mt-3">
@@ -24,54 +27,103 @@
                     }
                 </div>
                 <div class="wrapper row">
-                    <div class="col-md-6 text-center">
-                        <div class="card-img">
-                            @{
-                                var base64 = Convert.ToBase64String(Model.Img);
-                                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                            }
-                            <img class="img-fluid mt-3 mb-3" src='@imgSrc' />
+                    @{
+                        var base64 = Convert.ToBase64String(Model.Img);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    }
+                    <div class="preview col-md-6">
+                        <div class="mb-2" style="background-color:lightgray">
+                            <div class="preview-pic tab-content">
+                                <div class="tab-pane active" id="pic-1" style="height:500px">
+                                    <img class="img-fluid mt-3 mb-3 ml-2 mr-4" src='@imgSrc' />
+                                </div>
+                                @{
+                                    var nPic = 2;
+                                    foreach (var item in Model.ImgsPadrao)
+                                    {
+                                        <div class="tab-pane align-self-center" id="@string.Concat("pic-",nPic)" style="height:500px">
+                                            <img class="img-fluid  mt-3 mb-3 ml-2 mr-3" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" />
+                                        </div>
+                                        nPic++;
+                                    }
+                                }
+                            </div>
+                            <ul class="preview-thumbnail nav nav-tabs mb-2 ml-2 mr-2">
+                                <li class="active border bg-light" style="height:60px;width:60px">
+                                    <a data-target="#pic-1" data-toggle="tab" >
+                                        <img class="img-fluid" src='@imgSrc' style="height:60px;width:60px" />
+                                    </a>
+                                </li>
+                                @{
+                                    var nPic2 = 2;
+                                    foreach (var item in Model.ImgsPadrao)
+                                    {
+                                        <li class="border bg-light" style="height:60px;width:60px">
+                                            <a data-target="#@string.Concat("pic-",nPic2)" data-toggle="tab" >
+                                                <img class="img-fluid" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height:60px;width:60px"/>
+                                            </a>
+                                        </li>
+                                        nPic2++;
+                                    }
+                                }
+                            </ul>
                         </div>
                     </div>
                     <div class="col-md-6 mt-3">
-                        <div class="ml-3">
-                            <h5 class="modal-title">@Model.Nome</h5>
-                            <br />
-                        </div>
-                        <div class="input-group mb-2 col-9">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">Preço:</span>
+                        <div class="row">
+                            <div class="ml-3">
+                                <h5 class="modal-title">@Model.Nome</h5>
+                                <br />
                             </div>
-                            <input type="text" class="form-control" id="txtValor" value="@valorString" readonly/>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Preço:</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtValor" value="@valorString" readonly />
+                                </div>
+                            </div>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.Tamanhos))
                         {
-                            <div class="input-group mb-2 col-9">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">Tamanho:</span>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">Tamanho:</span>
+                                        </div>
+                                        @Html.DropDownListFor(m => m.Tamanhos,
+                                             new SelectList(Model.Tamanhos.Split(';')),
+                                             "", new { @class = "form-control", @title = "Selecione o tamanho", @required = true })
+                                    </div>
                                 </div>
-                                @Html.DropDownListFor(m => m.Tamanhos,
-                                     new SelectList(Model.Tamanhos.Split(';')),
-                                     "", new { @class = "form-control", @title = "Selecione o tamanho", @required = true})
-
                             </div>
                         }
-                        <div class="input-group ml-0 mb-2 col-9">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">Quantidade:</span>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="input-group ml-0 mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon1">Quantidade:</span>
+                                    </div>
+                                    @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @min = 1, @required = true })
+                                </div>
                             </div>
-                            @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade",@min=1, @required = true })
                         </div>
-                        <div class="mt-4">
-                            <div class="mb-3 ml-3">
-                                <button class="btn btn-outline-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
+                        <div class="row">
+                            <div class="mt-3">
+                                <div class="mb-3 ml-3">
+                                    <button class="btn btn-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
+                                </div>
                             </div>
+                        </div>
+                        <div class="row">
+                            <article class="ml-3 mr-5 mt-3">
+                                <p class="details"><strong>Descrição: </strong>@Model.Descricao</p>
+                            </article>
                         </div>
                     </div>
-                    <article class="ml-5 mr-5 mt-3">
-                        <p class="details"><strong>Descrição: </strong>@Model.Descricao</p>
-                    </article>
-
                 </div>
             </div>
         </div>
@@ -94,3 +146,4 @@
         }, false);
     })();
 </script>
+

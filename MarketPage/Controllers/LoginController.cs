@@ -1,5 +1,6 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
+using MarketPage.Repository;
 using MercadoPago.Client.Preference;
 using MercadoPago.Config;
 using MercadoPago.Resource.Preference;
@@ -17,6 +18,13 @@ namespace MarketPage.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly IUsuarioRepository _usuarioRepository;
+
+        public LoginController(IUsuarioRepository usuarioRepository)
+        {
+            _usuarioRepository = usuarioRepository;
+        }
+
         public IActionResult Index()
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
@@ -25,10 +33,14 @@ namespace MarketPage.Controllers
             }
             return View();
         }
-
         public IActionResult Cadastrar()
         {
             return View();
+        }
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index");
         }
 
         [Authorize]
@@ -48,7 +60,7 @@ namespace MarketPage.Controllers
             {
                 using (var context = new ContextEF())
                 {
-                    var data = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).First();
+                    var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
                     ViewBag.Endereco = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
                     return View(data);
                 };
@@ -70,12 +82,15 @@ namespace MarketPage.Controllers
                 var data = context.PedidosUsuario.Where(p => p.IdUsuario == int.Parse(User.Identity.Name)).ToList();
                 foreach (var item in data)
                 {
-                    if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual!="Aprovado")
+                    if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual != "Aprovado")
                     {
                         var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
-                        item.StatusAtual = res.Elements.First().Payments.Last().Status;
-                        item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
-                        PutStatusPedido(item);
+                        if (res.Elements != null)
+                        {
+                            item.StatusAtual = res.Elements.First().Payments.Last().Status;
+                            item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+                            PutStatusPedido(item);
+                        }
                     }
                 }
                 return View(data);
@@ -95,29 +110,20 @@ namespace MarketPage.Controllers
                 {
                     ViewBag.IdMp = data.IdMercadoPago;
                 }
+                ViewBag.ItensPedido = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
                 return View(data);
             };
         }
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync();
-            return RedirectToAction("Index");
-        }
-
         public IActionResult PostUsuario(Usuario usuario)
         {
             try
             {
-                if (ValidaNovoUsuario(usuario.Username))
+                if (!_usuarioRepository.ValidaNovoUsuario(usuario.Username))
                 {
-                    using (var context = new ContextEF())
-                    {
-                        usuario.StatusAtivo = true;
-                        usuario.RoleAcess = "Usuario_Comum";
-                        context.Usuarios.Add(usuario);
-                        context.SaveChanges();
-                        return View("Index");
-                    };
+                    usuario.StatusAtivo = true;
+                    usuario.RoleAcess = "Usuario_Comum";
+                    _usuarioRepository.PostUsuario(usuario);
+                    return View("Index");
                 }
                 TempData["Message"] = "Username já cadastrado, tente novamente!";
                 return View("Cadastrar");
@@ -167,15 +173,12 @@ namespace MarketPage.Controllers
         {
             try
             {
-                using (var context = new ContextEF())
+                var res = _usuarioRepository.GetUsuario(usuario.Username, usuario.Password);
+                if (res != null)
                 {
-                    var res = context.Usuarios.Where(u => u.Username == usuario.Username && u.Password == usuario.Password).FirstOrDefault();
-                    if (res != null)
-                    {
-                        GeraIdentity(res);
-                        return RedirectToAction("Index", "Home");
-                    }
-                };
+                    GeraIdentity(res);
+                    return RedirectToAction("Index", "Home");
+                }
                 TempData["Message"] = "Login Falhou. Username ou Senha inválido";
                 return View("Index");
             }
@@ -200,36 +203,52 @@ namespace MarketPage.Controllers
             HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimPrincipal, propriedadesDeAutenticacao);
         }
 
-        private static bool ValidaNovoUsuario(string username)
-        {
-            using (var context = new ContextEF())
-            {
-                return context.Usuarios.Where(l => l.Username == username).Any();
-            };
-        }
-
         [Authorize]
-        public IActionResult PostPedido()
+        public IActionResult PostPedido(List<ItemViewProduto> produtos)
         {
-            Pedido pedido = new()
+            var codProd = produtos.First().CodPromocional;
+            var tipoFrete = produtos.First().TipoFrete;
+            if (tipoFrete == null)
             {
-                IdUsuario = int.Parse(User.Identity.Name),
-                DataRealizacao = DateTime.UtcNow.AddHours(-3),
-                StatusAtual = "Pendente"
-            };
+                TempData["Message"] = "Selecione o tipo do Frete";
+                return RedirectToAction("Carrinho");
+            }
+            else
+            {
+                var valorFrete = decimal.Parse(tipoFrete.Substring(tipoFrete.IndexOf("R$"), 5));
 
-            var carrinho = GetCarrinho(pedido.IdUsuario);
-            pedido.ValorTotal = carrinho.Sum(c => c.Valor * c.Quantidade);
+                var end = GetEndereco(int.Parse(User.Identity.Name));
+                if (end == null)
+                {
+                    TempData["Message"] = "Realize o cadastro do endereço antes de finalizar sua compra.";
+                    return RedirectToAction("Endereco");
+                }
+                if (!string.IsNullOrEmpty(codProd))
+                {
+                    //Valida codigo promocional e adiciona ao valor
+                }
 
-            var end = GetEndereco(pedido.IdUsuario);
-            pedido.Pais = end.Pais;
-            pedido.Estado = end.Estado;
-            pedido.Cidade = end.Cidade;
-            pedido.Bairro = end.Bairro;
-            pedido.Numero = end.Numero;
-            var idPedido = AdicionaPedido(pedido);
-            AtualizaItensCarrinhoRealizado(idPedido, carrinho);
-            return RedirectToAction("Pedidos");
+                Pedido pedido = new()
+                {
+                    IdUsuario = int.Parse(User.Identity.Name),
+                    DataRealizacao = DateTime.UtcNow.AddHours(-3),
+                    StatusAtual = "Pendente"
+                };
+
+                var carrinho = GetCarrinho(pedido.IdUsuario);
+
+                pedido.ValorTotal = carrinho.Sum(c => c.Valor * c.Quantidade) + valorFrete;
+                pedido.Pais = end.Pais;
+                pedido.Estado = end.Estado;
+                pedido.Cidade = end.Cidade;
+                pedido.Bairro = end.Bairro;
+                pedido.Numero = end.Numero;
+                var idPedido = AdicionaPedido(pedido);
+
+                AtualizaItensCarrinhoRealizado(idPedido, carrinho);
+                return RedirectToAction("Pedidos");
+            }
+
         }
 
         private static List<Carrinho> GetCarrinho(int idUsuario)
@@ -257,11 +276,6 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
             {
-                if (item.Quantidade < 1)
-                {
-                    TempData["Message"] = "Atenção, quantidade está [0]!";
-                    return RedirectToAction("Index", "Produto", new { Id = item.Id });
-                }
                 using (var context = new ContextEF())
                 {
                     var i = new Carrinho
@@ -278,6 +292,7 @@ namespace MarketPage.Controllers
                     return RedirectToAction("Carrinho");
                 };
             }
+            TempData["Message"] = "Atenção! Realize cadastro para continuar!";
             return RedirectToAction("Cadastrar");
         }
 
@@ -357,6 +372,12 @@ namespace MarketPage.Controllers
             PutIdMercadoPago(pedido, preference.Id);
             return preference.Id;
         }
+        private static Preference GetPreferenceMP(string id)
+        {
+            MercadoPagoConfig.AccessToken = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220";
+            var client = new PreferenceClient();
+            return client.Get(id);
+        }
 
         private static void PutIdMercadoPago(Pedido pedido, string mercadoPagoId)
         {
@@ -369,41 +390,25 @@ namespace MarketPage.Controllers
         }
         private static void PutStatusPedido(Pedido pedido)
         {
-            switch (pedido.StatusAtual)
+            pedido.StatusAtual = pedido.StatusAtual switch
             {
-                case "pending":
-                    pedido.StatusAtual = "Pendente";
-                    break;
-                case "approved":
-                    pedido.StatusAtual = "Aprovado";
-                    break;
-                case "authorized":
-                    pedido.StatusAtual = "Autorizado";
-                    break;
-                case "in_process":
-                    pedido.StatusAtual = "Em Processo";
-                    break;
-                case "in_mediation":
-                    pedido.StatusAtual = "Em Mediação";
-                    break;
-                case "rejected":
-                    pedido.StatusAtual = "Rejeitado";
-                    break;
-                case "cancelled":
-                    pedido.StatusAtual = "Cancelado";
-                    break;
-                case "refunded":
-                    pedido.StatusAtual = "Devolvido";
-                    break;
-                case "charged_back":
-                    pedido.StatusAtual = "Cobrado de Volta";
-                    break;
-                default:
-                    pedido.StatusAtual = "Pendente";
-                    break;
-            }
+                "pending" => "Pendente",
+                "approved" => "Aprovado",
+                "authorized" => "Autorizado",
+                "in_process" => "Em Processo",
+                "in_mediation" => "Em Mediação",
+                "rejected" => "Rejeitado",
+                "cancelled" => "Cancelado",
+                "refunded" => "Devolvido",
+                "charged_back" => "Cobrado de Volta",
+                _ => "Pendente",
+            };
             using (var context = new ContextEF())
             {
+                if (pedido.StatusAtual == "Aprovado")
+                {
+                    pedido.DateFinalizacao = DateTime.UtcNow.AddHours(-3);
+                }
                 context.PedidosUsuario.Update(pedido);
                 context.SaveChanges();
             };

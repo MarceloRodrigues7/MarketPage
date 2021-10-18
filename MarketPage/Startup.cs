@@ -1,3 +1,5 @@
+using MarketPage.Models;
+using MarketPage.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,16 +25,22 @@ namespace MarketPage
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {            
+            services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
+            services.AddSingleton<IFreteRepository, FreteRepository>();
+            services.AddSingleton<ICategoriaRepository, CategoriaRepository>();
+            services.AddSingleton<IItemRepository, ItemRepository>();
+            services.AddSingleton<IImagemRepository, ImagemRepository>();
+
             services.AddControllersWithViews();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                        .AddCookie(options => options.LoginPath = "/Home/Index");
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => options.LoginPath = "/Home/Index");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

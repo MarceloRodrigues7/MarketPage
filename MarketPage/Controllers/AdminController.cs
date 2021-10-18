@@ -1,5 +1,6 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
+using MarketPage.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,20 @@ namespace MarketPage.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly ICategoriaRepository _Categoria;
+        private readonly IItemRepository _Item;
+        private readonly IImagemRepository _ImgItem;
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem)
+        {
+            _Categoria = categoria;
+            _Item = item;
+            _ImgItem = imgItem;
+        }
+
         [Authorize]
         public IActionResult Categoria()
         {
-            using (var context = new ContextEF())
-            {
-                return View(context.Categorias.ToList());
-            };
+            return View(_Categoria.GetCategorias());
         }
         [Authorize]
         public IActionResult AdicionarCategoria()
@@ -42,138 +50,110 @@ namespace MarketPage.Controllers
         {
             try
             {
-                using (var context = new ContextEF())
-                {
-                    categoria.DataAdicao = DateTime.Now;
-                    context.Categorias.Add(categoria);
-                    context.SaveChanges();
-                    return RedirectToAction("Categoria", "Admin");
-                };
+                _Categoria.PostCategoria(categoria);
+                return RedirectToAction("Categoria", "Admin");
             }
             catch (Exception e)
             {
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
                 return RedirectToAction("AdicionarCategoria", "Admin");
             }
-
         }
         [Authorize]
         public IActionResult PutCategoria(Categoria categoria)
         {
             try
             {
-                using (var context = new ContextEF())
-                {
-                    categoria.DataAdicao = DateTime.Now;
-                    context.Categorias.Update(categoria);
-                    context.SaveChanges();
-                    return RedirectToAction("Categoria", "Admin");
-                };
+                _Categoria.PutCategoria(categoria);
+                return RedirectToAction("Categoria", "Admin");
             }
             catch (Exception e)
             {
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
                 return RedirectToAction("EditarCategoria", "Admin", categoria);
             }
-
         }
         [Authorize]
         public IActionResult DeleteCategoria(Categoria categoria)
         {
             try
             {
-                using (var context = new ContextEF())
-                {
-                    context.Itens.RemoveRange(context.Itens.Where(i => i.IdCategoria == categoria.Id));
-                    context.Categorias.Remove(categoria);
-                    context.SaveChanges();
-                    return RedirectToAction("Categoria", "Admin");
-                };
+                _Categoria.DeleteCategoria(categoria);
+                return RedirectToAction("Categoria", "Admin");
             }
             catch (Exception e)
             {
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
                 return RedirectToAction("DeleteCategoria", "Admin");
             }
-
         }
-
         [Authorize]
         public IActionResult Produto()
         {
-            using (var context = new ContextEF())
-            {
-                var categorias = context.Categorias.ToList();
-                var itens = context.Itens.ToList();
-                var data = NovoItemViewAdmin(itens, categorias);
-                return View(data);
-            };
+            var categorias = _Categoria.GetCategorias();
+            var itens = _Item.GetItens();
+            var data = NovoItemViewAdmin(itens, categorias);
+            return View(data);
         }
         [Authorize]
         public IActionResult AdicionarProduto()
         {
-            using (var context = new ContextEF())
-            {
-                ViewBag.Categorias = context.Categorias.ToList();
-                return View();
-            };
+            ViewBag.Categorias = _Categoria.GetCategorias();
+            return View();
         }
-
+        [Authorize]
         public IActionResult EditarProduto(ItemViewAdmin item)
         {
-            using (var context = new ContextEF())
+            var produto = _Item.GetItem(item.Id);
+            var itemImg = new ItemImagem
             {
-                var produto = context.Itens.Where(i => i.Id == item.Id).First();
-                var img = context.ImagensItem.Where(i => i.IdItem == item.Id).FirstOrDefault();
-                var itemImg = new ItemImagem
-                {
-                    Id = produto.Id,
-                    Nome = produto.Nome,
-                    Descricao = produto.Descricao,
-                    Valor = produto.Valor.ToString(),
-                    Tamanhos = produto.Tamanhos,
-                    Quantidade = produto.Quantidade,
-                    Destaque = produto.Destaque,
-                    Categoria = produto.IdCategoria,
-                };
-                ViewBag.Categorias = context.Categorias.ToList();
-                return View();
+                Id = produto.Id,
+                Nome = produto.Nome,
+                Descricao = produto.Descricao,
+                Valor = produto.Valor.ToString(),
+                Tamanhos = produto.Tamanhos,
+                Quantidade = produto.Quantidade,
+                Destaque = produto.Destaque,
+                Categoria = produto.IdCategoria,
             };
+            ViewBag.Categorias = _Categoria.GetCategorias();
+            return View(itemImg);
         }
-
+        [Authorize]
         public IActionResult DeletarProduto(ItemViewAdmin item)
         {
-            using (var context = new ContextEF())
+            var produto = _Item.GetItem(item.Id);
+            var itemImg = new ItemImagem
             {
-                var produto = context.Itens.Where(i => i.Id == item.Id).First();
-                var img = context.ImagensItem.Where(i => i.IdItem == item.Id).FirstOrDefault();
-                var itemImg = new ItemImagem
-                {
-                    Id = produto.Id,
-                    Nome = produto.Nome,
-                    Descricao = produto.Descricao,
-                    Valor = produto.Valor.ToString(),
-                    Tamanhos = produto.Tamanhos,
-                    Quantidade = produto.Quantidade,
-                    Destaque = produto.Destaque,
-                    Categoria = produto.IdCategoria,
-                };
-                ViewBag.Categorias = context.Categorias.ToList();
-                return View();
+                Id = produto.Id,
+                Nome = produto.Nome,
+                Descricao = produto.Descricao,
+                Valor = produto.Valor.ToString(),
+                Tamanhos = produto.Tamanhos,
+                Quantidade = produto.Quantidade,
+                Destaque = produto.Destaque,
+                Categoria = produto.IdCategoria,
             };
+            ViewBag.Categorias = _Categoria.GetCategorias();
+            return View(itemImg);
         }
-
         [Authorize]
         public IActionResult PostProduto(ItemImagem produto)
         {
             try
             {
-                var novoProduto = NovoProduto(produto);
-                SalvarNovoItem(novoProduto);
-                var novaImagem = NovoImgItem(produto.Nome);
-                var res = new BinaryReader(produto.ImageUpload.OpenReadStream());
-                novaImagem.Img = res.ReadBytes((int)produto.ImageUpload.Length);
-                SalvarNovoImgItem(novaImagem);
+                var novoProduto = _Item.GeraItem(produto);
+                _Item.PostItem(novoProduto);
+
+                var novaImagem = _ImgItem.GeraImgItemPrincipal(produto.Nome);
+                novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
+                _ImgItem.PostImgItem(novaImagem);
+                foreach (var img in produto.ImageUpload)
+                {
+                    var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(produto.Nome);
+                    novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
+                    _ImgItem.PostImgItem(novaImagemPadrao);
+                }
                 return RedirectToAction("Produto", "Admin");
             }
             catch (Exception e)
@@ -181,26 +161,46 @@ namespace MarketPage.Controllers
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
                 return RedirectToAction("AdicionarProduto", "Admin");
             }
-
         }
-
+        [Authorize]
         public IActionResult DeleteProduto(ItemViewAdmin item)
         {
-            using (var context = new ContextEF())
+            try
             {
-                context.ImagensItem.RemoveRange(context.ImagensItem.Where(i => i.IdItem == item.Id));
-                context.Itens.RemoveRange(context.Itens.Where(i => i.Id == item.Id));
-                context.SaveChanges();
-                return RedirectToAction("Produto");
-            };
-        }
+                _ImgItem.DeleteImgItem(item.Id);
+                _Item.DeleteItem(item.Id);
+                return RedirectToAction("Produto", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("DeletarProduto", "Admin");
+            }
 
+        }
+        [Authorize]
         public IActionResult PutProduto(ItemImagem produto)
         {
             try
             {
-                AtualizaItem(produto);
-                DeletaItemImg(produto);
+                if (produto.ImageUploadMain != null)
+                {
+                    _ImgItem.DeletaItemImgMain(produto);
+                    var novaImagem = _ImgItem.GeraImgItemPrincipal(produto.Nome);
+                    novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
+                    _ImgItem.PostImgItem(novaImagem);
+                }
+                if (produto.ImageUpload.Any())
+                {
+                    _ImgItem.DeletaItemImgPadrao(produto);
+                    foreach (var img in produto.ImageUpload)
+                    {
+                        var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(produto.Nome);
+                        novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
+                        _ImgItem.PostImgItem(novaImagemPadrao);
+                    }
+                }
+                _Item.AtualizaItem(produto);
                 return RedirectToAction("Produto", "Admin");
             }
             catch (Exception e)
@@ -209,85 +209,7 @@ namespace MarketPage.Controllers
                 return RedirectToAction("EditarProduto", "Admin");
             }
         }
-
-        private static void DeletaItemImg(ItemImagem produto)
-        {
-            using (var context = new ContextEF())
-            {
-                if (produto.ImageUpload != null)
-                {
-                    var img = context.ImagensItem.Where(i => i.IdItem == produto.Id).FirstOrDefault();
-                    context.ImagensItem.Remove(img);
-                    var novaImagem = NovoImgItem(produto.Nome);
-                    var res = new BinaryReader(produto.ImageUpload.OpenReadStream());
-                    novaImagem.Img = res.ReadBytes((int)produto.ImageUpload.Length);
-                    SalvarNovoImgItem(novaImagem);
-                }
-                context.SaveChanges();
-            };
-        }
-        private static void AtualizaItem(ItemImagem produto)
-        {
-            using (var context = new ContextEF())
-            {
-                var prod = context.Itens.Where(i => i.Id == produto.Id).FirstOrDefault();
-                prod.Nome = produto.Nome;
-                prod.Descricao = produto.Descricao;
-                prod.Valor = decimal.Parse(produto.Valor.Replace(".",","));
-                prod.Tamanhos = produto.Tamanhos;
-                prod.Quantidade = produto.Quantidade;
-                prod.Destaque = produto.Destaque;
-                prod.IdCategoria = produto.Categoria;
-                context.Itens.Update(prod);
-                context.SaveChanges();
-            };
-        }
-        private static Item NovoProduto(ItemImagem produto)
-        {
-            return new Item
-            {
-                Nome = produto.Nome,
-                Descricao = produto.Descricao,
-                Valor = decimal.Parse(produto.Valor.Replace(".", ",")),
-                Tamanhos = produto.Tamanhos,
-                Quantidade = produto.Quantidade,
-                Destaque = produto.Destaque,
-                DataAdicao = DateTime.Now,
-                IdCategoria = produto.Categoria
-            };
-        }
-        private static void SalvarNovoItem(Item item)
-        {
-            using (var context = new ContextEF())
-            {
-                context.Itens.Add(item);
-                context.SaveChanges();
-            };
-        }
-        private static long GetIdNovoItem(string nomeItem)
-        {
-            using (var context = new ContextEF())
-            {
-                return context.Itens.Where(i => i.Nome == nomeItem).First().Id;
-            };
-        }
-        private static ImgItem NovoImgItem(string nomeItem)
-        {
-            return new ImgItem
-            {
-                IdItem = GetIdNovoItem(nomeItem),
-                Principal = true,
-                DataAdicao = DateTime.Now
-            };
-        }
-        private static void SalvarNovoImgItem(ImgItem imgItem)
-        {
-            using (var context = new ContextEF())
-            {
-                context.ImagensItem.Add(imgItem);
-                context.SaveChanges();
-            };
-        }
+                
         private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
         {
             List<ItemViewAdmin> list = new();
@@ -308,6 +230,32 @@ namespace MarketPage.Controllers
             return list;
         }
 
+
+        public IActionResult Painel()
+        {
+            var context = new ContextEF();
+            var pedidos = context.PedidosUsuario.ToList();
+            ViewBag.ResumoPedidos = ResumoTotalPedidos(pedidos);
+
+            return View();
+        }
+
+        private List<int> ResumoTotalPedidos(List<Pedido> pedidos)
+        {
+            var pedidosPendentes = pedidos.Where(p => p.StatusAtual == "Pendente").Count();
+            var pedidosAprovados = pedidos.Where(p => p.StatusAtual == "Aprovado").Count();
+            var pedidosAutorizado = pedidos.Where(p => p.StatusAtual == "Autorizado").Count();
+            var pedidosEmProcesso = pedidos.Where(p => p.StatusAtual == "Em Processo").Count();
+            var pedidosEmMediacao = pedidos.Where(p => p.StatusAtual == "Em Mediação").Count();
+            var pedidosRejeitado = pedidos.Where(p => p.StatusAtual == "Rejeitado").Count();
+            var pedidosCancelado = pedidos.Where(p => p.StatusAtual == "Cancelado").Count();
+            var pedidosDevolvido = pedidos.Where(p => p.StatusAtual == "Devolvido").Count();
+            var pedidosCobradoVolta = pedidos.Where(p => p.StatusAtual == "Cobrado de Volta").Count();
+            return new List<int>
+            {
+                pedidos.Count(),pedidosPendentes,pedidosAprovados,pedidosAutorizado,pedidosEmProcesso,pedidosEmMediacao,pedidosRejeitado,pedidosCancelado,pedidosDevolvido,pedidosCobradoVolta
+            };
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
