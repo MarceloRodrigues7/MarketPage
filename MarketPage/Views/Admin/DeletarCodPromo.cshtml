@@ -1,0 +1,65 @@
+﻿@model CodPromocao
+@{
+    ViewData["Title"] = "Deletar Cod Promocional";
+}
+
+<div class="row justify-content-center mt-3">
+    <div class="card col-8">
+        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Deletar codigo promocional</strong>
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["Message"].ToString()
+            </div>
+        }
+        @using (Html.BeginForm("DeleteCodPromo", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
+        {
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Codigo</label>
+                        @Html.TextBoxFor(m => m.Codigo, new { @class = "form-control", @type = "text", @readonly = true })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Desconto</label>
+                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @type = "number", @min = 0, @max = 1, @step = 0.01, @readonly = true })
+                    </div>
+                </div>
+                <div class="col-2">
+                    <label class="form-label"></label>
+                    <div class="form-outline form-control mt-2">
+                        @Html.CheckBoxFor(m => m.Ativo, new { @class = "form-check-input", @type = "checkbox", @readonly = true })
+                        <label class="form-label">Ativo</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-right mb-3 mt-3">
+                <a type="button" class="btn btn-secondary" href="javascript:history.back()">
+                    <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                </a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-trash-alt mr-2"></i>Deletar</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

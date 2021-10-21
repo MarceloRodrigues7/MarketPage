@@ -22,6 +22,7 @@ namespace MarketPage.Context
         public DbSet<Endereco> EnderecosUsuario { get; set; }
         public DbSet<Pedido> PedidosUsuario { get; set; }
         public DbSet<CodPromocao> CodPromocoes { get; set; }
+        public DbSet<CodPromocaoUtilizado> CodPromoUsuarios { get; set; }
         public DbSet<FretePedidoUsuario> FretesPedidosUsuarios { get; set; }
     }
 }

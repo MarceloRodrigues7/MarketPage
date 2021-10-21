@@ -3,6 +3,7 @@
     ViewData["Title"] = Model.Nome;
     Model.Quantidade = 0;
     var valorString = string.Concat("R$", Model.Valor);
+    var listDescricao = Model.Descricao.Split(';');
 }
 <link rel="stylesheet" href="~/css/produto.css" />
 
@@ -32,17 +33,17 @@
                         var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
                     }
                     <div class="preview col-md-6">
-                        <div class="mb-2" style="background-color:lightgray">
+                        <div class="mb-2">
                             <div class="preview-pic tab-content">
-                                <div class="tab-pane active" id="pic-1" style="height:500px">
-                                    <img class="img-fluid mt-3 mb-3 ml-2 mr-4" src='@imgSrc' />
+                                <div class="tab-pane active text-center" id="pic-1">
+                                    <img class="img-thumbnail mt-3 mb-3 ml-2 mr-2" src='@imgSrc' style="height: 430px; width: 450px"/>
                                 </div>
                                 @{
                                     var nPic = 2;
                                     foreach (var item in Model.ImgsPadrao)
                                     {
-                                        <div class="tab-pane align-self-center" id="@string.Concat("pic-",nPic)" style="height:500px">
-                                            <img class="img-fluid  mt-3 mb-3 ml-2 mr-3" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" />
+                                        <div class="tab-pane align-self-center text-center" id="@string.Concat("pic-",nPic)">
+                                            <img class="img-thumbnail mt-3 mb-3 ml-2 mr-2" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height: 430px; width: 450px"/>
                                         </div>
                                         nPic++;
                                     }
@@ -50,7 +51,7 @@
                             </div>
                             <ul class="preview-thumbnail nav nav-tabs mb-2 ml-2 mr-2">
                                 <li class="active border bg-light" style="height:60px;width:60px">
-                                    <a data-target="#pic-1" data-toggle="tab" >
+                                    <a data-target="#pic-1" data-toggle="tab">
                                         <img class="img-fluid" src='@imgSrc' style="height:60px;width:60px" />
                                     </a>
                                 </li>
@@ -59,8 +60,8 @@
                                     foreach (var item in Model.ImgsPadrao)
                                     {
                                         <li class="border bg-light" style="height:60px;width:60px">
-                                            <a data-target="#@string.Concat("pic-",nPic2)" data-toggle="tab" >
-                                                <img class="img-fluid" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height:60px;width:60px"/>
+                                            <a data-target="#@string.Concat("pic-",nPic2)" data-toggle="tab">
+                                                <img class="img-fluid" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height:60px;width:60px" />
                                             </a>
                                         </li>
                                         nPic2++;
@@ -69,26 +70,34 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-6 mt-3">
-                        <div class="row">
-                            <div class="ml-3">
-                                <h5 class="modal-title">@Model.Nome</h5>
-                                <br />
+                    <div class="col mt-3 mr-2 mb-2 card">
+                        <div class="card-title ml-2 mt-3">
+                            <h5>@Model.Nome</h5>
+                            <hr />
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col">
+                                @{
+                                    var valorParcelado = (Model.Valor / 12).ToString("00.00");
+                                    <div class="text-capitalize ml-2">
+                                        <label style="font-size:24px;"><strong>R$ @Model.Valor</strong></label>
+                                        <label class="text-secondary ml-2" style="font-size:16px;">Ou 12x de R$@valorParcelado</label>
+                                        <a class="ml-2" href="" style="font-size:14px;color:darkcyan"><b>Formas de pagamento</b></a>
+                                    </div>
+                                }
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-6">
-                                <div class="input-group mb-2">
+                                <div class="input-group ml-0 mb-2 ml-2">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1">Preço:</span>
+                                        <span class="input-group-text" id="basic-addon1">Quantidade:</span>
                                     </div>
-                                    <input type="text" class="form-control" id="txtValor" value="@valorString" readonly />
+                                    @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @min = 1, @required = true })
                                 </div>
                             </div>
-                        </div>
-                        @if (!string.IsNullOrEmpty(Model.Tamanhos))
-                        {
-                            <div class="row">
+                            @if (!string.IsNullOrEmpty(Model.Tamanhos))
+                            {
                                 <div class="col-6">
                                     <div class="input-group mb-2">
                                         <div class="input-group-prepend">
@@ -99,28 +108,24 @@
                                              "", new { @class = "form-control", @title = "Selecione o tamanho", @required = true })
                                     </div>
                                 </div>
-                            </div>
-                        }
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="input-group ml-0 mb-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="basic-addon1">Quantidade:</span>
-                                    </div>
-                                    @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @min = 1, @required = true })
-                                </div>
-                            </div>
+                            }
                         </div>
                         <div class="row">
-                            <div class="mt-3">
+                            <div class="mt-2">
                                 <div class="mb-3 ml-3">
-                                    <button class="btn btn-success" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
+                                    <button class="btn btn-success ml-2" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <article class="ml-3 mr-5 mt-3">
-                                <p class="details"><strong>Descrição: </strong>@Model.Descricao</p>
+                                <div class="ml-2">
+                                    <p><strong>Descrição</strong></p>
+                                    @foreach (var item in listDescricao)
+                                    {
+                                        <label>@item</label><br />
+                                    }
+                                </div>
                             </article>
                         </div>
                     </div>

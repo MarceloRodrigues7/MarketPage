@@ -9,6 +9,14 @@ namespace MarketPage.Repository
 {
     public class FreteRepository : IFreteRepository
     {
+        public FretePedidoUsuario GetFretePedido(int idUsuario, long idCarrinho)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.FretesPedidosUsuarios.Where(f=>f.IdUsuario==idUsuario && f.IdCarrinho==idCarrinho).FirstOrDefault();
+            };
+        }
+
         public void PostFrete(FretePedidoUsuario frete)
         {
             using (var context = new ContextEF())

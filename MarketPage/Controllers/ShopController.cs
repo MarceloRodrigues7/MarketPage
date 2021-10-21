@@ -1,5 +1,6 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
+using MarketPage.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,9 +15,9 @@ namespace MarketPage.Controllers
     public class ShopController : Controller
     {
         private readonly ILogger<ShopController> _logger;
-        private readonly IFunc_Categoria _Categoria;
+        private readonly ICategoriaRepository _Categoria;
 
-        public ShopController(ILogger<ShopController> logger, IFunc_Categoria categoria)
+        public ShopController(ILogger<ShopController> logger, ICategoriaRepository categoria)
         {
             _logger = logger;
             _Categoria = categoria;

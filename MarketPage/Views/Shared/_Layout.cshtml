@@ -28,7 +28,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 @{
-                                    var categorias = new Func_Categoria().GetCategorias();
+                                    var categorias = new Categoria().GetCategorias();
                                     foreach (var categoria in categorias)
                                     {
                                         <a class="dropdown-item text-secondary" onclick="@("window.location.href='" + @Url.Action("Index", "Shop",new { categoria = categoria.Nome }) + "'");" style="cursor:pointer">
