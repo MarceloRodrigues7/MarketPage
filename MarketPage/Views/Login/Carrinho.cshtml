@@ -103,7 +103,7 @@
                                 <label class="form-check-label mr-2">SEDEX - R$20,00</label>
                                 @Html.RadioButtonFor(m => m.FirstOrDefault().TipoFrete, "PAC - R$15,00", new { @class = "form-check-input", @type = "radio" })
                                 <label class="form-check-label">PAC - R$15,00</label>
-                                <button class="btn btn-info ml-3">Selecionar</button>
+                                <button class="btn btn-info ml-2" style="cursor:pointer" onclick="SelecionarFrete()">Selecionar</button>
                             </div>
                         </div>
                     </div>
@@ -167,5 +167,11 @@
         var form = document.forms[0]
         var element = form.querySelector('input[name="txtCodPromo"')
         window.location.href = 'ValidarCodPromo/?CodPromocional=' + element.value
+    }
+</script>
+
+<script>
+    function SelecionarFrete() {
+        var form = document.forms[0]
     }
 </script>

@@ -46,32 +46,34 @@ namespace MarketPage.Repository
                 context.SaveChanges();
             };
         }
-        public Item GeraItem(ItemImagem item)
+        public Item GeraItem(ViewItemAdmAddEEdit item)
         {
             return new Item
             {
                 Nome = item.Nome,
                 Descricao = item.Descricao,
-                Valor = decimal.Parse(item.Valor.Replace(".", ",")),
+                Valor = decimal.Parse(item.ValorString.Replace(".", ",")),
                 Tamanhos = item.Tamanhos,
                 Quantidade = item.Quantidade,
                 Destaque = item.Destaque,
                 DataAdicao = DateTime.Now,
-                IdCategoria = item.Categoria
+                IdCategoria = item.IdCategoria,
+                Peso = float.Parse(item.PesoString.Replace(".",","))
             };
         }
-        public void AtualizaItem(ItemImagem produto)
+        public void AtualizaItem(ViewItemAdmAddEEdit produto)
         {
             using (var context = new ContextEF())
             {
                 var prod = context.Itens.Where(i => i.Id == produto.Id).FirstOrDefault();
                 prod.Nome = produto.Nome;
                 prod.Descricao = produto.Descricao;
-                prod.Valor = decimal.Parse(produto.Valor.Replace(".", ","));
+                prod.Valor = decimal.Parse(produto.ValorString.Replace(".", ","));
                 prod.Tamanhos = produto.Tamanhos;
                 prod.Quantidade = produto.Quantidade;
                 prod.Destaque = produto.Destaque;
-                prod.IdCategoria = produto.Categoria;
+                prod.IdCategoria = produto.IdCategoria;
+                prod.Peso = float.Parse(produto.PesoString.Replace(".", ","));
                 context.Itens.Update(prod);
                 context.SaveChanges();
             };

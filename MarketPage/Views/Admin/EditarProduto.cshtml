@@ -1,4 +1,4 @@
-﻿@model ItemImagem
+﻿@model ViewItemAdmAddEEdit
 @{
     ViewData["Title"] = "Editar Produto";
     var data = ViewBag.Categorias;
@@ -25,7 +25,7 @@
                 </div>
                 <div class="col">
                     <label class="visually-hidden">Categoria</label>
-                    @Html.DropDownListFor(m => m.Categoria,
+                    @Html.DropDownListFor(m => m.IdCategoria,
                                      new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @required = true })
                 </div>
                 <div class="col-2">
@@ -41,7 +41,7 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Valor</label>
-                        @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", @type = "text", @required = true })
+                        @Html.TextBoxFor(m => m.ValorString, new { @class = "form-control", @type = "text", @required = true })
                     </div>
                 </div>
                 <div class="col">
@@ -54,6 +54,12 @@
                     <div class="form-outline">
                         <label class="form-label">Quantidade</label>
                         @Html.TextBoxFor(m => m.Quantidade, new { @class = "form-control", @type = "number", @required = true })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Peso</label>
+                        @Html.TextBoxFor(m => m.PesoString, new { @class = "form-control", @type = "text", @required = true })
                     </div>
                 </div>
             </div>

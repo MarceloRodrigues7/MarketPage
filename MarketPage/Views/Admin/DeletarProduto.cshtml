@@ -1,4 +1,4 @@
-﻿@model ItemImagem
+﻿@model ViewItemAdmAddEEdit
 @{
     ViewData["Title"] = "Deletar Produto";
     var data = ViewBag.Categorias;
@@ -25,7 +25,7 @@
                 </div>
                 <div class="col">
                     <label class="visually-hidden">Categoria</label>
-                    @Html.DropDownListFor(m => m.Categoria,
+                    @Html.DropDownListFor(m => m.IdCategoria,
                                      new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @readonly = "true", @enabled = "false" })
                 </div>
             </div>
