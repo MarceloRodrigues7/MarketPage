@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Models
 {
@@ -12,5 +11,13 @@ namespace MarketPage.Models
         public string Nome { get; set; }
         public bool Ativo { get; set; }
         public DateTime DataAdicao { get; set; }
+        
+        public List<Categoria> GetCategorias()
+        {
+            using (var context = new ContextEF())
+            {
+                return context.Categorias.ToList();
+            };
+        }
     }
 }

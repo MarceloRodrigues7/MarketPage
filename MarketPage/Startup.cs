@@ -31,6 +31,7 @@ namespace MarketPage
             services.AddSingleton<ICategoriaRepository, CategoriaRepository>();
             services.AddSingleton<IItemRepository, ItemRepository>();
             services.AddSingleton<IImagemRepository, ImagemRepository>();
+            services.AddSingleton<ICodPromocionalRepository, CodPromocionalRepository>();
 
             services.AddControllersWithViews();
 

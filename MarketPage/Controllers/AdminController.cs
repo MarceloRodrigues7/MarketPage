@@ -18,11 +18,14 @@ namespace MarketPage.Controllers
         private readonly ICategoriaRepository _Categoria;
         private readonly IItemRepository _Item;
         private readonly IImagemRepository _ImgItem;
-        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem)
+        private readonly ICodPromocionalRepository _codPromocional;
+
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional)
         {
             _Categoria = categoria;
             _Item = item;
             _ImgItem = imgItem;
+            _codPromocional = codPromocional;
         }
 
         [Authorize]
@@ -88,6 +91,72 @@ namespace MarketPage.Controllers
             }
         }
         [Authorize]
+        public IActionResult CodPromocional()
+        {
+            var data = _codPromocional.GetCodPromocoes();
+            return View(data);
+        }
+        [Authorize]
+        public IActionResult AddCodPromo()
+        {
+            return View();
+        }
+        [Authorize]
+        public IActionResult EditarCodPromo(CodPromocao codPromocao)
+        {
+            return View(codPromocao);
+        }
+        [Authorize]
+        public IActionResult PutCodPromo(CodPromocao codPromocao)
+        {
+            try
+            {
+                codPromocao.Desconto *= 0.01m;
+                _codPromocional.PutCodPromocao(codPromocao);
+                return RedirectToAction("CodPromocional");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("EditarCodPromo");
+            }
+        }
+        [Authorize]
+        public IActionResult DeletarCodPromo(CodPromocao codPromocao)
+        {
+            return View(codPromocao);
+        }
+        public IActionResult DeleteCodPromo(CodPromocao codPromocao)
+        {
+            try
+            {
+                _codPromocional.DeleteCodPromocao(codPromocao.Codigo);
+                return RedirectToAction("CodPromocional");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("DeletarCodPromo");
+            }
+        }
+        [Authorize]
+        public IActionResult PostCodPromo(CodPromocao codPromocao)
+        {
+            try
+            {
+                codPromocao.Utilizacoes = 0;
+                codPromocao.Desconto *= 0.01m;
+                _codPromocional.PostCodPromocao(codPromocao);
+                return RedirectToAction("CodPromocional");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
+                return RedirectToAction("AddCodPromo");
+            }
+
+        }
+        [Authorize]
         public IActionResult Produto()
         {
             var categorias = _Categoria.GetCategorias();
@@ -105,16 +174,17 @@ namespace MarketPage.Controllers
         public IActionResult EditarProduto(ItemViewAdmin item)
         {
             var produto = _Item.GetItem(item.Id);
-            var itemImg = new ItemImagem
+            var itemImg = new ViewItemAdmAddEEdit
             {
                 Id = produto.Id,
                 Nome = produto.Nome,
                 Descricao = produto.Descricao,
-                Valor = produto.Valor.ToString(),
+                ValorString = produto.Valor.ToString(),
                 Tamanhos = produto.Tamanhos,
                 Quantidade = produto.Quantidade,
                 Destaque = produto.Destaque,
-                Categoria = produto.IdCategoria,
+                IdCategoria = produto.IdCategoria,
+                PesoString = produto.Peso.ToString()
             };
             ViewBag.Categorias = _Categoria.GetCategorias();
             return View(itemImg);
@@ -123,22 +193,23 @@ namespace MarketPage.Controllers
         public IActionResult DeletarProduto(ItemViewAdmin item)
         {
             var produto = _Item.GetItem(item.Id);
-            var itemImg = new ItemImagem
+            var itemImg = new ViewItemAdmAddEEdit
             {
                 Id = produto.Id,
                 Nome = produto.Nome,
                 Descricao = produto.Descricao,
-                Valor = produto.Valor.ToString(),
+                Valor = produto.Valor,
                 Tamanhos = produto.Tamanhos,
                 Quantidade = produto.Quantidade,
                 Destaque = produto.Destaque,
-                Categoria = produto.IdCategoria,
+                IdCategoria = produto.IdCategoria,
+                Peso = produto.Peso
             };
             ViewBag.Categorias = _Categoria.GetCategorias();
             return View(itemImg);
         }
         [Authorize]
-        public IActionResult PostProduto(ItemImagem produto)
+        public IActionResult PostProduto(ViewItemAdmAddEEdit produto)
         {
             try
             {
@@ -179,7 +250,7 @@ namespace MarketPage.Controllers
 
         }
         [Authorize]
-        public IActionResult PutProduto(ItemImagem produto)
+        public IActionResult PutProduto(ViewItemAdmAddEEdit produto)
         {
             try
             {
@@ -190,7 +261,7 @@ namespace MarketPage.Controllers
                     novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
                     _ImgItem.PostImgItem(novaImagem);
                 }
-                if (produto.ImageUpload.Any())
+                if (produto.ImageUpload != null)
                 {
                     _ImgItem.DeletaItemImgPadrao(produto);
                     foreach (var img in produto.ImageUpload)
@@ -201,15 +272,14 @@ namespace MarketPage.Controllers
                     }
                 }
                 _Item.AtualizaItem(produto);
-                return RedirectToAction("Produto", "Admin");
+                return RedirectToAction("Produto");
             }
             catch (Exception e)
             {
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                return RedirectToAction("EditarProduto", "Admin");
+                return RedirectToAction("EditarProduto", new ItemViewAdmin { Id = produto.Id });
             }
         }
-                
         private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
         {
             List<ItemViewAdmin> list = new();
@@ -229,8 +299,7 @@ namespace MarketPage.Controllers
             }
             return list;
         }
-
-
+        [Authorize]
         public IActionResult Painel()
         {
             var context = new ContextEF();
@@ -239,8 +308,7 @@ namespace MarketPage.Controllers
 
             return View();
         }
-
-        private List<int> ResumoTotalPedidos(List<Pedido> pedidos)
+        private static List<int> ResumoTotalPedidos(List<Pedido> pedidos)
         {
             var pedidosPendentes = pedidos.Where(p => p.StatusAtual == "Pendente").Count();
             var pedidosAprovados = pedidos.Where(p => p.StatusAtual == "Aprovado").Count();

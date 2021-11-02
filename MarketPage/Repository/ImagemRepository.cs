@@ -65,7 +65,7 @@ namespace MarketPage.Repository
             return res.ReadBytes((int)formFile.Length);
         }
 
-        public void DeletaItemImgMain(ItemImagem produto)
+        public void DeletaItemImgMain(ViewItemAdmAddEEdit produto)
         {
             using (var context = new ContextEF())
             {
@@ -78,7 +78,7 @@ namespace MarketPage.Repository
             };
         }
 
-        public void DeletaItemImgPadrao(ItemImagem produto)
+        public void DeletaItemImgPadrao(ViewItemAdmAddEEdit produto)
         {
             using (var context = new ContextEF())
             {

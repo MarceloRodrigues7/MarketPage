@@ -8,6 +8,19 @@
         var t = i.Quantidade * i.Valor;
         list.Add(t);
     };
+    decimal? valorTotal = 0;
+    if (list.Any())
+    {
+        if (Model.FirstOrDefault().ValorDesconto != null)
+        {
+            valorTotal = list.Sum() - (list.Sum() * Model.FirstOrDefault().ValorDesconto);
+        }
+        else
+        {
+            valorTotal = list.Sum();
+        }
+    }
+
 }
 
 @using (Html.BeginForm("PostPedido", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
@@ -17,6 +30,12 @@
     <div class="card mt-3">
         <div class="row justify-content-center">
             <div class="col-sm-10 col-md-10 col-md-offset-1">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-danger mt-4" role="alert">
+                        @TempData["Message"].ToString()
+                    </div>
+                }
                 <table class="table">
                     <thead>
                         <tr>
@@ -74,28 +93,43 @@
                         </tr>
                     </tbody>
                 </table>
-                <div class="row ml-1">
-                    <div class="col d-flex">
-                        <label class="col-form-label mr-3"><b>Tipo do Frete:</b></label>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(m => m.First().TipoFrete, "SEDEX - R$20,00", new { @class = "form-check-input", @type = "radio" })
-                            <label class="form-check-label mr-2">SEDEX - R$20,00</label>
-                            @Html.RadioButtonFor(m => m.First().TipoFrete, "PAC - R$15,00", new { @class = "form-check-input", @type = "radio" })
-                            <label class="form-check-label">PAC - R$15,00</label>
+                @if (Model.Any())
+                {
+                    <div class="row ml-1">
+                        <div class="col d-flex">
+                            <label class="col-form-label mr-3"><b>Tipo do Frete:</b></label>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.FirstOrDefault().TipoFrete, "SEDEX - R$20,00", new { @class = "form-check-input", @type = "radio" })
+                                <label class="form-check-label mr-2">SEDEX - R$20,00</label>
+                                @Html.RadioButtonFor(m => m.FirstOrDefault().TipoFrete, "PAC - R$15,00", new { @class = "form-check-input", @type = "radio" })
+                                <label class="form-check-label">PAC - R$15,00</label>
+                                <button class="btn btn-info ml-2" style="cursor:pointer" onclick="SelecionarFrete()">Selecionar</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <hr />
-                <div class="row ml-1">
-                    <div class="col d-flex">
-                        <label class="col-form-label mr-3"><b class="mr-1">Cupom Promocional</b>(Opcional)</label>
-                        @Html.TextBoxFor(m => m.First().CodPromocional, new { @class = "form-control col-6", @type = "text" })
+                    <hr />
+                    <div class="row ml-1">
+                        <div class="col d-flex">
+
+                            @if (Model.FirstOrDefault().CodPromocional != null)
+                            {
+                                <label class="col-form-label mr-3">Cupom Promocional (Aplicado)</label>
+                                @Html.TextBoxFor(m => m.FirstOrDefault().CodPromocional, new { @class = "form-control col-6", @readonly = true })
+                            }
+                            else
+                            {
+                                <label class="col-form-label mr-3"><strong>Cupom Promocional </strong> (Opcional)</label>
+                                <input type="text" class="form-control col-6" name="txtCodPromo" />
+                                <button class="btn btn-info ml-2" style="cursor:pointer" onclick="ValidaCodPromo()">Verificar</button>
+                            }
+
+                        </div>
                     </div>
-                </div>
+                }
                 <hr />
                 @*Total*@
                 <div class="row ml-1 mt-3">
-                    <h5 style="font-size:18px">Total: R$@list.Sum()</h5>
+                    <h5 style="font-size:18px">Total: R$@valorTotal</h5>
                 </div>
 
                 @* Botões *@
@@ -109,3 +143,35 @@
         </div>
     </div>
 }
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+<script>
+    function ValidaCodPromo() {
+        var form = document.forms[0]
+        var element = form.querySelector('input[name="txtCodPromo"')
+        window.location.href = 'ValidarCodPromo/?CodPromocional=' + element.value
+    }
+</script>
+
+<script>
+    function SelecionarFrete() {
+        var form = document.forms[0]
+    }
+</script>

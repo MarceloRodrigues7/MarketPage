@@ -20,22 +20,7 @@ namespace MarketPage.Models
         public bool Destaque { get; set; }
         public DateTime DataAdicao { get; set; }
         public int IdCategoria { get; set; }
-    }
-
-    public class ItemImagem
-    {
-        public long Id { get; set; }
-        public string Nome { get; set; }
-        public string Descricao { get; set; }
-        public string Valor { get; set; }
-        public string Tamanhos { get; set; }
-        public int Quantidade { get; set; }
-        public bool Destaque { get; set; }
-        public int Categoria { get; set; }
-        [DataType(DataType.Upload)]
-        public IFormFile ImageUploadMain { get; set; }
-        [DataType(DataType.Upload)]
-        public IFormFile[] ImageUpload { get; set; }
+        public float Peso { get; set; }
     }
 
     public class ItemViewShop
@@ -62,18 +47,7 @@ namespace MarketPage.Models
         public List<byte[]> ImgsPadrao { get; set; }
         public string TipoFrete { get; set; }
         public string CodPromocional { get; set; }
-    }
-
-    public class Carrinho
-    {
-        public long Id { get; set; }
-        public int IdUsuario { get; set; }
-        public long IdItem { get; set; }
-        public decimal Valor { get; set; }
-        public string Tamanhos { get; set; }
-        public int Quantidade { get; set; }
-        public DateTime DataHora { get; set; }
-        public long? IdPedido { get; set; }
+        public decimal? ValorDesconto { get; set; } 
     }
 
     public class ItemViewAdmin
@@ -86,6 +60,7 @@ namespace MarketPage.Models
         public bool Destaque { get; set; }
         public DateTime DataAdicao { get; set; }
         public string Categoria { get; set; }
+        public decimal Peso { get; set; }
     }
 
     public class ItemMercadoPago

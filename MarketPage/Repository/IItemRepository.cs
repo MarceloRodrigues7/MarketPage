@@ -13,7 +13,7 @@ namespace MarketPage.Repository
         long GetIdItem(string nome);
         void PostItem(Item item);
         void DeleteItem(long id);
-        Item GeraItem(ItemImagem item);
-        void AtualizaItem(ItemImagem produto);
+        Item GeraItem(ViewItemAdmAddEEdit item);
+        void AtualizaItem(ViewItemAdmAddEEdit produto);
     }
 }

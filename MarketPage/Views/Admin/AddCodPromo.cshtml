@@ -1,0 +1,80 @@
+﻿@model CodPromocao
+@{
+    ViewData["Title"] = "Adicionar Cod Promocional";
+}
+
+<div class="row justify-content-center mt-3">
+    <div class="card col-8">
+        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Adicionar novo produto</strong>
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["Message"].ToString()
+            </div>
+        }
+        @using (Html.BeginForm("PostCodPromo", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
+        {
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Codigo</label>
+                        @Html.TextBoxFor(m => m.Codigo, new { @class = "form-control", @type = "text", @required = true })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Desconto</label>
+                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @type = "number", @min = 0, @max = 1, @step = 0.01, @required = true })
+                    </div>
+                </div>
+                <div class="col-2">
+                    <label class="form-label"></label>
+                    <div class="form-outline form-control mt-2">
+                        @Html.CheckBoxFor(m => m.Ativo, new { @class = "form-check-input", @type = "checkbox" })
+                        <label class="form-label">Ativo</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Data Ini</label>
+                        @Html.TextBoxFor(m => m.DataInicio, new { @class = "form-control", @type = "date", @required = true })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-outline">
+                        <label class="form-label">Data Fim</label>
+                        @Html.TextBoxFor(m => m.DataFinal, new { @class = "form-control", @type = "date", @required = true })
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-right mb-3 mt-3">
+                <a type="button" class="btn btn-secondary" href="javascript:history.back()">
+                    <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                </a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus mr-2"></i>Adicionar</button>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

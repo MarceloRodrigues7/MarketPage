@@ -19,10 +19,13 @@ namespace MarketPage.Controllers
     public class LoginController : Controller
     {
         private readonly IUsuarioRepository _usuarioRepository;
-
-        public LoginController(IUsuarioRepository usuarioRepository)
+        private readonly ICodPromocionalRepository _codPromocional;
+        private readonly IFreteRepository _freteRepository;
+        public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository)
         {
             _usuarioRepository = usuarioRepository;
+            _codPromocional = codPromocional;
+            _freteRepository = freteRepository;
         }
 
         public IActionResult Index()
@@ -206,26 +209,22 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult PostPedido(List<ItemViewProduto> produtos)
         {
-            var codProd = produtos.First().CodPromocional;
-            var tipoFrete = produtos.First().TipoFrete;
-            if (tipoFrete == null)
+            var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
+            var codPromo = _codPromocional.GetCodPromocao(carrinho.FirstOrDefault().Id);
+
+            var frete = _freteRepository.GetFretePedido(int.Parse(User.Identity.Name), carrinho.FirstOrDefault().Id);
+            if (frete == null)
             {
-                TempData["Message"] = "Selecione o tipo do Frete";
+                TempData["Message"] = "Selecione o tipo de frete";
                 return RedirectToAction("Carrinho");
             }
             else
             {
-                var valorFrete = decimal.Parse(tipoFrete.Substring(tipoFrete.IndexOf("R$"), 5));
-
                 var end = GetEndereco(int.Parse(User.Identity.Name));
                 if (end == null)
                 {
                     TempData["Message"] = "Realize o cadastro do endereço antes de finalizar sua compra.";
                     return RedirectToAction("Endereco");
-                }
-                if (!string.IsNullOrEmpty(codProd))
-                {
-                    //Valida codigo promocional e adiciona ao valor
                 }
 
                 Pedido pedido = new()
@@ -235,9 +234,13 @@ namespace MarketPage.Controllers
                     StatusAtual = "Pendente"
                 };
 
-                var carrinho = GetCarrinho(pedido.IdUsuario);
+                var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);
+                if (codPromo != null)
+                {
+                    valorCarrinho *= codPromo.Desconto;
+                }
 
-                pedido.ValorTotal = carrinho.Sum(c => c.Valor * c.Quantidade) + valorFrete;
+                pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
                 pedido.Pais = end.Pais;
                 pedido.Estado = end.Estado;
                 pedido.Cidade = end.Cidade;
@@ -270,6 +273,33 @@ namespace MarketPage.Controllers
                 }
                 context.SaveChanges();
             };
+        }
+
+        public IActionResult ValidarCodPromo(string CodPromocional)
+        {
+            var data = _codPromocional.GetCodPromocao(CodPromocional);
+            if (data == null)
+            {
+                TempData["Message"] = "Codigo promocional inválido";
+                return RedirectToAction("Carrinho");
+            }
+            else
+            {
+                var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
+                foreach (var item in carrinho)
+                {
+                    _codPromocional.PostCodPromoUsuario(new CodPromocaoUtilizado
+                    {
+                        IdUsuario = int.Parse(User.Identity.Name),
+                        IdCarrinho = item.Id,
+                        IdCodPromocao = data.Id,
+                        DataUtilizacao = DateTime.UtcNow.AddHours(-3),
+                    });
+                }
+                data.Utilizacoes++;
+                _codPromocional.PutCodPromocao(data);
+                return RedirectToAction("Carrinho");
+            }
         }
 
         public IActionResult PostItemCarrinho(ItemViewProduto item)
@@ -316,16 +346,24 @@ namespace MarketPage.Controllers
                 data = context.CarrinhoItem.Where(c => c.IdUsuario == int.Parse(User.Identity.Name) && c.IdPedido == null).ToList();
                 foreach (var item in data)
                 {
-                    lista.Add(new ItemViewProduto
+                    var codPromo = context.CodPromoUsuarios.Where(c => c.IdCarrinho == item.Id).FirstOrDefault();
+                    var itemView = new ItemViewProduto
                     {
                         Id = item.Id,
-                        Nome = context.Itens.Where(i => i.Id == item.IdItem).First().Nome,
-                        Descricao = context.Itens.Where(i => i.Id == item.IdItem).First().Descricao,
+                        Nome = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault().Nome,
+                        Descricao = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault().Descricao,
                         Valor = item.Valor,
                         Tamanhos = item.Tamanhos,
                         Quantidade = item.Quantidade,
-                        Img = context.ImagensItem.Where(i => i.IdItem == item.IdItem).First().Img
-                    });
+                        Img = context.ImagensItem.Where(i => i.IdItem == item.IdItem).FirstOrDefault().Img,
+
+                    };
+                    if (codPromo != null)
+                    {
+                        itemView.CodPromocional = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Codigo;
+                        itemView.ValorDesconto = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Desconto;
+                    }
+                    lista.Add(itemView);
                 }
             };
             return lista;

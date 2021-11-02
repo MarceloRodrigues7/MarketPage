@@ -9,7 +9,7 @@ namespace MarketPage.Models
     {
         public long Id { get; set; }
         public int IdUsuario { get; set; }
-        public long IdPedido { get; set; }
+        public long IdCarrinho { get; set; }
         public string TipoFrete { get; set; }
         public decimal ValorTotal { get; set; }
     }

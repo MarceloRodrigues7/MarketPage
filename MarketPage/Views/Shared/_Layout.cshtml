@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -28,7 +28,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 @{
-                                    var categorias = new Func_Categoria().GetCategorias();
+                                    var categorias = new Categoria().GetCategorias();
                                     foreach (var categoria in categorias)
                                     {
                                         <a class="dropdown-item text-secondary" onclick="@("window.location.href='" + @Url.Action("Index", "Shop",new { categoria = categoria.Nome }) + "'");" style="cursor:pointer">
