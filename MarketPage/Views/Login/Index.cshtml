@@ -18,22 +18,26 @@
                         </div>
                     }
                     <h3 class="text-secondary mb-3">Sign in <i class="fas fa-sign-in-alt pl-2"></i></h3>
-                    
+
                     <div class="row d-flex justify-content-center">
                         <div class="col-8 mb-2">
                             <label class="form-label" for="lblusername">Username</label>
                             @Html.TextBoxFor(model => model.Username, new { @type = "text", @class = "form-control", @id = "txtUsername", @required = true })
                         </div>
                     </div>
-                    
+
                     <div class="row d-flex justify-content-center">
                         <div class="col-8 mb-2">
                             <label class="form-label" for="lblPassword">Password</label>
                             @Html.TextBoxFor(model => model.Password, new { @type = "password", @class = "form-control", @id = "txtPassword", @required = true })
                         </div>
                     </div>
-
-                    <button class="btn btn-primary" type="submit">Login</button>
+                    <div class="row">
+                        <div class="col-8 ml-2">
+                            <label><a href="~/Login/EsqueciMinhaSenha" style="font-size:14px">Esqueci minha senha</a></label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-2" type="submit">Login</button>
                 </div>
             </div>
         </div>

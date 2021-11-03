@@ -1,0 +1,54 @@
+﻿@model Usuario
+@{
+    ViewData["Title"] = "Esqueci minha senha";
+}
+<div class="row justify-content-center mt-3">
+    <div class="card col-8">
+        <div class="card-subtitle ml-4 mt-3">
+            <div class="text-center">
+                <h4 class="text-secondary">Esqueci minha senha<i class="fas fa-key ml-2"></i></h4>
+            </div>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("ResetarSenha", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+            {
+                @Html.ValidationSummary()
+                @Html.AntiForgeryToken()
+                <div class="container">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @TempData["Message"].ToString()
+                        </div>
+                    }
+                    <label class=""><strong>Informe seu email abaixo para receber as instruções e criar uma nova senha.</strong></label>
+                    <div class="col">
+                        <label class="form-text">Email</label>
+                        @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-warning" id="btnEnviar">Recuperar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

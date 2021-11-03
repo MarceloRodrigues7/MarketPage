@@ -16,5 +16,7 @@ namespace MarketPage.Models
         public DateTime DataNascimento { get; set; }
         public string RoleAcess { get; set; }
         public bool StatusAtivo { get; set; }
+        public bool PermiteEmail { get; set; }
+        public bool ConcordaRegras { get; set; }
     }
 }

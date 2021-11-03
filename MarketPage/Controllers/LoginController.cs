@@ -45,6 +45,10 @@ namespace MarketPage.Controllers
             await HttpContext.SignOutAsync();
             return RedirectToAction("Index");
         }
+        public IActionResult EsqueciMinhaSenha()
+        {
+            return View();
+        }
 
         [Authorize]
         public IActionResult Endereco()

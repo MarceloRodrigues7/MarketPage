@@ -31,6 +31,16 @@ namespace MarketPage.Controllers
             return View();
         }
 
+        public IActionResult Termos()
+        {
+            return View();
+        }
+
+        public IActionResult FormasPagamento()
+        {
+            return View();
+        }
+
         public IActionResult Contato()
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
@@ -49,7 +59,7 @@ namespace MarketPage.Controllers
             }
             return View();
         }
-                
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
