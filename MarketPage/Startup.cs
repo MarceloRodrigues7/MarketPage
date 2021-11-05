@@ -25,13 +25,15 @@ namespace MarketPage
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
             services.AddSingleton<IFreteRepository, FreteRepository>();
             services.AddSingleton<ICategoriaRepository, CategoriaRepository>();
             services.AddSingleton<IItemRepository, ItemRepository>();
             services.AddSingleton<IImagemRepository, ImagemRepository>();
             services.AddSingleton<ICodPromocionalRepository, CodPromocionalRepository>();
+            services.AddSingleton<IMessagesContatoRepository, MessagesContatoRepository>();
+            services.AddSingleton<IEnderecoRepository, EnderecoRepository>();
 
             services.AddControllersWithViews();
 

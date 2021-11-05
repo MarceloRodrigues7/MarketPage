@@ -15,11 +15,13 @@ namespace MarketPage.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ICategoriaRepository _Categoria;
+        private readonly IMessagesContatoRepository _messagesContato;
 
-        public HomeController(ILogger<HomeController> logger, ICategoriaRepository categoria)
+        public HomeController(ILogger<HomeController> logger, ICategoriaRepository categoria,IMessagesContatoRepository messagesContato)
         {
             _logger = logger;
             _Categoria = categoria;
+            _messagesContato = messagesContato;
         }
 
         public IActionResult Index()
@@ -103,15 +105,9 @@ namespace MarketPage.Controllers
 
         public IActionResult PostMessageContato(MessageContato message)
         {
-            using (var context = new ContextEF())
-            {
-                message.DataEnvio = DateTime.Now;
-                message.Visualizado = false;
-                context.MessagesContato.Add(message);
-                context.SaveChanges();
-                TempData["Message"] = "Mensagem enviada com sucesso, aguarde retorno.";
-                return RedirectToAction("Index");
-            };
+            _messagesContato.PostMensage(message);
+            TempData["Message"] = "Mensagem enviada com sucesso, aguarde retorno.";
+            return RedirectToAction("Index");
         }
     }
 }

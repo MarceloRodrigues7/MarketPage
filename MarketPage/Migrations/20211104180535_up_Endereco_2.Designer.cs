@@ -4,14 +4,16 @@ using MarketPage.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketPage.Migrations
 {
     [DbContext(typeof(ContextEF))]
-    partial class ContextEFModelSnapshot : ModelSnapshot
+    [Migration("20211104180535_up_Endereco_2")]
+    partial class up_Endereco_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,11 +193,11 @@ namespace MarketPage.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("CepFinal")
-                        .HasColumnType("bigint");
+                    b.Property<string>("CepFinal")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("CepInicio")
-                        .HasColumnType("bigint");
+                    b.Property<string>("CepInicio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PesoMax")
                         .HasColumnType("int");

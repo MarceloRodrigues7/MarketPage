@@ -4,14 +4,16 @@ using MarketPage.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketPage.Migrations
 {
     [DbContext(typeof(ContextEF))]
-    partial class ContextEFModelSnapshot : ModelSnapshot
+    [Migration("20211104175621_up_tbFreteValores")]
+    partial class up_tbFreteValores
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,9 +139,6 @@ namespace MarketPage.Migrations
                     b.Property<string>("Bairro")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Cep")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Cidade")
                         .HasColumnType("nvarchar(max)");
 
@@ -191,11 +190,11 @@ namespace MarketPage.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("CepFinal")
-                        .HasColumnType("bigint");
+                    b.Property<string>("CepFinal")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("CepInicio")
-                        .HasColumnType("bigint");
+                    b.Property<string>("CepInicio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PesoMax")
                         .HasColumnType("int");

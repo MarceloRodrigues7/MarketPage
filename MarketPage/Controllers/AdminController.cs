@@ -19,13 +19,15 @@ namespace MarketPage.Controllers
         private readonly IItemRepository _Item;
         private readonly IImagemRepository _ImgItem;
         private readonly ICodPromocionalRepository _codPromocional;
+        private readonly IMessagesContatoRepository _messagesContato;
 
-        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional)
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato)
         {
             _Categoria = categoria;
             _Item = item;
             _ImgItem = imgItem;
             _codPromocional = codPromocional;
+            _messagesContato = messagesContato;
         }
 
         [Authorize]
@@ -323,6 +325,13 @@ namespace MarketPage.Controllers
             {
                 pedidos.Count(),pedidosPendentes,pedidosAprovados,pedidosAutorizado,pedidosEmProcesso,pedidosEmMediacao,pedidosRejeitado,pedidosCancelado,pedidosDevolvido,pedidosCobradoVolta
             };
+        }
+
+        [Authorize]
+        public ActionResult MensagensContato()
+        {
+            var data = _messagesContato.GetMessageContatos();
+            return View(data);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

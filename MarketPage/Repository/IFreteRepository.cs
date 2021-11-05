@@ -10,5 +10,6 @@ namespace MarketPage.Repository
     {
         FretePedidoUsuario GetFretePedido(int idUsuario, long idCarrinho);
         public void PostFrete(FretePedidoUsuario frete);
+        List<FreteValores> GetFreteValores(string cep);
     }
 }

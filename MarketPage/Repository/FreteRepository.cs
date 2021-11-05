@@ -24,5 +24,15 @@ namespace MarketPage.Repository
                 context.FretesPedidosUsuarios.Add(frete);
             };
         }
+
+        public List<FreteValores> GetFreteValores(string cep)
+        {
+            var cepLong = long.Parse(cep);
+            using (var context = new ContextEF())
+            {
+                var data = context.FreteValores.Where(f=>cepLong<=f.CepFinal && cepLong>=f.CepInicio).ToList();
+                return data;
+            };
+        }
     }
 }
