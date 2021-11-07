@@ -27,5 +27,16 @@ namespace MarketPage.Repository
                 return context.MessagesContato.ToList();
             };
         }
+
+        public void PostConfirmaVisualizacao(MessageContato message)
+        {
+            using (var context = new ContextEF())
+            {
+                message.DataVisualizado = DateTime.Now;
+                message.Visualizado = true;
+                context.MessagesContato.Update(message);
+                context.SaveChanges();
+            };
+        }
     }
 }

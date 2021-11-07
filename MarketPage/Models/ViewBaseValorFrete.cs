@@ -11,4 +11,10 @@ namespace MarketPage.Models
         public decimal Preco { get; set; }
         public int Prazo { get; set; }
     }
+
+    public class ViewFreteCarrinho
+    {
+        public string Servico { get; set; }
+        public string Texto { get; set; }
+    }
 }

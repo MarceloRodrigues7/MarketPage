@@ -21,11 +21,14 @@ namespace MarketPage.Controllers
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ICodPromocionalRepository _codPromocional;
         private readonly IFreteRepository _freteRepository;
-        public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository)
+        private readonly IEnderecoRepository _enderecoRepository;
+
+        public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository)
         {
             _usuarioRepository = usuarioRepository;
             _codPromocional = codPromocional;
             _freteRepository = freteRepository;
+            _enderecoRepository = enderecoRepository;
         }
 
         public IActionResult Index()
@@ -53,11 +56,8 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Endereco()
         {
-            using (var context = new ContextEF())
-            {
-                var data = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
-                return View(data);
-            };
+            var data = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+            return View(data);
         }
 
         [Authorize]
@@ -65,12 +65,9 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
             {
-                using (var context = new ContextEF())
-                {
-                    var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
-                    ViewBag.Endereco = context.EnderecosUsuario.Where(e => e.IdUsuario == int.Parse(User.Identity.Name)).FirstOrDefault();
-                    return View(data);
-                };
+                var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
+                ViewBag.Endereco = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+                return View(data);
             }
             return RedirectToAction("Index", "Home");
         }
@@ -78,6 +75,8 @@ namespace MarketPage.Controllers
         public IActionResult Carrinho()
         {
             var carrinho = GetItensCarrinho();
+            var enderecoUsuario = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+            ViewBag.ValoresFrete = GeraViewValorFrete(enderecoUsuario.Cep);
             return View(carrinho);
         }
 
@@ -149,23 +148,34 @@ namespace MarketPage.Controllers
             {
                 using (var context = new ContextEF())
                 {
-                    endereco.IdUsuario = int.Parse(User.Identity.Name);
-                    var res = context.EnderecosUsuario.Where(u => u.IdUsuario == endereco.IdUsuario).FirstOrDefault();
-                    if (res == null)
+                    var validaCep = new Endereco().ValidaCEP(endereco.Cep);
+                    if (validaCep)
                     {
-                        context.EnderecosUsuario.Add(endereco);
+                        endereco.Cep = new Endereco().FormataCEP(endereco.Cep);
+                        endereco.IdUsuario = int.Parse(User.Identity.Name);
+                        var res = context.EnderecosUsuario.Where(u => u.IdUsuario == endereco.IdUsuario).FirstOrDefault();
+                        if (res == null)
+                        {
+                            context.EnderecosUsuario.Add(endereco);
+                        }
+                        else
+                        {
+                            res.Pais = endereco.Pais;
+                            res.Estado = endereco.Estado;
+                            res.Cidade = endereco.Cidade;
+                            res.Bairro = endereco.Bairro;
+                            res.Numero = endereco.Numero;
+                            res.Cep = endereco.Cep;
+                            context.EnderecosUsuario.Update(res);
+                        }
+                        context.SaveChanges();
+                        return RedirectToAction("Usuario");
                     }
                     else
                     {
-                        res.Pais = endereco.Pais;
-                        res.Estado = endereco.Estado;
-                        res.Cidade = endereco.Cidade;
-                        res.Bairro = endereco.Bairro;
-                        res.Numero = endereco.Numero;
-                        context.EnderecosUsuario.Update(res);
+                        TempData["Messege"] = "Cep inválido, tente novamente!";
+                        return View("Endereco");
                     }
-                    context.SaveChanges();
-                    return RedirectToAction("Usuario");
                 };
             }
             catch (Exception ex)
@@ -215,7 +225,6 @@ namespace MarketPage.Controllers
         {
             var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
             var codPromo = _codPromocional.GetCodPromocao(carrinho.FirstOrDefault().Id);
-
             var frete = _freteRepository.GetFretePedido(int.Parse(User.Identity.Name), carrinho.FirstOrDefault().Id);
             if (frete == null)
             {
@@ -241,7 +250,7 @@ namespace MarketPage.Controllers
                 var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);
                 if (codPromo != null)
                 {
-                    valorCarrinho *= codPromo.Desconto;
+                    valorCarrinho -= valorCarrinho*codPromo.Desconto;
                 }
 
                 pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
@@ -279,6 +288,7 @@ namespace MarketPage.Controllers
             };
         }
 
+        [HttpPost]
         public IActionResult ValidarCodPromo(string CodPromocional)
         {
             var data = _codPromocional.GetCodPromocao(CodPromocional);
@@ -302,6 +312,33 @@ namespace MarketPage.Controllers
                 }
                 data.Utilizacoes++;
                 _codPromocional.PutCodPromocao(data);
+                return RedirectToAction("Carrinho");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SelecionaTipoFrete(string TipoFrete)
+        {
+            if (TipoFrete == null)
+            {
+                TempData["Message"] = "Selecione o frete";
+                return RedirectToAction("Carrinho");
+            }
+            else
+            {
+                var frete = TipoFrete.Replace(" ","").Split("-");
+                var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
+                foreach (var item in carrinho)
+                {
+                    var fret = new FretePedidoUsuario
+                    {
+                        IdUsuario = int.Parse(User.Identity.Name),
+                        IdCarrinho = item.Id,
+                        TipoFrete = frete[0],
+                        ValorTotal = decimal.Parse(frete[1].Replace("R$", ""))
+                    };
+                    _freteRepository.PostFrete(fret);
+                }
                 return RedirectToAction("Carrinho");
             }
         }
@@ -351,6 +388,7 @@ namespace MarketPage.Controllers
                 foreach (var item in data)
                 {
                     var codPromo = context.CodPromoUsuarios.Where(c => c.IdCarrinho == item.Id).FirstOrDefault();
+                    var frete = context.FretesPedidosUsuarios.Where(f => f.IdCarrinho == item.Id).FirstOrDefault();
                     var itemView = new ItemViewProduto
                     {
                         Id = item.Id,
@@ -366,6 +404,11 @@ namespace MarketPage.Controllers
                     {
                         itemView.CodPromocional = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Codigo;
                         itemView.ValorDesconto = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Desconto;
+                    }
+                    if (frete!=null)
+                    {
+                        itemView.TipoFrete = frete.TipoFrete;
+                        itemView.ValorFrete = frete.ValorTotal;
                     }
                     lista.Add(itemView);
                 }
@@ -420,7 +463,6 @@ namespace MarketPage.Controllers
             var client = new PreferenceClient();
             return client.Get(id);
         }
-
         private static void PutIdMercadoPago(Pedido pedido, string mercadoPagoId)
         {
             using (var context = new ContextEF())
@@ -454,6 +496,17 @@ namespace MarketPage.Controllers
                 context.PedidosUsuario.Update(pedido);
                 context.SaveChanges();
             };
+        }
+
+        private List<ViewBaseValorFrete> GeraViewValorFrete(string cep)
+        {
+            var list = new List<ViewBaseValorFrete>();
+            var data = _freteRepository.GetFreteValores(cep);
+            foreach (var frete in data)
+            {
+                list.Add(new ViewBaseValorFrete { Preco = frete.PrecoFrete, Prazo = frete.PrazoMin, Servico = frete.Servico });
+            }
+            return list;
         }
     }
 }

@@ -22,6 +22,7 @@ namespace MarketPage.Repository
             using (var context = new ContextEF())
             {
                 context.FretesPedidosUsuarios.Add(frete);
+                context.SaveChanges();
             };
         }
 

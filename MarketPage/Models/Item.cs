@@ -46,8 +46,9 @@ namespace MarketPage.Models
         public byte[] Img { get; set; }
         public List<byte[]> ImgsPadrao { get; set; }
         public string TipoFrete { get; set; }
+        public decimal? ValorFrete { get; set; }
         public string CodPromocional { get; set; }
-        public decimal? ValorDesconto { get; set; } 
+        public decimal? ValorDesconto { get; set; }
     }
 
     public class ItemViewAdmin

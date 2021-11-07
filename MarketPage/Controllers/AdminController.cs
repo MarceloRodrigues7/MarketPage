@@ -334,6 +334,19 @@ namespace MarketPage.Controllers
             return View(data);
         }
 
+        [Authorize]
+        public ActionResult MensageContato(MessageContato message)
+        {
+            return View(message);
+        }
+
+        [Authorize]
+        public ActionResult ConfirmaVisualizacaoMensageContato(MessageContato message)
+        {
+            _messagesContato.PostConfirmaVisualizacao(message);
+            return RedirectToAction("MensagensContato");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -34,6 +34,8 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        @Html.Hidden(item.Texto);
+                        @Html.Hidden(item.Visualizado.ToString());
                         <tr>
                             <td class="text-center">@item.Id</td>
                             <td class="text-center">@item.Nome</td>
@@ -49,7 +51,7 @@
                             }
                             <td class="text-center">@item.DataVisualizado</td>
                             <td class="col-3 text-center">
-                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Vizualizar</a>
+                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("MensageContato", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Vizualizar</a>
                             </td>
                         </tr>
                     }

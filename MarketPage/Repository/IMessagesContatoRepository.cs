@@ -10,5 +10,6 @@ namespace MarketPage.Repository
     {
         void PostMensage(MessageContato message);
         List<MessageContato> GetMessageContatos();
+        void PostConfirmaVisualizacao(MessageContato message);
     }
 }
