@@ -23,5 +23,10 @@ namespace MarketPage.Models
         public string CodRastreio { get; set; }
         public int PrazoEntrega { get; set; }
     }
-    
+    public class PedidoStatus
+    {
+        public long Id { get; set; }
+        public string Nome { get; set; }
+        public string NomeMercadoLivre { get; set; }
+    }
 }

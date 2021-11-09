@@ -22,13 +22,17 @@ namespace MarketPage.Controllers
         private readonly ICodPromocionalRepository _codPromocional;
         private readonly IFreteRepository _freteRepository;
         private readonly IEnderecoRepository _enderecoRepository;
+        private readonly ICarrinhoRepository _carrinhoRepository;
+        private readonly IPedidoRepository _pedidoRepository;
 
-        public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository)
+        public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICarrinhoRepository carrinhoRepository, IPedidoRepository pedidoRepository)
         {
             _usuarioRepository = usuarioRepository;
             _codPromocional = codPromocional;
             _freteRepository = freteRepository;
             _enderecoRepository = enderecoRepository;
+            _carrinhoRepository = carrinhoRepository;
+            _pedidoRepository = pedidoRepository;
         }
 
         public IActionResult Index()
@@ -52,14 +56,12 @@ namespace MarketPage.Controllers
         {
             return View();
         }
-
         [Authorize]
         public IActionResult Endereco()
         {
             var data = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
             return View(data);
         }
-
         [Authorize]
         public IActionResult Usuario()
         {
@@ -74,51 +76,49 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Carrinho()
         {
-            var carrinho = GetItensCarrinho();
             var enderecoUsuario = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+            if (enderecoUsuario == null)
+            {
+                TempData["Message"] = "Registre o endereço de destino";
+                return RedirectToAction("Endereco");
+            }
+            var carrinho = _carrinhoRepository.GetItensCarrinhoView(int.Parse(User.Identity.Name));
             ViewBag.ValoresFrete = GeraViewValorFrete(enderecoUsuario.Cep);
             return View(carrinho);
         }
-
         [Authorize]
         public IActionResult Pedidos()
         {
-            using (var context = new ContextEF())
+            var data = _pedidoRepository.GetPedidos(int.Parse(User.Identity.Name));
+            foreach (var item in data)
             {
-                var data = context.PedidosUsuario.Where(p => p.IdUsuario == int.Parse(User.Identity.Name)).ToList();
-                foreach (var item in data)
+                if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual != "Aprovado")
                 {
-                    if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual != "Aprovado")
+                    var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
+                    if (res.Elements != null)
                     {
-                        var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
-                        if (res.Elements != null)
-                        {
-                            item.StatusAtual = res.Elements.First().Payments.Last().Status;
-                            item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
-                            PutStatusPedido(item);
-                        }
+                        item.StatusAtual = res.Elements.First().Payments.Last().Status;
+                        item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+                        _pedidoRepository.PutStatusPedido(item);
                     }
                 }
-                return View(data);
-            };
+            }
+            return View(data);
         }
         [Authorize]
         public IActionResult DescPedido(Pedido pedido)
         {
-            using (var context = new ContextEF())
+            var data = _pedidoRepository.GetPedido(pedido.Id);
+            if (data.IdMercadoPago == null)
             {
-                var data = context.PedidosUsuario.Where(p => p.Id == pedido.Id).FirstOrDefault();
-                if (data.IdMercadoPago == null)
-                {
-                    ViewBag.IdMp = MercadoPagoRequest(data);
-                }
-                else
-                {
-                    ViewBag.IdMp = data.IdMercadoPago;
-                }
-                ViewBag.ItensPedido = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
-                return View(data);
-            };
+                ViewBag.IdMp = MercadoPagoRequest(data);
+            }
+            else
+            {
+                ViewBag.IdMp = data.IdMercadoPago;
+            }
+            ViewBag.ItensPedido = _carrinhoRepository.GetCarrinhos(pedido.Id);
+            return View(data);
         }
         public IActionResult PostUsuario(Usuario usuario)
         {
@@ -126,6 +126,7 @@ namespace MarketPage.Controllers
             {
                 if (!_usuarioRepository.ValidaNovoUsuario(usuario.Username))
                 {
+                    usuario.Telefone = usuario.Telefone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
                     usuario.StatusAtivo = true;
                     usuario.RoleAcess = "Usuario_Comum";
                     _usuarioRepository.PostUsuario(usuario);
@@ -205,21 +206,6 @@ namespace MarketPage.Controllers
                 return View("Index");
             }
         }
-
-        private void GeraIdentity(Usuario usuario)
-        {
-            var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };
-            var identidadeDeUsuario = new ClaimsIdentity(claims, "Login");
-            ClaimsPrincipal claimPrincipal = new(identidadeDeUsuario);
-            var propriedadesDeAutenticacao = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-                ExpiresUtc = DateTime.Now.ToLocalTime().AddHours(2),
-                IsPersistent = true,
-            };
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimPrincipal, propriedadesDeAutenticacao);
-        }
-
         [Authorize]
         public IActionResult PostPedido(List<ItemViewProduto> produtos)
         {
@@ -250,7 +236,7 @@ namespace MarketPage.Controllers
                 var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);
                 if (codPromo != null)
                 {
-                    valorCarrinho -= valorCarrinho*codPromo.Desconto;
+                    valorCarrinho -= valorCarrinho * codPromo.Desconto;
                 }
 
                 pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
@@ -259,7 +245,7 @@ namespace MarketPage.Controllers
                 pedido.Cidade = end.Cidade;
                 pedido.Bairro = end.Bairro;
                 pedido.Numero = end.Numero;
-                var idPedido = AdicionaPedido(pedido);
+                var idPedido = _pedidoRepository.PostPedido(pedido);
 
                 AtualizaItensCarrinhoRealizado(idPedido, carrinho);
                 return RedirectToAction("Pedidos");
@@ -297,23 +283,20 @@ namespace MarketPage.Controllers
                 TempData["Message"] = "Codigo promocional inválido";
                 return RedirectToAction("Carrinho");
             }
-            else
+            var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
+            foreach (var item in carrinho)
             {
-                var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
-                foreach (var item in carrinho)
+                _codPromocional.PostCodPromoUsuario(new CodPromocaoUtilizado
                 {
-                    _codPromocional.PostCodPromoUsuario(new CodPromocaoUtilizado
-                    {
-                        IdUsuario = int.Parse(User.Identity.Name),
-                        IdCarrinho = item.Id,
-                        IdCodPromocao = data.Id,
-                        DataUtilizacao = DateTime.UtcNow.AddHours(-3),
-                    });
-                }
-                data.Utilizacoes++;
-                _codPromocional.PutCodPromocao(data);
-                return RedirectToAction("Carrinho");
+                    IdUsuario = int.Parse(User.Identity.Name),
+                    IdCarrinho = item.Id,
+                    IdCodPromocao = data.Id,
+                    DataUtilizacao = DateTime.UtcNow.AddHours(-3),
+                });
             }
+            data.Utilizacoes++;
+            _codPromocional.PutCodPromocao(data);
+            return RedirectToAction("Carrinho");
         }
 
         [HttpPost]
@@ -324,23 +307,20 @@ namespace MarketPage.Controllers
                 TempData["Message"] = "Selecione o frete";
                 return RedirectToAction("Carrinho");
             }
-            else
+            var valorFrete = TipoFrete.Replace(" ", "").Split("-");
+            var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
+            foreach (var item in carrinho)
             {
-                var frete = TipoFrete.Replace(" ","").Split("-");
-                var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
-                foreach (var item in carrinho)
+                var frete = new FretePedidoUsuario
                 {
-                    var fret = new FretePedidoUsuario
-                    {
-                        IdUsuario = int.Parse(User.Identity.Name),
-                        IdCarrinho = item.Id,
-                        TipoFrete = frete[0],
-                        ValorTotal = decimal.Parse(frete[1].Replace("R$", ""))
-                    };
-                    _freteRepository.PostFrete(fret);
-                }
-                return RedirectToAction("Carrinho");
+                    IdUsuario = int.Parse(User.Identity.Name),
+                    IdCarrinho = item.Id,
+                    TipoFrete = valorFrete[0],
+                    ValorTotal = decimal.Parse(valorFrete[1].Replace("R$", ""))
+                };
+                _freteRepository.PostFrete(frete);
             }
+            return RedirectToAction("Carrinho");
         }
 
         public IActionResult PostItemCarrinho(ItemViewProduto item)
@@ -377,45 +357,6 @@ namespace MarketPage.Controllers
             };
         }
 
-        public List<ItemViewProduto> GetItensCarrinho()
-        {
-            var data = new List<Carrinho>();
-            var lista = new List<ItemViewProduto>();
-
-            using (var context = new ContextEF())
-            {
-                data = context.CarrinhoItem.Where(c => c.IdUsuario == int.Parse(User.Identity.Name) && c.IdPedido == null).ToList();
-                foreach (var item in data)
-                {
-                    var codPromo = context.CodPromoUsuarios.Where(c => c.IdCarrinho == item.Id).FirstOrDefault();
-                    var frete = context.FretesPedidosUsuarios.Where(f => f.IdCarrinho == item.Id).FirstOrDefault();
-                    var itemView = new ItemViewProduto
-                    {
-                        Id = item.Id,
-                        Nome = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault().Nome,
-                        Descricao = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault().Descricao,
-                        Valor = item.Valor,
-                        Tamanhos = item.Tamanhos,
-                        Quantidade = item.Quantidade,
-                        Img = context.ImagensItem.Where(i => i.IdItem == item.IdItem).FirstOrDefault().Img,
-
-                    };
-                    if (codPromo != null)
-                    {
-                        itemView.CodPromocional = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Codigo;
-                        itemView.ValorDesconto = context.CodPromocoes.Where(c => c.Id == codPromo.IdCodPromocao).FirstOrDefault().Desconto;
-                    }
-                    if (frete!=null)
-                    {
-                        itemView.TipoFrete = frete.TipoFrete;
-                        itemView.ValorFrete = frete.ValorTotal;
-                    }
-                    lista.Add(itemView);
-                }
-            };
-            return lista;
-        }
-
         private static Endereco GetEndereco(int idUsuario)
         {
             using (var context = new ContextEF())
@@ -423,18 +364,7 @@ namespace MarketPage.Controllers
                 return context.EnderecosUsuario.Where(e => e.IdUsuario == idUsuario).FirstOrDefault();
             };
         }
-
-        private static long AdicionaPedido(Pedido pedido)
-        {
-            using (var context = new ContextEF())
-            {
-                context.PedidosUsuario.Add(pedido);
-                context.SaveChanges();
-                var idPedido = context.PedidosUsuario.Where(p => p.DataRealizacao == pedido.DataRealizacao && p.ValorTotal == pedido.ValorTotal).FirstOrDefault().Id;
-                return idPedido;
-            };
-        }
-
+                
         private static string MercadoPagoRequest(Pedido pedido)
         {
             MercadoPagoConfig.AccessToken = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220";
@@ -472,32 +402,7 @@ namespace MarketPage.Controllers
                 context.SaveChanges();
             };
         }
-        private static void PutStatusPedido(Pedido pedido)
-        {
-            pedido.StatusAtual = pedido.StatusAtual switch
-            {
-                "pending" => "Pendente",
-                "approved" => "Aprovado",
-                "authorized" => "Autorizado",
-                "in_process" => "Em Processo",
-                "in_mediation" => "Em Mediação",
-                "rejected" => "Rejeitado",
-                "cancelled" => "Cancelado",
-                "refunded" => "Devolvido",
-                "charged_back" => "Cobrado de Volta",
-                _ => "Pendente",
-            };
-            using (var context = new ContextEF())
-            {
-                if (pedido.StatusAtual == "Aprovado")
-                {
-                    pedido.DateFinalizacao = DateTime.UtcNow.AddHours(-3);
-                }
-                context.PedidosUsuario.Update(pedido);
-                context.SaveChanges();
-            };
-        }
-
+        
         private List<ViewBaseValorFrete> GeraViewValorFrete(string cep)
         {
             var list = new List<ViewBaseValorFrete>();
@@ -507,6 +412,49 @@ namespace MarketPage.Controllers
                 list.Add(new ViewBaseValorFrete { Preco = frete.PrecoFrete, Prazo = frete.PrazoMin, Servico = frete.Servico });
             }
             return list;
+        }
+
+        public IActionResult ResetarSenha(Usuario usuario)
+        {
+            usuario.Telefone = usuario.Telefone.Replace("(", "").Replace(")", "").Replace("-", "").Replace(" ", "");
+            var data = _usuarioRepository.GetUsuario(usuario.Username, usuario.Email, usuario.Telefone);
+            if (data == null)
+            {
+                TempData["Message"] = "Informações de cadastro não localizadas. Tente novamente.";
+                return RedirectToAction("EsqueciMinhaSenha");
+            }
+            data.Password = null;
+            return View(data);
+        }
+
+        public IActionResult PostNovaSenha(Usuario usuario)
+        {
+            var data = _usuarioRepository.GetUsuario(usuario.Id);
+            data.Password = usuario.Password;
+            try
+            {
+                _usuarioRepository.PutUsuario(data);
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["Message"] = "Erro ao alterar nova senha. Tente novamente.";
+                return RedirectToAction("EsqueciMinhaSenha");
+            }
+        }
+
+        private void GeraIdentity(Usuario usuario)
+        {
+            var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };
+            var identidadeDeUsuario = new ClaimsIdentity(claims, "Login");
+            ClaimsPrincipal claimPrincipal = new(identidadeDeUsuario);
+            var propriedadesDeAutenticacao = new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                ExpiresUtc = DateTime.Now.ToLocalTime().AddHours(2),
+                IsPersistent = true,
+            };
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimPrincipal, propriedadesDeAutenticacao);
         }
     }
 }

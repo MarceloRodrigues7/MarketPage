@@ -18,5 +18,6 @@ namespace MarketPage.Models
         public bool StatusAtivo { get; set; }
         public bool PermiteEmail { get; set; }
         public bool ConcordaRegras { get; set; }
+        public string Telefone { get; set; }
     }
 }

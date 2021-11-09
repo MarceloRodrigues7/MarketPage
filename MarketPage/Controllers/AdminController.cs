@@ -20,14 +20,16 @@ namespace MarketPage.Controllers
         private readonly IImagemRepository _ImgItem;
         private readonly ICodPromocionalRepository _codPromocional;
         private readonly IMessagesContatoRepository _messagesContato;
+        private readonly IPedidoRepository _pedidoRepository;
 
-        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato)
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository)
         {
             _Categoria = categoria;
             _Item = item;
             _ImgItem = imgItem;
             _codPromocional = codPromocional;
             _messagesContato = messagesContato;
+            _pedidoRepository = pedidoRepository;
         }
 
         [Authorize]
@@ -332,6 +334,27 @@ namespace MarketPage.Controllers
         {
             var data = _messagesContato.GetMessageContatos();
             return View(data);
+        }
+
+        [Authorize]
+        public ActionResult Pedidos(string status)
+        {
+            if (status == null)
+            {
+                return View(_pedidoRepository.GetPedidos());
+            }
+            return View(_pedidoRepository.GetPedidos(status));
+        }
+
+        [Authorize]
+        public IActionResult DescPedido(Pedido pedido)
+        {
+            using (var context = new ContextEF())
+            {
+                var data = context.PedidosUsuario.Where(p => p.Id == pedido.Id).FirstOrDefault();
+                ViewBag.ItensPedido = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
+                return View(data);
+            };
         }
 
         [Authorize]

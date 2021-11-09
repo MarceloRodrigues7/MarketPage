@@ -4,7 +4,7 @@
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
-        <div class="card-subtitle ml-4 mt-3">
+        <div class="card-subtitle ml-3 mt-3">
             <div class="text-center">
                 <h4 class="text-secondary">Esqueci minha senha<i class="fas fa-key ml-2"></i></h4>
             </div>
@@ -21,10 +21,22 @@
                             @TempData["Message"].ToString()
                         </div>
                     }
-                    <label class=""><strong>Informe seu email abaixo para receber as instruções e criar uma nova senha.</strong></label>
-                    <div class="col">
-                        <label class="form-text">Email</label>
-                        @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
+                    <label class=""><strong>Informe seu dados abaixo para criar uma nova senha.</strong></label>
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-text">Email</label>
+                            @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <label class="form-text">Username</label>
+                            @Html.TextBoxFor(model => model.Username, new { @type = "text", @class = "form-control", @id = "txtUsername", @required = true })
+                        </div>
+                        <div class="col">
+                            <label class="form-text">Telefone</label>
+                            @Html.TextBoxFor(model => model.Telefone, new { @type = "text", @class = "form-control", @id = "txtTelefone", @required = true })
+                        </div>
                     </div>
                     <div class="d-flex justify-content-center mt-4">
                         <button type="submit" class="btn btn-warning" id="btnEnviar">Recuperar</button>
@@ -52,3 +64,7 @@
         }, false);
     })();
 </script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script type="text/javascript">$("#txtTelefone").mask("(00) 0000-00000");</script>

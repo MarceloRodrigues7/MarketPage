@@ -4,14 +4,16 @@ using MarketPage.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarketPage.Migrations
 {
     [DbContext(typeof(ContextEF))]
-    partial class ContextEFModelSnapshot : ModelSnapshot
+    [Migration("20211108012034_up_pedidosStatus")]
+    partial class up_pedidosStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -421,9 +423,6 @@ namespace MarketPage.Migrations
 
                     b.Property<bool>("StatusAtivo")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Telefone")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");

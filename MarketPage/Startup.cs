@@ -34,6 +34,8 @@ namespace MarketPage
             services.AddSingleton<ICodPromocionalRepository, CodPromocionalRepository>();
             services.AddSingleton<IMessagesContatoRepository, MessagesContatoRepository>();
             services.AddSingleton<IEnderecoRepository, EnderecoRepository>();
+            services.AddSingleton<IPedidoRepository, PedidoRepository>();
+            services.AddSingleton<ICarrinhoRepository, CarrinhoRepository>();
 
             services.AddControllersWithViews();
 

@@ -4,70 +4,74 @@
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
-        <div class="card-subtitle ml-4 mt-3">
+        <div class="card-subtitle ml-3 mt-3">
             <div class="text-center">
                 <h4 class="text-secondary">Novo Cadastro<i class="fas fa-user-plus ml-2"></i></h4>
             </div>
         </div>
         <div class="card-body">
-            <div class="row">
-                @using (Html.BeginForm("PostUsuario", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+            @using (Html.BeginForm("PostUsuario", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+            {
+                @Html.ValidationSummary()
+                @Html.AntiForgeryToken()
+                @if (TempData["Message"] != null)
                 {
-                    @Html.ValidationSummary()
-                    @Html.AntiForgeryToken()
-                    <div class="container">
-                        @if (TempData["Message"] != null)
-                        {
-                            <div class="alert alert-danger" role="alert">
-                                @TempData["Message"].ToString()
-                            </div>
-                        }
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="lblUsername" class="text-body">Username</label>
-                                @Html.TextBoxFor(model => model.Username, new { @type = "text", @class = "form-control", @id = "txtUsername", @required = true })
-                            </div>
-                            <div class="col">
-                                <label for="lblPassword" class="text-body">Password</label>
-                                @Html.TextBoxFor(model => model.Password, new { @type = "password", @class = "form-control", @id = "txtPassword", @placeholder = "*****", @required = true })
-                            </div>
-                            <div class="col">
-                                <label for="lblEmail" class="text-body">Email</label>
-                                @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="lblNome" class="text-body">Nome</label>
-                                @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @required = true })
-                            </div>
-                            <div class="col">
-                                <label for="lblSobrenome" class="text-body">Sobrenome</label>
-                                @Html.TextBoxFor(model => model.Sobrenome, new { @type = "text", @class = "form-control", @id = "txtSobrenome" })
-                            </div>
-                            <div class="col">
-                                <label for="dtDataNascimento">Data Nascimento</label>
-                                @Html.TextBoxFor(model => model.DataNascimento, new { @type = "Date", @class = "form-control", @id = "dtDataNascimento", @min = "1/1/1753", @required = true })
-                            </div>
-                        </div>
-                        <div class="row mb-2 ml-2 mt-2">
-                            <div class="col">
-                                @Html.CheckBoxFor(model => model.PermiteEmail, new { @type = "checkbox", @class = "form-check-input" })
-                                <label class="form-check-label text-secondary" style="font-size:13px"><i>Permito envios de correio eletronico promocional.</i></label>
-                            </div>
-                        </div>
-                        <div class="row mb-2 ml-2">
-                            <div class="col">
-                                @Html.CheckBoxFor(model => model.ConcordaRegras, new { @type = "checkbox", @class = "form-check-input", @required = true })
-                                <label class="form-check-label text-secondary" style="font-size:13px"><i>Aceito as <a href="~/Home/Termos">Regras e Termos.</a></i></label>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3">
-                            <button type="submit" class="btn btn-primary" id="btnEnviar">Cadastrar</button>
-                        </div>
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["Message"].ToString()
                     </div>
                 }
-            </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="lblUsername" class="text-body">Username</label>
+                        @Html.TextBoxFor(model => model.Username, new { @type = "text", @class = "form-control", @id = "txtUsername", @required = true })
+                    </div>
+                    <div class="col">
+                        <label for="lblPassword" class="text-body">Password</label>
+                        @Html.TextBoxFor(model => model.Password, new { @type = "password", @class = "form-control", @id = "txtPassword", @placeholder = "*****", @required = true })
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="lblEmail" class="text-body">Email</label>
+                        @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="lblNome" class="text-body">Nome</label>
+                        @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @required = true })
+                    </div>
+                    <div class="col">
+                        <label for="lblSobrenome" class="text-body">Sobrenome</label>
+                        @Html.TextBoxFor(model => model.Sobrenome, new { @type = "text", @class = "form-control", @id = "txtSobrenome" })
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="dtDataNascimento">Nº Telefone</label>
+                        @Html.TextBoxFor(model => model.Telefone, new { @type = "text", @class = "form-control", @id = "txtTelefone", @required = true })
+                    </div>
+                    <div class="col">
+                        <label for="dtDataNascimento">Data Nascimento</label>
+                        @Html.TextBoxFor(model => model.DataNascimento, new { @type = "Date", @class = "form-control", @id = "dtDataNascimento", @min = "1/1/1753", @required = true })
+                    </div>
+                </div>
+                <div class="row mb-2 ml-2 mt-2">
+                    <div class="col">
+                        @Html.CheckBoxFor(model => model.PermiteEmail, new { @type = "checkbox", @class = "form-check-input" })
+                        <label class="form-check-label text-secondary" style="font-size:13px"><i>Permito envios de correio eletronico promocional.</i></label>
+                    </div>
+                </div>
+                <div class="row mb-2 ml-2">
+                    <div class="col">
+                        @Html.CheckBoxFor(model => model.ConcordaRegras, new { @type = "checkbox", @class = "form-check-input", @required = true })
+                        <label class="form-check-label text-secondary" style="font-size:13px"><i>Aceito as <a href="~/Home/Termos">Regras e Termos.</a></i></label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="submit" class="btn btn-primary" id="btnEnviar">Cadastrar</button>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -89,3 +93,7 @@
         }, false);
     })();
 </script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.11/jquery.mask.min.js"></script>
+<script type="text/javascript">$("#txtTelefone").mask("(00) 0000-00000");</script>

@@ -14,15 +14,24 @@ namespace MarketPage.Repository
             using (var context = new ContextEF())
             {
                 return context.Usuarios.Where(u => u.Id == idUsuario).FirstOrDefault();
-            };   
+            };
         }
-        public Usuario GetUsuario(string username,string password)
+        public Usuario GetUsuario(string username, string password)
         {
             using (var context = new ContextEF())
             {
                 return context.Usuarios.Where(u => u.Username == username && u.Password == password).FirstOrDefault();
             };
         }
+
+        public Usuario GetUsuario(string username, string email, string telefone)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.Usuarios.Where(u => u.Username == username && u.Email == email && u.Telefone == telefone).FirstOrDefault();
+            };
+        }
+
         public void PostUsuario(Usuario usuario)
         {
             using (var context = new ContextEF())
@@ -36,6 +45,15 @@ namespace MarketPage.Repository
             using (var context = new ContextEF())
             {
                 return context.Usuarios.Where(l => l.Username == username).Any();
+            };
+        }
+
+        public void PutUsuario(Usuario usuario)
+        {
+            using (var context = new ContextEF())
+            {
+                context.Usuarios.Update(usuario);
+                context.SaveChanges();
             };
         }
     }
