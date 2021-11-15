@@ -11,6 +11,10 @@
     var TDevolvido = ViewBag.ResumoPedidos[8];
     var TRejeitado = ViewBag.ResumoPedidos[6];
     var TCobradoVolta = ViewBag.ResumoPedidos[9];
+    var TFinalizado = ViewBag.ResumoPedidos[10];
+    var TPreparando = ViewBag.ResumoPedidos[11];
+    var TEnviado = ViewBag.ResumoPedidos[12];
+    var TEntregue = ViewBag.ResumoPedidos[13];
 }
 
 <div class="container">
@@ -80,7 +84,7 @@
                 <div class="card">
                     <div class="card-text text-center text-success">
                         <a class="btn btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Pedidos", "admin",new { status = "Finalizado" }) + "'");">
-                            <strong>Finalizado: 0</strong><i class="fas fa-eye ml-2"></i>
+                            <strong>Finalizado: @TFinalizado</strong><i class="fas fa-eye ml-2"></i>
                         </a>
                     </div>
                 </div>
@@ -114,21 +118,21 @@
                 <div class="card">
                     <div class="card-text text-center text-info">
                         <a class="btn btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Pedidos", "admin",new { status = "Preparando" }) + "'");">
-                            <strong>Preparando: 0</strong><i class="fas fa-eye ml-2"></i>
+                            <strong>Preparando: @TPreparando</strong><i class="fas fa-eye ml-2"></i>
                         </a>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-text text-center text-info">
                         <a class="btn btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Pedidos", "admin",new { status = "Enviado" }) + "'");">
-                            <strong>Enviado: 0</strong><i class="fas fa-eye ml-2"></i>
+                            <strong>Enviado: @TEnviado</strong><i class="fas fa-eye ml-2"></i>
                         </a>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-text text-center text-info">
                         <a class="btn btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Pedidos", "admin",new { status = "Entregue" }) + "'");">
-                            <strong>Entregue: 0</strong><i class="fas fa-eye ml-2"></i>
+                            <strong>Entregue: @TEntregue</strong><i class="fas fa-eye ml-2"></i>
                         </a>
                     </div>
                 </div>

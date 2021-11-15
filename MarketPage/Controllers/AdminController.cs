@@ -21,8 +21,9 @@ namespace MarketPage.Controllers
         private readonly ICodPromocionalRepository _codPromocional;
         private readonly IMessagesContatoRepository _messagesContato;
         private readonly IPedidoRepository _pedidoRepository;
+        private readonly ICarrinhoRepository _carrinhoRepository;
 
-        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository)
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
         {
             _Categoria = categoria;
             _Item = item;
@@ -30,6 +31,7 @@ namespace MarketPage.Controllers
             _codPromocional = codPromocional;
             _messagesContato = messagesContato;
             _pedidoRepository = pedidoRepository;
+            _carrinhoRepository = carrinhoRepository;
         }
 
         [Authorize]
@@ -244,6 +246,7 @@ namespace MarketPage.Controllers
             {
                 _ImgItem.DeleteImgItem(item.Id);
                 _Item.DeleteItem(item.Id);
+                _carrinhoRepository.DeleteItemCarrinhoAdmin(item.Id);                
                 return RedirectToAction("Produto", "Admin");
             }
             catch (Exception e)
@@ -323,9 +326,13 @@ namespace MarketPage.Controllers
             var pedidosCancelado = pedidos.Where(p => p.StatusAtual == "Cancelado").Count();
             var pedidosDevolvido = pedidos.Where(p => p.StatusAtual == "Devolvido").Count();
             var pedidosCobradoVolta = pedidos.Where(p => p.StatusAtual == "Cobrado de Volta").Count();
+            var pedidosFinalizado = pedidos.Where(p => p.StatusAtual == "Finalizado").Count();
+            var pedidosPreparando = pedidos.Where(p => p.StatusAtual == "Preparando").Count();
+            var pedidosEnviado = pedidos.Where(p => p.StatusAtual == "Enviado").Count();
+            var pedidosEntregue = pedidos.Where(p => p.StatusAtual == "Entregue").Count();
             return new List<int>
             {
-                pedidos.Count(),pedidosPendentes,pedidosAprovados,pedidosAutorizado,pedidosEmProcesso,pedidosEmMediacao,pedidosRejeitado,pedidosCancelado,pedidosDevolvido,pedidosCobradoVolta
+                pedidos.Count(),pedidosPendentes,pedidosAprovados,pedidosAutorizado,pedidosEmProcesso,pedidosEmMediacao,pedidosRejeitado,pedidosCancelado,pedidosDevolvido,pedidosCobradoVolta,pedidosFinalizado,pedidosPreparando,pedidosEnviado,pedidosEntregue
             };
         }
 
@@ -351,22 +358,60 @@ namespace MarketPage.Controllers
         {
             using (var context = new ContextEF())
             {
+                List<ItemViewDescAdmin> items = new();
                 var data = context.PedidosUsuario.Where(p => p.Id == pedido.Id).FirstOrDefault();
-                ViewBag.ItensPedido = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
+                var carrinho = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
+                foreach (var item in carrinho)
+                {
+                    var i = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault();
+                    var tamanho = item.Tamanhos;
+                    items.Add(new ItemViewDescAdmin
+                    {
+                        Id = i.Id,
+                        DataAdicao = i.DataAdicao,
+                        Descricao = i.Descricao,
+                        Destaque = i.Destaque,
+                        IdCategoria = i.IdCategoria,
+                        Nome = i.Nome,
+                        Peso = i.Peso,
+                        Quantidade = item.Quantidade,
+                        Tamanho = item.Tamanhos,
+                        Tamanhos = i.Tamanhos,
+                        Valor = i.Valor
+                    });
+                }
+                ViewBag.ItensPedido = items;
+                ViewBag.PedidosStatus = context.PedidosStatus.OrderBy(p=>p.Nome).ToList();
                 return View(data);
             };
         }
-
         [Authorize]
-        public ActionResult MensageContato(MessageContato message)
+        public IActionResult PutPedido(Pedido pedido)
         {
-            return View(message);
+            var data = _pedidoRepository.GetPedido(pedido.Id);
+            data.StatusAtual = pedido.StatusAtual;
+            data.CodRastreio = pedido.CodRastreio;
+            data.PrazoEntrega = pedido.PrazoEntrega;
+            data.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+            if (data.StatusAtual== "Finalizado")
+            {
+                data.DateFinalizacao= DateTime.UtcNow.AddHours(-3);
+            }
+            _pedidoRepository.PutPedido(data);
+            return RedirectToAction("Pedidos");
+        }
+        
+        [Authorize]
+        public ActionResult MensageContato(long Id)
+        {
+            var data = _messagesContato.GetMessageContatos(Id);
+            return View(data);
         }
 
         [Authorize]
         public ActionResult ConfirmaVisualizacaoMensageContato(MessageContato message)
         {
-            _messagesContato.PostConfirmaVisualizacao(message);
+            _messagesContato.PutConfirmaVisualizacao(message);
             return RedirectToAction("MensagensContato");
         }
 

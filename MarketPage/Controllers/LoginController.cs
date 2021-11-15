@@ -92,7 +92,8 @@ namespace MarketPage.Controllers
             var data = _pedidoRepository.GetPedidos(int.Parse(User.Identity.Name));
             foreach (var item in data)
             {
-                if (!string.IsNullOrEmpty(item.IdMercadoPago) && item.StatusAtual != "Aprovado")
+                List<string> StatusIgnore = new() { "Aprovado", "Rejeitado", "Cancelado", "Devolvido", "Cobrado de Volta", "Finalizado", "Preparando", "Enviado", "Entregue" };
+                if (string.IsNullOrEmpty(item.IdMercadoPago) && !StatusIgnore.Contains(item.StatusAtual))
                 {
                     var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
                     if (res.Elements != null)
@@ -108,7 +109,9 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult DescPedido(Pedido pedido)
         {
+            List<ItemViewDescAdmin> items = new();
             var data = _pedidoRepository.GetPedido(pedido.Id);
+            var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
             if (data.IdMercadoPago == null)
             {
                 ViewBag.IdMp = MercadoPagoRequest(data);
@@ -117,7 +120,30 @@ namespace MarketPage.Controllers
             {
                 ViewBag.IdMp = data.IdMercadoPago;
             }
-            ViewBag.ItensPedido = _carrinhoRepository.GetCarrinhos(pedido.Id);
+            foreach (var item in carrinho)
+            {
+                Item i = new();
+                using (var context = new ContextEF())
+                {
+                    i = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault();
+                };
+                var tamanho = item.Tamanhos;
+                items.Add(new ItemViewDescAdmin
+                {
+                    Id = i.Id,
+                    DataAdicao = i.DataAdicao,
+                    Descricao = i.Descricao,
+                    Destaque = i.Destaque,
+                    IdCategoria = i.IdCategoria,
+                    Nome = i.Nome,
+                    Peso = i.Peso,
+                    Quantidade = item.Quantidade,
+                    Tamanho = item.Tamanhos,
+                    Tamanhos = i.Tamanhos,
+                    Valor = i.Valor
+                });
+            }
+            ViewBag.ItensPedido = items;
             return View(data);
         }
         public IActionResult PostUsuario(Usuario usuario)
@@ -174,8 +200,8 @@ namespace MarketPage.Controllers
                     }
                     else
                     {
-                        TempData["Messege"] = "Cep inválido, tente novamente!";
-                        return View("Endereco");
+                        TempData["Message"] = "Cep inválido, tente novamente!";
+                        return RedirectToAction("Endereco");
                     }
                 };
             }
@@ -183,7 +209,7 @@ namespace MarketPage.Controllers
             {
                 Console.WriteLine(ex.Message);
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + ex.Message;
-                return View("Endereco");
+                return RedirectToAction("Usuario");
             }
         }
 
@@ -357,6 +383,24 @@ namespace MarketPage.Controllers
             };
         }
 
+        [Authorize]
+        public IActionResult Editar()
+        {
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            {
+                var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
+                return View(data);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        public IActionResult PutUsuario(Usuario usuario)
+        {
+            _usuarioRepository.PutUsuario(usuario);
+            return RedirectToAction("Usuario");
+        }
+
         private static Endereco GetEndereco(int idUsuario)
         {
             using (var context = new ContextEF())
@@ -364,7 +408,7 @@ namespace MarketPage.Controllers
                 return context.EnderecosUsuario.Where(e => e.IdUsuario == idUsuario).FirstOrDefault();
             };
         }
-                
+
         private static string MercadoPagoRequest(Pedido pedido)
         {
             MercadoPagoConfig.AccessToken = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220";
@@ -402,7 +446,7 @@ namespace MarketPage.Controllers
                 context.SaveChanges();
             };
         }
-        
+
         private List<ViewBaseValorFrete> GeraViewValorFrete(string cep)
         {
             var list = new List<ViewBaseValorFrete>();

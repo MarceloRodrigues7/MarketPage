@@ -52,6 +52,15 @@ namespace MarketPage.Repository
             };
         }
 
+        public void PutPedido(Pedido pedido)
+        {
+            using (var context = new ContextEF())
+            {
+                context.PedidosUsuario.Update(pedido);
+                context.SaveChanges();
+            };
+        }
+
         public void PutStatusPedido(Pedido pedido)
         {
             using (var context = new ContextEF())

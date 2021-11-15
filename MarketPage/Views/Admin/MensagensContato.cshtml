@@ -51,7 +51,7 @@
                             }
                             <td class="text-center">@item.DataVisualizado</td>
                             <td class="col-3 text-center">
-                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("MensageContato", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Vizualizar</a>
+                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("MensageContato", "Admin",new { Id = item.Id }) + "'");"><i class="fas fa-edit mr-1"></i>Vizualizar</a>
                             </td>
                         </tr>
                     }

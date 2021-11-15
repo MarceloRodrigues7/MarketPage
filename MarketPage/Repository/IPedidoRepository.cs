@@ -13,6 +13,7 @@ namespace MarketPage.Repository
         List<Pedido> GetPedidos(string status);
         List<Pedido> GetPedidos(int idUsuario);
         long PostPedido(Pedido pedido);
+        void PutPedido(Pedido pedido);
         void PutStatusPedido(Pedido pedido);
     }
 }

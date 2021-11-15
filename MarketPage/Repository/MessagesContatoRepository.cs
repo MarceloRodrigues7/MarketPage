@@ -28,13 +28,22 @@ namespace MarketPage.Repository
             };
         }
 
-        public void PostConfirmaVisualizacao(MessageContato message)
+        public MessageContato GetMessageContatos(long id)
         {
             using (var context = new ContextEF())
             {
-                message.DataVisualizado = DateTime.Now;
-                message.Visualizado = true;
-                context.MessagesContato.Update(message);
+                return context.MessagesContato.Where(c=>c.Id==id).First();
+            };
+        }
+
+        public void PutConfirmaVisualizacao(MessageContato message)
+        {
+            using (var context = new ContextEF())
+            {
+                var regMsg = context.MessagesContato.Where(m => m.Id == message.Id).FirstOrDefault();
+                regMsg.DataVisualizado = DateTime.Now;
+                regMsg.Visualizado = true;
+                context.MessagesContato.Update(regMsg);
                 context.SaveChanges();
             };
         }

@@ -19,14 +19,16 @@ namespace MarketPage.Models
 
         public bool ValidaCEP(string cep)
         {
-            Regex Rgx = new(@"^\d{5}-\d{3}$");
-            if (!Rgx.IsMatch(cep)){
+            var cepvalid = FormataCEP(cep);
+            Regex Rgx = new Regex(@"^\d{8}$");
+
+            if (!Rgx.IsMatch(cepvalid))
+
                 return false;
-            }
+
             else
-            {
+
                 return true;
-            }
         }
 
         public string FormataCEP(string cep)

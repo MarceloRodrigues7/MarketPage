@@ -21,10 +21,10 @@
     {
         @if (activeCarousel)
         {
-            <div class="row mt-4 rounded" style="background-color: #0984e3 ">
+            <div class="row mt-4 rounded" style="background-color: #FC90D8 ">
                 <div class="col-form-label">
                     <a class="text-secondary" style="cursor: pointer; color: #2d3436" onclick="@("window.location.href='" + @Url.Action("Index", "Shop",new { categoria = categoria.Nome }) + "'");">
-                        <h5 class="ml-3 mt-2">@categoria.Nome<i class="fas fa-store-alt ml-2"></i></h5>
+                        <h5 class="ml-3 mt-2"><i class="fas fa-store-alt mr-2"></i>@categoria.Nome</h5>
                     </a>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                                                 }
                                                 <div class="text-capitalize text-secondary" style="font-size:16px;">Ou 12x de R$@valorParcelado</div>
                                                 <div class="text-left">
-                                                    <a class="btn btn-sm mt-2 mb-2" style="cursor: pointer; background-color: #00b894 " title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
+                                                    <a class="btn btn-sm btn-secondary text-light mt-2 mb-2" style="cursor: pointer;" title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
                                                         <i class="fas fa-shopping-cart mr-2"></i>Ver mais
                                                     </a>
                                                 </div>
@@ -83,7 +83,7 @@
                                                 }
                                                 <div class="text-capitalize text-secondary" style="font-size:16px;">Ou 12x de R$@valorParcelado</div>
                                                 <div class="text-left">
-                                                    <a class="btn btn-sm mt-2 mb-2" style="cursor: pointer; background-color: #00b894 " title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
+                                                    <a class="btn btn-sm btn-secondary text-light mt-2 mb-2" style="cursor: pointer;" title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
                                                         <i class="fas fa-shopping-cart mr-2"></i>Ver mais
                                                     </a>
                                                 </div>
@@ -108,9 +108,9 @@
         else
         {
             <div>
-                <div class="row mb-1 mt-4 rounded" style="background-color: #3498db ">
+                <div class="row d-flex justify-content-center align-items-center mb-1 mt-4 rounded" style="background-color: #FC90D8 ">
                     <a class="text-secondary" style="cursor: pointer; color: #2d3436" onclick="@("window.location.href='" + @Url.Action("Index", "Shop",new { categoria = categoria.Nome }) + "'");">
-                        <h5 class="ml-3 pt-1">@categoria.Nome<i class="fas fa-tshirt ml-2"></i></h5>
+                        <h5 class="ml-3 pt-1">@categoria.Nome</h5>
                     </a>
                 </div>
                 <div class="card-deck ml-1">
@@ -149,7 +149,7 @@
                                         }
                                         <div class="text-capitalize text-secondary" style="font-size:14px;">Ou 12x de R$@valorParcelado</div>
                                         <div class="text-center">
-                                            <a class="btn btn-sm mt-2" style="cursor: pointer; background-color: #55efc4 " title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
+                                            <a class="btn btn-sm btn-secondary text-light mt-2" style="cursor: pointer;" title="Compra / Adicionar ao carrinho" onclick="@("window.location.href='" + @Url.Action("Index", "Produto",new { item.Id }) + "'");">
                                                 <i class="fas fa-shopping-cart mr-2"></i>Ver mais
                                             </a>
                                         </div>

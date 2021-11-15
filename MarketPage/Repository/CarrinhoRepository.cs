@@ -54,5 +54,15 @@ namespace MarketPage.Repository
             };
             return lista;
         }
+
+        public void DeleteItemCarrinhoAdmin(long idItem)
+        {
+            using (var context = new ContextEF())
+            {
+                var data = context.CarrinhoItem.Where(c => c.IdItem==idItem);
+                context.RemoveRange(data);
+                context.SaveChanges();
+            };
+        }
     }
 }

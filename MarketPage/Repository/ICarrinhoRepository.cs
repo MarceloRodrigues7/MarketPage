@@ -10,5 +10,6 @@ namespace MarketPage.Repository
     {
         List<Carrinho> GetCarrinhos(long idPedido);
         List<ItemViewProduto> GetItensCarrinhoView(int idUsuario);
+        void DeleteItemCarrinhoAdmin(long idItem);
     }
 }

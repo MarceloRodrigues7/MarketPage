@@ -70,4 +70,8 @@ namespace MarketPage.Models
         public string IdMp { get; set; }
     }
 
+    public class ItemViewDescAdmin: Item
+    {
+        public string Tamanho { get; set; }
+    }
 }
