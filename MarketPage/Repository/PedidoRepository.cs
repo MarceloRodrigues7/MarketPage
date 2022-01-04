@@ -66,10 +66,6 @@ namespace MarketPage.Repository
             using (var context = new ContextEF())
             {
                 pedido.StatusAtual = context.PedidosStatus.Where(p => p.NomeMercadoLivre == pedido.StatusAtual).FirstOrDefault().Nome;
-                if (pedido.StatusAtual == "Aprovado")
-                {
-                    pedido.DateFinalizacao = DateTime.UtcNow.AddHours(-3);
-                }
                 context.PedidosUsuario.Update(pedido);
                 context.SaveChanges();
             };

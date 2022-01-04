@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MarketPage</title>
+    <title>@ViewData["Title"] - Patrícia Morais Semijóias</title>
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -12,7 +13,9 @@
     <header>
         <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="font-size:16px;cursor:pointer">MarketPage</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="cursor:pointer">
+                    <img src="~/img/logomarca.jpeg" alt="Logo Marca" class="img-fluid rounded-circle" style="width:50px;height:50px;" title="Home" />
+                </a>
                 <button data-toggle="collapse" data-target="#navbarResponsive" class="navbar-toggler" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon">
                     </span>
@@ -97,13 +100,13 @@
         <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
             <div class="me-5 d-none d-lg-block">
                 <span class="mr-2">Conecte-se conosco nas redes sociais:</span>
-                <a href="" class="me-4 text-reset">
+                <a href="https://www.facebook.com/patricia.moraesteixeira" class="me-4 text-reset" target="_blank">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="" class="me-4 text-reset">
+                <a href="https://www.instagram.com/patriciamoraessemijoias/" class="me-4 text-reset" target="_blank">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="" class="me-4 text-reset">
+                <a href="https://wa.me/5519991392232" class="me-4 text-reset" target="_blank">
                     <i class="fab fa-whatsapp"></i>
                 </a>
             </div>
@@ -113,12 +116,10 @@
                 <div class="row mt-3">
                     <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
                         <h6 class="text-uppercase fw-bold mb-4">
-                            Footer WebPage
+                            Patrícia Moraes
                         </h6>
                         <p>
-                            description 1
-                            <br />
-                            description 2
+                            Semijóias
                         </p>
                     </div>
                     <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
@@ -126,28 +127,29 @@
                             Paginas
                         </h6>
                         <p>
-                            <a asp-area="" asp-controller="Login" asp-action="Usuario" class="text-reset">Usuário</a>
-                        </p>
-                        <p>
-                            <a asp-area="" asp-controller="Login" asp-action="Carrinho" class="text-reset">Carrinho</a>
-                        </p>
-                        <p>
-                            <a asp-area="" asp-controller="Login" asp-action="Pedidos" class="text-reset">Pedidos</a>
-                        </p>
-                        <p>
                             <a asp-area="" asp-controller="Shop" asp-action="Index" class="text-reset">Shop</a>
                         </p>
+                        <p>
+                            <a asp-area="" asp-controller="Home" asp-action="FormasPagamento" class="text-reset">Formas de Pagamento</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Home" asp-action="Termos" class="text-reset">Termos e Regras</a>
+                        </p>
+                        <p>
+                            <a asp-area="" asp-controller="Home" asp-action="Contato" class="text-reset">Contato</a>
+                        </p>
+                        
                     </div>
                     <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
                         <h6 class="text-uppercase fw-bold mb-4">
                             Contato
                         </h6>
-                        <p><i class="fas fa-home me-3"></i> Vargem Grande do Sul - SP , BR</p>
+                        <p><i class="fas fa-home me-3"></i> Quinzinho Otávio 98 - Centro, Vargem Grande do Sul - SP, BR</p>
                         <p>
                             <i class="fas fa-envelope me-3"></i>
-                            exemple@email.com
+                            pat.mt@hotmail.com
                         </p>
-                        <p><i class="fas fa-phone me-3"></i> +55 19 12345-6789</p>
+                        <p><i class="fas fa-phone me-3"></i> +55 19 99139-2232</p>
                     </div>
                 </div>
             </div>

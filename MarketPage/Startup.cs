@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -59,6 +61,26 @@ namespace MarketPage
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            var newCulture = new CultureInfo("pt-BR");
+            var localizationOptions = new RequestLocalizationOptions()
+            {
+                SupportedCultures = new List<CultureInfo>()
+                {
+                    newCulture
+                },
+                SupportedUICultures = new List<CultureInfo>()
+                {
+                    newCulture
+                },
+                DefaultRequestCulture = new RequestCulture(newCulture),
+                FallBackToParentCultures = false,
+                FallBackToParentUICultures = false,
+                RequestCultureProviders = null
+            };
+
+            app.UseRequestLocalization(localizationOptions);
+
 
             app.UseAuthentication();
             app.UseHttpsRedirection();

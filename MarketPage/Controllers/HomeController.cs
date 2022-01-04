@@ -26,7 +26,7 @@ namespace MarketPage.Controllers
 
         public IActionResult Index()
         {
-            var itens = GetItems().Where(i => i.Destaque == true).ToList();
+            var itens = GetItems().Where(i => i.Destaque == true && i.Quantidade>0).ToList();
             var imgs = GetImgs();
             ViewBag.Itens = GeraListaItemImagem(itens, imgs);
             ViewBag.Categorias = _Categoria.GetCategorias();

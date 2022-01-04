@@ -34,30 +34,24 @@ namespace MarketPage.Repository
                 context.SaveChanges();
             };
         }
-        public ImgItem GeraImgItemPrincipal(string nomeItem)
+        public ImgItem GeraImgItemPrincipal(long idItem)
         {
-            using (var context = new ContextEF())
+            return new ImgItem
             {
-                return new ImgItem
-                {
-                    IdItem = context.Itens.Where(i => i.Nome == nomeItem).Select(i => i.Id).FirstOrDefault(),
-                    Principal = true,
-                    DataAdicao = DateTime.Now
-                };
+                IdItem = idItem,
+                Principal = true,
+                DataAdicao = DateTime.Now
             };
         }
-        public ImgItem GeraImgItemPadrao(string nomeItem)
-        {
-            using (var context = new ContextEF())
-            {
-                return new ImgItem
-                {
-                    IdItem = context.Itens.Where(i => i.Nome == nomeItem).Select(i => i.Id).FirstOrDefault(),
-                    Principal = false,
-                    DataAdicao = DateTime.Now
-                };
-            };
 
+        public ImgItem GeraImgItemPadrao(long idItem)
+        {
+            return new ImgItem
+            {
+                IdItem = idItem,
+                Principal = false,
+                DataAdicao = DateTime.Now
+            };
         }
         public byte[] GeraImgByte(IFormFile formFile)
         {

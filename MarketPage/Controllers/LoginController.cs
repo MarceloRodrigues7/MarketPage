@@ -93,12 +93,14 @@ namespace MarketPage.Controllers
             foreach (var item in data)
             {
                 List<string> StatusIgnore = new() { "Aprovado", "Rejeitado", "Cancelado", "Devolvido", "Cobrado de Volta", "Finalizado", "Preparando", "Enviado", "Entregue" };
-                if (string.IsNullOrEmpty(item.IdMercadoPago) && !StatusIgnore.Contains(item.StatusAtual))
+                if (!StatusIgnore.Contains(item.StatusAtual))
                 {
                     var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
                     if (res.Elements != null)
                     {
-                        item.StatusAtual = res.Elements.First().Payments.Last().Status;
+                        var teste = res.Elements.First();
+                        item.StatusAtual = teste.Payments.Last().Status; 
+
                         item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
                         _pedidoRepository.PutStatusPedido(item);
                     }
@@ -264,13 +266,14 @@ namespace MarketPage.Controllers
                 {
                     valorCarrinho -= valorCarrinho * codPromo.Desconto;
                 }
-
                 pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
                 pedido.Pais = end.Pais;
                 pedido.Estado = end.Estado;
                 pedido.Cidade = end.Cidade;
                 pedido.Bairro = end.Bairro;
                 pedido.Numero = end.Numero;
+                var idMercadoLivre = MercadoPagoRequest(pedido);
+                pedido.IdMercadoPago = idMercadoLivre;
                 var idPedido = _pedidoRepository.PostPedido(pedido);
 
                 AtualizaItensCarrinhoRealizado(idPedido, carrinho);
@@ -428,7 +431,6 @@ namespace MarketPage.Controllers
             };
             var client = new PreferenceClient();
             Preference preference = client.Create(request);
-            PutIdMercadoPago(pedido, preference.Id);
             return preference.Id;
         }
         private static Preference GetPreferenceMP(string id)
@@ -437,15 +439,7 @@ namespace MarketPage.Controllers
             var client = new PreferenceClient();
             return client.Get(id);
         }
-        private static void PutIdMercadoPago(Pedido pedido, string mercadoPagoId)
-        {
-            using (var context = new ContextEF())
-            {
-                pedido.IdMercadoPago = mercadoPagoId;
-                context.PedidosUsuario.Update(pedido);
-                context.SaveChanges();
-            };
-        }
+
 
         private List<ViewBaseValorFrete> GeraViewValorFrete(string cep)
         {
