@@ -27,15 +27,21 @@ namespace MarketPage.Repository
         {
             using (var context = new ContextEF())
             {
-                return context.Itens.Where(i => i.Nome == nome).First().Id;
+                var res = context.Itens.Where(i => i.Nome == nome).FirstOrDefault();
+                if (res != null)
+                {
+                    return res.Id;
+                }
+                return 0;
             };
         }
-        public void PostItem(Item item)
+        public long PostItem(Item item)
         {
             using (var context = new ContextEF())
             {
                 context.Itens.Add(item);
                 context.SaveChanges();
+                return GetIdItem(item.Nome);
             };
         }
         public void DeleteItem(long id)
@@ -58,7 +64,7 @@ namespace MarketPage.Repository
                 Destaque = item.Destaque,
                 DataAdicao = DateTime.Now,
                 IdCategoria = item.IdCategoria,
-                Peso = float.Parse(item.PesoString.Replace(".",","))
+                Peso = float.Parse(item.PesoString.Replace(".", ","))
             };
         }
         public void AtualizaItem(ViewItemAdmAddEEdit produto)

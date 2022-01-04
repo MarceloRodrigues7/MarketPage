@@ -36,14 +36,14 @@
                         <div class="mb-2">
                             <div class="preview-pic tab-content">
                                 <div class="tab-pane active text-center" id="pic-1">
-                                    <img class="img-thumbnail mt-3 mb-2 ml-2 mr-2" src='@imgSrc' style="height: 430px; width: 450px"/>
+                                    <img class="img-thumbnail mt-3 mb-2 ml-2 mr-2" src='@imgSrc' style="height: 430px; width: 450px" />
                                 </div>
                                 @{
                                     var nPic = 2;
                                     foreach (var item in Model.ImgsPadrao)
                                     {
                                         <div class="tab-pane align-self-center text-center" id="@string.Concat("pic-",nPic)">
-                                            <img class="img-thumbnail mt-3 mb-3 ml-2 mr-2" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height: 430px; width: 450px"/>
+                                            <img class="img-thumbnail mt-3 mb-3 ml-2 mr-2" src="@String.Format("data:image/gif;base64,{0}", Convert.ToBase64String(item))" style="height: 430px; width: 450px" />
                                         </div>
                                         nPic++;
                                     }
@@ -70,7 +70,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col mt-3 mr-2 mb-2 card">
+                    <div class="col mt-3 ml-2 mr-2 mb-2 card">
                         <div class="card-title ml-2 mt-3">
                             <h5>@Model.Nome</h5>
                             <hr />
@@ -88,18 +88,21 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
-                                <div class="input-group ml-0 mb-2 ml-2">
+                            <div class="col">
+                                <div class="input-group mb-2 ml-2 mr-2">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="basic-addon1">Quantidade:</span>
                                     </div>
                                     @Html.TextBoxFor(model => model.Quantidade, new { @type = "number", @class = "form-control", @id = "txtQuantidade", @min = 1, @required = true })
                                 </div>
                             </div>
-                            @if (!string.IsNullOrEmpty(Model.Tamanhos))
-                            {
-                                <div class="col-6">
-                                    <div class="input-group mb-2">
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Tamanhos))
+                        {
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-group mb-2 ml-2 mr-2">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text" id="basic-addon1">Tamanho:</span>
                                         </div>
@@ -108,15 +111,15 @@
                                              "", new { @class = "form-control", @title = "Selecione o tamanho", @required = true })
                                     </div>
                                 </div>
-                            }
-                        </div>
-                        <div class="row">
-                            <div class="mt-2">
-                                <div class="mb-3 ml-3">
-                                    <button class="btn btn-success ml-2" type="submit">Comprar<i class="fas fa-cash-register ml-2"></i></button>
-                                </div>
+                            </div>
+                        }
+
+                        <div class="row d-flex justify-content-center">
+                            <div class="mt-2 mb-3">
+                                <button class="btn btn-success ml-2" type="submit">Add Carrinho<i class="fas fa-shopping-cart ml-2"></i></button>
                             </div>
                         </div>
+
                         <div class="row">
                             <article class="ml-3 mr-5 mt-3">
                                 <div class="ml-2">

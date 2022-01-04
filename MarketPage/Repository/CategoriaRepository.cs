@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace MarketPage.Repository
 {
-    public class CategoriaRepository:ICategoriaRepository
+    public class CategoriaRepository : ICategoriaRepository
     {
         public List<Categoria> GetCategorias()
         {
             using (var db = new ContextEF())
             {
-                return db.Categorias.Where(c => c.Ativo == true).ToList();
+                var catItens = db.Itens.Where(i=>i.Quantidade>0).Select(i => i.IdCategoria).Distinct();
+                var data = db.Categorias.Where(c => c.Ativo == true && catItens.Contains(c.Id));
+                return data.ToList();
             };
         }
         public Categoria GetCategoria(int id)

@@ -45,14 +45,14 @@ namespace MarketPage.Controllers
         {
             using (var context = new ContextEF())
             {
-                return context.Itens.ToList();
+                return context.Itens.Where(i => i.Quantidade > 0).ToList();
             };
         }
         private static List<Item> GetItems(int categoria)
         {
             using (var context = new ContextEF())
             {
-                return context.Itens.Where(i=>i.IdCategoria==categoria).ToList();
+                return context.Itens.Where(i => i.IdCategoria == categoria && i.Quantidade > 0).ToList();
             };
         }
 

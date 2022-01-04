@@ -11,7 +11,7 @@ namespace MarketPage.Repository
         List<Item> GetItens();
         Item GetItem(long id);
         long GetIdItem(string nome);
-        void PostItem(Item item);
+        long PostItem(Item item);
         void DeleteItem(long id);
         Item GeraItem(ViewItemAdmAddEEdit item);
         void AtualizaItem(ViewItemAdmAddEEdit produto);
