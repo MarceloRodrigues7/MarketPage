@@ -14,12 +14,10 @@ namespace MarketPage.Controllers
 {
     public class ShopController : Controller
     {
-        private readonly ILogger<ShopController> _logger;
         private readonly ICategoriaRepository _Categoria;
 
-        public ShopController(ILogger<ShopController> logger, ICategoriaRepository categoria)
+        public ShopController(ICategoriaRepository categoria)
         {
-            _logger = logger;
             _Categoria = categoria;
         }
 

@@ -372,7 +372,7 @@ namespace MarketPage.Controllers
                     return RedirectToAction("Carrinho");
                 };
             }
-            TempData["Message"] = "Atenção! Realize cadastro para continuar!";
+            TempData["Alert"] = "Realize seu cadastro para continuar.";
             return RedirectToAction("Cadastrar");
         }
 

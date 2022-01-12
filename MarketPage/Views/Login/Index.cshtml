@@ -1,6 +1,6 @@
 ﻿@model Usuario
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Entrar";
 }
 
 @using (Html.BeginForm("AutenticacaoUsuario", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
@@ -17,7 +17,7 @@
                             @TempData["Message"].ToString()
                         </div>
                     }
-                    <h3 class="text-secondary mb-3">Sign in <i class="fas fa-sign-in-alt pl-2"></i></h3>
+                    <h3 class="text-secondary mb-3">Entrar <i class="fas fa-sign-in-alt pl-2"></i></h3>
 
                     <div class="row d-flex justify-content-center">
                         <div class="col-8 mb-2">
@@ -37,7 +37,7 @@
                             <label><a href="~/Login/EsqueciMinhaSenha" style="font-size:14px">Esqueci minha senha</a></label>
                         </div>
                     </div>
-                    <button class="btn btn-primary mt-2" type="submit">Login</button>
+                    <button class="btn btn-primary mt-3" type="submit">Acessar</button>
                 </div>
             </div>
         </div>

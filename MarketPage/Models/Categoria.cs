@@ -12,12 +12,5 @@ namespace MarketPage.Models
         public bool Ativo { get; set; }
         public DateTime DataAdicao { get; set; }
         
-        public List<Categoria> GetCategorias()
-        {
-            using (var context = new ContextEF())
-            {
-                return context.Categorias.ToList();
-            };
-        }
     }
 }

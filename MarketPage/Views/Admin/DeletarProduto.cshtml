@@ -1,7 +1,8 @@
 ﻿@model ViewItemAdmAddEEdit
 @{
     ViewData["Title"] = "Deletar Produto";
-    var data = ViewBag.Categorias;
+    List<Categoria> data = ViewBag.Categorias;
+    var categoria = data.Where(c=>c.Id==Model.IdCategoria).FirstOrDefault().Nome;
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
@@ -14,7 +15,8 @@
         }
         @using (Html.BeginForm("DeleteProduto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
         {
-            @Html.HiddenFor(m => m.Id);
+            @Html.HiddenFor(m => m.Id)
+            ;
             <div class="row mb-3">
                 <div class="col">
                     <div class="form-outline">
@@ -25,8 +27,7 @@
                 </div>
                 <div class="col">
                     <label class="visually-hidden">Categoria</label>
-                    @Html.DropDownListFor(m => m.IdCategoria,
-                                     new SelectList(ViewBag.Categorias, "Id", "Nome"), new { @class = "form-control", @readonly = "true", @enabled = "false" })
+                    <input type="text" class="form-control" value="@categoria" readonly enable="false" />
                 </div>
             </div>
 

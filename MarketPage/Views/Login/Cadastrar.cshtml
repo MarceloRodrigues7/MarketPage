@@ -4,13 +4,13 @@
 }
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
-        <div class="card-subtitle ml-3 mt-3">
+        <div class="card-subtitle mt-3">
             <div class="text-center">
                 <h4 class="text-secondary">Novo Cadastro<i class="fas fa-user-plus ml-2"></i></h4>
             </div>
         </div>
         <div class="card-body">
-            @using (Html.BeginForm("PostUsuario", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+            @using (Html.BeginForm("PostUsuario", "Login", FormMethod.Post, new { @class = "needs-validation" }))
             {
                 @Html.ValidationSummary()
                 @Html.AntiForgeryToken()
@@ -20,25 +20,31 @@
                         @TempData["Message"].ToString()
                     </div>
                 }
+                @if (TempData["Alert"] != null)
+                {
+                    <div class="alert alert-warning" role="alert">
+                        @TempData["Alert"].ToString()
+                    </div>
+                }
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="lblUsername" class="text-body">Username</label>
+                        <label for="lblUsername" class="text-body">Username <i class="text-danger">*</i></label>
                         @Html.TextBoxFor(model => model.Username, new { @type = "text", @class = "form-control", @id = "txtUsername", @required = true })
                     </div>
                     <div class="col">
-                        <label for="lblPassword" class="text-body">Password</label>
+                        <label for="lblPassword" class="text-body">Password <i class="text-danger">*</i></label>
                         @Html.TextBoxFor(model => model.Password, new { @type = "password", @class = "form-control", @id = "txtPassword", @placeholder = "*****", @required = true })
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="lblEmail" class="text-body">Email</label>
+                        <label for="lblEmail" class="text-body">Email <i class="text-danger">*</i></label>
                         @Html.TextBoxFor(model => model.Email, new { @type = "email", @class = "form-control", @id = "txtEmail", @placeholder = "exemplo@seu.email", @required = true })
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="lblNome" class="text-body">Nome</label>
+                        <label for="lblNome" class="text-body">Nome <i class="text-danger">*</i></label>
                         @Html.TextBoxFor(model => model.Nome, new { @type = "text", @class = "form-control", @id = "txtNome", @required = true })
                     </div>
                     <div class="col">
@@ -48,11 +54,11 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="dtDataNascimento">Nº Telefone</label>
-                        @Html.TextBoxFor(model => model.Telefone, new { @type = "text", @class = "form-control", @id = "txtTelefone", @required = true })
+                        <label for="dtDataNascimento">Nº Telefone <i class="text-danger">*</i></label>
+                        @Html.TextBoxFor(model => model.Telefone, new { @type = "text", @class = "form-control", @id = "txtTelefone", @required = true, @placeholder="(00) 90000-0000" })
                     </div>
                     <div class="col">
-                        <label for="dtDataNascimento">Data Nascimento</label>
+                        <label for="dtDataNascimento">Data Nascimento <i class="text-danger">*</i></label>
                         @Html.TextBoxFor(model => model.DataNascimento, new { @type = "Date", @class = "form-control", @id = "dtDataNascimento", @min = "1/1/1753", @required = true })
                     </div>
                 </div>
@@ -65,7 +71,7 @@
                 <div class="row mb-2 ml-2">
                     <div class="col">
                         @Html.CheckBoxFor(model => model.ConcordaRegras, new { @type = "checkbox", @class = "form-check-input", @required = true })
-                        <label class="form-check-label text-secondary" style="font-size:13px"><i>Aceito as <a href="~/Home/Termos">Regras e Termos.</a></i></label>
+                        <label class="form-check-label text-secondary" style="font-size:13px"><i>Aceito as <a href="~/Home/Termos">Regras e Termos.</a></i> <i class="text-danger">*</i></label>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-3">

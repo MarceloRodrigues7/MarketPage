@@ -9,7 +9,7 @@
 
 
 
-@using (Html.BeginForm("PostItemCarrinho", "Login", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+@using (Html.BeginForm("PostItemCarrinho", "Login", FormMethod.Post, new { @class = "needs-validation" }))
 {
     @Html.ValidationSummary()
     @Html.AntiForgeryToken()

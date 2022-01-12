@@ -34,40 +34,7 @@
                             <td class="text-center">@string.Concat(pedido.IdUsuario, pedido.Id)</td>
                             <td class="text-center">@pedido.DataRealizacao</td>
                             <td class="text-center">R$@pedido.ValorTotal</td>
-                            @switch (pedido.StatusAtual)
-                            {
-                                case "Pendente":
-                                    <td class="text-center"><i class="fas fa-business-time text-warning" title="Pendente"></i></td>
-                                    break;
-                                case "Aprovado":
-                                    <td class="text-center"><i class="fas fa-check-circle text-success" title="Aprovado"></i></td>
-                                    break;
-                                case "Autorizado":
-                                    <td class="text-center"><i class="fas fa-check-circle text-success" title="Autorizado"></i></td>
-                                    break;
-                                case "Em Processo":
-                                    <td class="text-center"><i class="fas fa-business-time text-warning" title="Em Processo"></i></td>
-                                    break;
-                                case "Em Mediação":
-                                    <td class="text-center"><i class="fas fa-business-time text-warning" title="Em Mediação"></i></td>
-                                    break;
-                                case "Rejeitado":
-                                    <td class="text-center"><i class="fas fa-times-circle text-danger" title="Rejeitado"></i></td>
-                                    break;
-                                case "Cancelado":
-                                    <td class="text-center"><i class="fas fa-times-circle text-danger" title="Cancelado"></i></td>
-                                    break;
-                                case "Devolvido":
-                                    <td class="text-center"><i class="fas fa-people-carry text-danger" title="Devolvido"></i></td>
-                                    break;
-                                case "Cobrado de Volta":
-                                    <td class="text-center"><i class="fas fa-people-carry text-danger" title="Cobrado de Volta"></i></td>
-                                    break;
-                                default:
-                                    <td class="text-center">@pedido.StatusAtual</td>
-                                    break;
-
-                            }
+                            <td class="text-center">@pedido.StatusAtual</td>
                             <td class="text-center">
                                 <a class="btn btn-info btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("DescPedido", "Login",pedido) + "'");"><i class="fas fa-eye  mr-2"></i>Visualizar</a>
                             </td>

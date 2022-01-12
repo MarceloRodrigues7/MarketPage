@@ -17,26 +17,35 @@
                                     <div class="col">
                                         <a type="button" class="btn btn-secondary" href="https://wa.me/5519991392232" target="_blank">
                                             <i class="fab fa-whatsapp"></i>
+                                            <br />
                                             <label>Whatsapp</label>
                                         </a>
                                     </div>
                                     <div class="col">
                                         <a type="button" class="btn btn-secondary" href="https://www.facebook.com/patricia.moraesteixeira" target="_blank">
-                                            <i class="fab fa-facebook"></i>
+                                            <i class="fab fa-facebook-f"></i>
+                                            <br />
                                             <label>Facebook</label>
                                         </a>
                                     </div>
                                     <div class="col">
                                         <a type="button" class="btn btn-secondary" href="https://www.instagram.com/patriciamoraessemijoias/" target="_blank">
                                             <i class="fab fa-instagram"></i>
+                                            <br />
                                             <label>Instagram</label>
                                         </a>
                                     </div>
                                 </div>
-                                <p class="text-secondary">
-                                    Seu atendimento é prioritário para nós.<br />
-                                    Utilize os canais de comunicação acima ou envie uma mensagem com o formulário ao lado.
-                                </p>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="card-text text-secondary">
+                                            Seu atendimento é prioritário para nós.
+                                            <br />
+                                            Utilize os canais de comunicação acima ou envie uma mensagem com o formulário ao lado.
+                                        </p>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="col-6">
                                 @using (Html.BeginForm("PostMessageContato", "Home", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
@@ -53,8 +62,7 @@
                                         <div class="card border-secondary rounded-0">
                                             <div class="card-header p-0">
                                                 <div class="bg-secondary text-white text-center py-2">
-                                                    <h5>Contato</h5>
-                                                    <p class="m-0">Formúlario de contato</p>
+                                                    <h5>Formúlario de contato</h5>
                                                 </div>
                                             </div>
                                             <div class="card-body p-3">
