@@ -62,12 +62,12 @@ namespace MarketPage.Controllers
             };
         }
 
-        private static List<ItemViewShop> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
+        private static List<ItemView> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
         {
-            var lista = new List<ItemViewShop>();
+            var lista = new List<ItemView>();
             foreach (var item in items)
             {
-                var itemViewShop = new ItemViewShop
+                var itemViewShop = new ItemView
                 {
                     Id = item.Id,
                     Nome = item.Nome,

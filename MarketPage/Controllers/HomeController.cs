@@ -13,23 +13,27 @@ namespace MarketPage.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ICategoriaRepository _Categoria;
-        private readonly IMessagesContatoRepository _messagesContato;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IMessagesContatoRepository _messagesContatoRepository;
+        private readonly IItemRepository _itemRepository;
+        private readonly IImagemRepository _imagemRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public HomeController(ILogger<HomeController> logger, ICategoriaRepository categoria,IMessagesContatoRepository messagesContato)
+        public HomeController(ICategoriaRepository categoriaRepository, IMessagesContatoRepository messagesContatoRepository, IItemRepository itemRepository, IImagemRepository imagemRepository, IUsuarioRepository usuarioRepository)
         {
-            _logger = logger;
-            _Categoria = categoria;
-            _messagesContato = messagesContato;
+            _categoriaRepository = categoriaRepository;
+            _messagesContatoRepository = messagesContatoRepository;
+            _itemRepository = itemRepository;
+            _imagemRepository = imagemRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         public IActionResult Index()
         {
-            var itens = GetItems().Where(i => i.Destaque == true && i.Quantidade>0).ToList();
-            var imgs = GetImgs();
+            var itens = _itemRepository.GetItens().Where(i => i.Destaque == true && i.Quantidade > 0).ToList();
+            var imgs = _imagemRepository.GetImgPrincipalItens();
             ViewBag.Itens = GeraListaItemImagem(itens, imgs);
-            ViewBag.Categorias = _Categoria.GetCategorias();
+            ViewBag.Categorias = _categoriaRepository.GetCategorias();
             return View();
         }
 
@@ -47,11 +51,7 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
             {
-                Usuario usuario;
-                using (var context = new ContextEF())
-                {
-                    usuario = context.Usuarios.Where(u => u.Id == int.Parse(User.Identity.Name)).FirstOrDefault();
-                };
+                var usuario = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
                 MessageContato message = new()
                 {
                     Nome = usuario.Nome,
@@ -68,46 +68,36 @@ namespace MarketPage.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private List<Item> GetItems()
+        private List<ItemView> GeraListaItemImagem(List<Item> items, IEnumerable<ImgItem> imgs)
         {
-            using (var context = new ContextEF())
-            {
-                return context.Itens.ToList();
-            };
-        }
-
-        private List<ImgItem> GetImgs()
-        {
-            using (var context = new ContextEF())
-            {
-                return context.ImagensItem.ToList();
-            };
-        }
-
-        private List<ItemViewShop> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
-        {
-            var lista = new List<ItemViewShop>();
+            var lista = new List<ItemView>();
             foreach (var item in items)
             {
-                var itemViewShop = new ItemViewShop
+                lista.Add(new ItemView
                 {
                     Id = item.Id,
                     Nome = item.Nome,
                     Valor = item.Valor,
-                    Img = imgs.First(i => i.IdItem == item.Id && i.Principal == true).Img,
+                    Img = imgs.First(i => i.IdItem == item.Id).Img,
                     IdCategoria = item.IdCategoria
-
-                };
-                lista.Add(itemViewShop);
+                });
             }
             return lista;
         }
 
         public IActionResult PostMessageContato(MessageContato message)
         {
-            _messagesContato.PostMensage(message);
-            TempData["Message"] = "Mensagem enviada com sucesso, aguarde retorno.";
-            return RedirectToAction("Index");
+            try
+            {
+                _messagesContatoRepository.PostMensage(message);
+                TempData["Message"] = "Mensagem enviada com sucesso, aguarde retorno.";
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                TempData["Message"] = "Erro ao enviar mensagem, tente novamente!";
+                return Contato();
+            }
         }
     }
 }

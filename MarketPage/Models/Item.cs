@@ -23,7 +23,7 @@ namespace MarketPage.Models
         public float Peso { get; set; }
     }
 
-    public class ItemViewShop
+    public class ItemView
     {
         public long Id { get; set; }
         public string Nome { get; set; }
@@ -70,7 +70,7 @@ namespace MarketPage.Models
         public string IdMp { get; set; }
     }
 
-    public class ItemViewDescAdmin: Item
+    public class ItemViewDescAdmin : Item
     {
         public string Tamanho { get; set; }
     }

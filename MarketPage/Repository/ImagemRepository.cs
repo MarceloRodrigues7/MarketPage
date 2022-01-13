@@ -11,6 +11,11 @@ namespace MarketPage.Repository
 {
     public class ImagemRepository : IImagemRepository
     {
+        public IEnumerable<ImgItem> GetImgPrincipalItens()
+        {
+            var context = new ContextEF();
+            return context.ImagensItem.Where(i => i.Principal == true);
+        }
         public ImgItem GetImgItem(long idItem)
         {
             using (var context = new ContextEF())

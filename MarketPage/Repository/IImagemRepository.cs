@@ -1,10 +1,12 @@
-﻿using MarketPage.Models;
+﻿using System.Collections.Generic;
+using MarketPage.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace MarketPage.Repository
 {
     public interface IImagemRepository
     {
+        IEnumerable<ImgItem> GetImgPrincipalItens();
         ImgItem GetImgItem(long idItem);
         void PostImgItem(ImgItem imgItem);
         void DeleteImgItem(long idItem);

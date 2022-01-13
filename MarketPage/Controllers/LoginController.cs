@@ -96,7 +96,7 @@ namespace MarketPage.Controllers
                 if (!StatusIgnore.Contains(item.StatusAtual))
                 {
                     var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
-                    if (res.Elements != null)
+                    if (res.Elements.Any())
                     {
                         var teste = res.Elements.First();
                         item.StatusAtual = teste.Payments.Last().Status; 
