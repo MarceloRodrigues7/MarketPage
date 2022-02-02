@@ -13,11 +13,20 @@ namespace MarketPage.Repository
         {
             using (var db = new ContextEF())
             {
-                var catItens = db.Itens.Where(i=>i.Quantidade>0).Select(i => i.IdCategoria).Distinct();
+                return db.Categorias.ToList();
+            };
+        }
+
+        public List<Categoria> GetCategoriasComItens()
+        {
+            using (var db = new ContextEF())
+            {
+                var catItens = db.Itens.Where(i => i.Quantidade > 0).Select(i => i.IdCategoria).Distinct();
                 var data = db.Categorias.Where(c => c.Ativo == true && catItens.Contains(c.Id));
                 return data.ToList();
             };
         }
+
         public Categoria GetCategoria(int id)
         {
             using (var db = new ContextEF())

@@ -32,7 +32,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 @{
-                                    var categorias = new CategoriaRepository().GetCategorias();
+                                    var categorias = new CategoriaRepository().GetCategoriasComItens();
                                     foreach (var categoria in categorias)
                                     {
                                         <a class="dropdown-item text-secondary" onclick="@("window.location.href='" + @Url.Action("Index", "Shop",new { categoria = categoria.Nome }) + "'");" style="cursor:pointer">
@@ -47,7 +47,7 @@
                         </li>
 
                     </ul>
-                    @if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+                    @if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
                     {
                         <ul class="navbar-nav text-right">
                             <li class="nav-item dropdown" style="cursor:pointer">
@@ -62,7 +62,7 @@
                                 </div>
                             </li>
                         </ul>
-                        @if (User.IsInRole("Usuario_Admin"))
+                        @if (User.IsInRole("Admin"))
                         {
                             <ul class="navbar-nav text-right">
                                 <li class="nav-item dropdown" style="cursor:pointer">

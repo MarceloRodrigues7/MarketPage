@@ -33,7 +33,7 @@ namespace MarketPage.Controllers
             var itens = _itemRepository.GetItens().Where(i => i.Destaque == true && i.Quantidade > 0).ToList();
             var imgs = _imagemRepository.GetImgPrincipalItens();
             ViewBag.Itens = GeraListaItemImagem(itens, imgs);
-            ViewBag.Categorias = _categoriaRepository.GetCategorias();
+            ViewBag.Categorias = _categoriaRepository.GetCategoriasComItens();
             return View();
         }
 
@@ -49,7 +49,7 @@ namespace MarketPage.Controllers
 
         public IActionResult Contato()
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
             {
                 var usuario = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
                 MessageContato message = new()

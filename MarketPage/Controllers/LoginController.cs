@@ -37,7 +37,7 @@ namespace MarketPage.Controllers
 
         public IActionResult Index()
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -65,7 +65,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Usuario()
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
             {
                 var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
                 ViewBag.Endereco = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
@@ -354,7 +354,7 @@ namespace MarketPage.Controllers
 
         public IActionResult PostItemCarrinho(ItemViewProduto item)
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
             {
                 using (var context = new ContextEF())
                 {
@@ -389,7 +389,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Editar()
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Usuario_Admin"))
+            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
             {
                 var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
                 return View(data);

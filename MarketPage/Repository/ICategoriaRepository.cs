@@ -11,6 +11,7 @@ namespace MarketPage.Repository
         Categoria GetCategoria(int id);
         Categoria GetCategoria(string nome);
         List<Categoria> GetCategorias();
+        List<Categoria> GetCategoriasComItens();
         void PostCategoria(Categoria categoria);
         void PutCategoria(Categoria categoria);
         void DeleteCategoria(Categoria categoria);

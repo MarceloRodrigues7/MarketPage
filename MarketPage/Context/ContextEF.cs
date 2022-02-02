@@ -9,7 +9,7 @@ namespace MarketPage.Context
 {
     public class ContextEF : DbContext
     {
-        private readonly static string StringConnectionDbTeste = "Data Source=DESKTOP-R0PQL34;Initial Catalog=MarketPage;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+        private readonly static string StringConnectionDbTeste = @"Data Source=143.244.190.244;Initial Catalog=MarketPage;User ID='sa';Password='P@ssword';Connect Timeout=999899999";
         private readonly static string StringConnectionDbProd = "Data Source=mssql-58318-0.cloudclusters.net,12564;Initial Catalog=MarketPage;User ID=adm;Password=P@ssword11;Connect Timeout=1000;TrustServerCertificate=True";
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(StringConnectionDbTeste);
 

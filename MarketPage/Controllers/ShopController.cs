@@ -29,6 +29,7 @@ namespace MarketPage.Controllers
             var data = GeraListaItemImagem(itens, imagens);
             return View(data);
         }
+
         [HttpGet("Shop/{categoria}")]
         public IActionResult Index(string categoria)
         {
@@ -46,6 +47,7 @@ namespace MarketPage.Controllers
                 return context.Itens.Where(i => i.Quantidade > 0).ToList();
             };
         }
+
         private static List<Item> GetItems(int categoria)
         {
             using (var context = new ContextEF())
