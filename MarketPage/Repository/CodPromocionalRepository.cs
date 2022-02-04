@@ -24,6 +24,15 @@ namespace MarketPage.Repository
                 return context.CodPromocoes.Where(c => c.Codigo == codigo && c.DataInicio <= DateTime.Now && c.DataFinal >= DateTime.Now && c.Ativo == true).FirstOrDefault();
             };
         }
+
+        public CodPromocao GetCodPromocao(CodPromocao codPromocao)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.CodPromocoes.Where(c => c.Codigo == codPromocao.Codigo).FirstOrDefault();
+            };
+        }
+
         public CodPromocao GetCodPromocao(long idCarrinho)
         {
             using (var context = new ContextEF())
@@ -56,7 +65,7 @@ namespace MarketPage.Repository
 
         public void PutCodPromocao(CodPromocao cod)
         {
-            var codLast = GetCodPromocao(cod.Codigo);
+            var codLast = GetCodPromocao(cod);
             cod = AlteraValores(cod, codLast);
             using (var context = new ContextEF())
             {

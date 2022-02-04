@@ -37,9 +37,10 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        var desconto = @item.Desconto.ToString();
                         <tr>
                             <td class="text-center">@item.Codigo</td>
-                            <td class="text-center">@item.Desconto</td>
+                            <td class="text-center">@desconto.Substring(desconto.IndexOf(',')+1)%</td>
                             <td class="text-center">@item.DataInicio.ToShortDateString()</td>
                             <td class="text-center">@item.DataFinal.ToShortDateString()</td>
                             <td class="text-center" title="Sim">@item.Ativo</td>
