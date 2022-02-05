@@ -441,11 +441,12 @@ namespace MarketPage.Controllers
                 using (var context = new ContextEF())
                 {
                     List<ItemViewDescAdmin> items = new();
-                    var data = context.PedidosUsuario.Where(p => p.Id == pedido.Id).FirstOrDefault();
-                    var carrinho = context.CarrinhoItem.Where(c => c.IdPedido == pedido.Id).ToList();
+                    var data = _pedidoRepository.GetPedidos().Where(p => p.Id == pedido.Id).FirstOrDefault();
+                    var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
                     foreach (var item in carrinho)
                     {
-                        var i = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault();
+                       
+                        var i = _Item.GetItem(item.IdItem);
                         var tamanho = item.Tamanhos;
                         items.Add(new ItemViewDescAdmin
                         {

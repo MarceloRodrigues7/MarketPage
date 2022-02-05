@@ -1,6 +1,7 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
+using MarketPage.Services;
 using MercadoPago.Client.Preference;
 using MercadoPago.Config;
 using MercadoPago.Resource.Preference;
@@ -25,6 +26,8 @@ namespace MarketPage.Controllers
         private readonly ICarrinhoRepository _carrinhoRepository;
         private readonly IPedidoRepository _pedidoRepository;
 
+        private readonly MercadoPagoService _mercadoPagoService;
+
         public LoginController(IUsuarioRepository usuarioRepository, ICodPromocionalRepository codPromocional, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICarrinhoRepository carrinhoRepository, IPedidoRepository pedidoRepository)
         {
             _usuarioRepository = usuarioRepository;
@@ -33,6 +36,8 @@ namespace MarketPage.Controllers
             _enderecoRepository = enderecoRepository;
             _carrinhoRepository = carrinhoRepository;
             _pedidoRepository = pedidoRepository;
+
+            _mercadoPagoService = new();
         }
 
         public IActionResult Index()
@@ -92,14 +97,14 @@ namespace MarketPage.Controllers
             var data = _pedidoRepository.GetPedidos(int.Parse(User.Identity.Name));
             foreach (var item in data)
             {
-                List<string> StatusIgnore = new() { "Aprovado", "Rejeitado", "Cancelado", "Devolvido", "Cobrado de Volta", "Finalizado", "Preparando", "Enviado", "Entregue" };
+                List<string> StatusIgnore = new() { "aprovado", "rejeitado", "cancelado", "devolvido", "cobrado de volta", "finalizado", "preparando", "enviado", "entregue" };
                 if (!StatusIgnore.Contains(item.StatusAtual))
                 {
-                    var res = new RefitRepository().GetPedidoMercadoPago(item.IdMercadoPago);
-                    if (res.Elements.Any())
+                    var res = _mercadoPagoService.GetPedidoMercadoPago(item.IdMercadoPago);
+                    if (res.Elements != null)
                     {
                         var teste = res.Elements.First();
-                        item.StatusAtual = teste.Payments.Last().Status; 
+                        item.StatusAtual = teste.Payments.Last().Status;
 
                         item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
                         _pedidoRepository.PutStatusPedido(item);

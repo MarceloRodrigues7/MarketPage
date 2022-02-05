@@ -37,7 +37,6 @@ namespace MarketPage.Repository
                         Tamanhos = item.Tamanhos,
                         Quantidade = item.Quantidade,
                         Img = context.ImagensItem.Where(i => i.IdItem == item.IdItem).FirstOrDefault().Img,
-
                     };
                     if (codPromo != null)
                     {
