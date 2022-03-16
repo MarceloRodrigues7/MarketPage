@@ -15,18 +15,16 @@ namespace MarketPage.Controllers
     {
         private readonly ICategoriaRepository _Categoria;
         private readonly IItemRepository _Item;
-        private readonly IImagemRepository _ImgItem;
-        private readonly ICodPromocionalRepository _codPromocional;
+        private readonly IImagemRepository _ImgItem;        
         private readonly IMessagesContatoRepository _messagesContato;
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
 
-        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, ICodPromocionalRepository codPromocional, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
+        public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
         {
             _Categoria = categoria;
             _Item = item;
             _ImgItem = imgItem;
-            _codPromocional = codPromocional;
             _messagesContato = messagesContato;
             _pedidoRepository = pedidoRepository;
             _carrinhoRepository = carrinhoRepository;
@@ -129,105 +127,9 @@ namespace MarketPage.Controllers
             return RedirectToAction("Index", "Home");
         }
         
-        [Authorize]
-        public IActionResult CodPromocional()
-        {
-            if (User.IsInRole("Admin"))
-            {
-                var data = _codPromocional.GetCodPromocoes();
-                return View(data);
-            }
-            return RedirectToAction("Index", "Home");
-        }
         
-        [Authorize]
-        public IActionResult AddCodPromo()
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View();
-            }
-            return RedirectToAction("Index", "Home");
-        }
         
-        [Authorize]
-        public IActionResult EditarCodPromo(CodPromocao codPromocao)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View(codPromocao);
-            }
-            return RedirectToAction("Index", "Home");
-        }
         
-        [Authorize]
-        public IActionResult PutCodPromo(CodPromocao codPromocao)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    codPromocao.Desconto *= 0.01m;
-                    _codPromocional.PutCodPromocao(codPromocao);
-                    return RedirectToAction("CodPromocional");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("EditarCodPromo");
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult DeletarCodPromo(CodPromocao codPromocao)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View(codPromocao);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        public IActionResult DeleteCodPromo(CodPromocao codPromocao)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    _codPromocional.DeleteCodPromocao(codPromocao.Codigo);
-                    return RedirectToAction("CodPromocional");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("DeletarCodPromo");
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult PostCodPromo(CodPromocao codPromocao)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    codPromocao.Utilizacoes = 0;
-                    codPromocao.Desconto *= 0.01m;
-                    _codPromocional.PostCodPromocao(codPromocao);
-                    return RedirectToAction("CodPromocional");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("AddCodPromo");
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
         
         [Authorize]
         public IActionResult Produto()

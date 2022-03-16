@@ -1,18 +1,18 @@
 ﻿@model CodPromocao
 @{
-    ViewData["Title"] = "Adicionar Cod Promocional";
+    ViewData["Title"] = "Editar Cod Promocional";
 }
 
 <div class="row justify-content-center mt-3">
     <div class="card col-8">
-        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Adicionar novo produto</strong>
+        <strong class="text-secondary mt-4 ml-2"><i class="fas fa-tag mr-2"></i>Editar codigo promocional</strong>
         @if (TempData["Message"] != null)
         {
             <div class="alert alert-danger" role="alert">
                 @TempData["Message"].ToString()
             </div>
         }
-        @using (Html.BeginForm("PostCodPromo", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
+        @using (Html.BeginForm("Put", "CodPromo", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
         {
             <div class="row mb-3">
                 <div class="col">
@@ -24,7 +24,7 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Desconto</label>
-                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @type = "number", @min = 1, @max = 100, @required = true })
+                        @Html.TextBoxFor(m => m.Desconto, new { @class = "form-control", @type = "number", @min = 0, @max = 100, @required = true })
                     </div>
                 </div>
                 <div class="col-2">
@@ -40,13 +40,13 @@
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Data Ini</label>
-                        @Html.TextBoxFor(m => m.DataInicio, new { @class = "form-control", @type = "date", @required = true })
+                        @Html.TextBoxFor(m => m.DataInicio, new { @class = "form-control", @type = "text", @required = true })
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-outline">
                         <label class="form-label">Data Fim</label>
-                        @Html.TextBoxFor(m => m.DataFinal, new { @class = "form-control", @type = "date", @required = true })
+                        @Html.TextBoxFor(m => m.DataFinal, new { @class = "form-control", @type = "text", @required = true })
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                 <a type="button" class="btn btn-secondary" href="javascript:history.back()">
                     <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
                 </a>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-plus mr-2"></i>Adicionar</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-edit mr-2"></i>Editar</button>
             </div>
         }
     </div>

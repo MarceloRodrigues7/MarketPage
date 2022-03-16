@@ -8,13 +8,14 @@ namespace MarketPage.Repository
 {
     public interface ICodPromocionalRepository
     {
-        List<CodPromocao> GetCodPromocoes();
-        CodPromocao GetCodPromocao(string codigo);
+        List<CodPromocao> GetList();
+        CodPromocao GetPromocaoValida(string codigo);
         CodPromocao GetCodPromocao(CodPromocao codPromocao);
-        void PostCodPromocao(CodPromocao cod);
-        void PutCodPromocao(CodPromocao cod);
-        void DeleteCodPromocao(string cod);
+        CodPromocao GetCodPromocao(long id);
+        void Post(CodPromocao cod);
+        void Put(CodPromocao cod);
+        void Delete(long id);
         void PostCodPromoUsuario(CodPromocaoUtilizado cod);
-        CodPromocao GetCodPromocao(long idCarrinho);
+        CodPromocao GetPromocaoUtilizada(long idCarrinho);
     }
 }

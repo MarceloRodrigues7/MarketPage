@@ -84,7 +84,7 @@ namespace MarketPage.Controllers
             var enderecoUsuario = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
             if (enderecoUsuario == null)
             {
-                TempData["Message"] = "Registre o endereço de destino";
+                TempData["Message"] = "Registre o endereço de entrega";
                 return RedirectToAction("Endereco");
             }
             var carrinho = _carrinhoRepository.GetItensCarrinhoView(int.Parse(User.Identity.Name));
@@ -243,7 +243,7 @@ namespace MarketPage.Controllers
         public IActionResult PostPedido(List<ItemViewProduto> produtos)
         {
             var carrinho = GetCarrinho(int.Parse(User.Identity.Name));
-            var codPromo = _codPromocional.GetCodPromocao(carrinho.FirstOrDefault().Id);
+            var codPromo = _codPromocional.GetPromocaoUtilizada(carrinho.FirstOrDefault().Id);
             var frete = _freteRepository.GetFretePedido(int.Parse(User.Identity.Name), carrinho.FirstOrDefault().Id);
             if (frete == null)
             {
@@ -311,7 +311,7 @@ namespace MarketPage.Controllers
         [HttpPost]
         public IActionResult ValidarCodPromo(string CodPromocional)
         {
-            var data = _codPromocional.GetCodPromocao(CodPromocional);
+            var data = _codPromocional.GetPromocaoValida(CodPromocional);
             if (data == null)
             {
                 TempData["Message"] = "Codigo promocional inválido";
@@ -329,7 +329,7 @@ namespace MarketPage.Controllers
                 });
             }
             data.Utilizacoes++;
-            _codPromocional.PutCodPromocao(data);
+            _codPromocional.Put(data);
             return RedirectToAction("Carrinho");
         }
 

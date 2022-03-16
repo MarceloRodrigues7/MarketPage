@@ -9,7 +9,7 @@ namespace MarketPage.Repository
 {
     public class CodPromocionalRepository : ICodPromocionalRepository
     {
-        public List<CodPromocao> GetCodPromocoes()
+        public List<CodPromocao> GetList()
         {
             using (var context = new ContextEF())
             {
@@ -17,11 +17,13 @@ namespace MarketPage.Repository
             };
         }
 
-        public CodPromocao GetCodPromocao(string codigo)
+        public CodPromocao GetPromocaoValida(string codigo)
         {
             using (var context = new ContextEF())
             {
-                return context.CodPromocoes.Where(c => c.Codigo == codigo && c.DataInicio <= DateTime.Now && c.DataFinal >= DateTime.Now && c.Ativo == true).FirstOrDefault();
+                return context.CodPromocoes.
+                    Where(c => c.Codigo == codigo && c.DataInicio <= DateTime.Now && c.DataFinal >= DateTime.Now && c.Ativo == true).
+                    FirstOrDefault();
             };
         }
 
@@ -33,7 +35,12 @@ namespace MarketPage.Repository
             };
         }
 
-        public CodPromocao GetCodPromocao(long idCarrinho)
+        public CodPromocao GetCodPromocao(long id)
+        {
+            return GetCodPromocaoId(id);
+        }
+
+        public CodPromocao GetPromocaoUtilizada(long idCarrinho)
         {
             using (var context = new ContextEF())
             {
@@ -46,15 +53,7 @@ namespace MarketPage.Repository
             };
         }
 
-        private CodPromocao GetCodPromocaoId(long id)
-        {
-            using (var context = new ContextEF())
-            {
-                return context.CodPromocoes.Where(c => c.Id == id).FirstOrDefault();
-            };
-        }
-
-        public void PostCodPromocao(CodPromocao cod)
+        public void Post(CodPromocao cod)
         {
             using (var context = new ContextEF())
             {
@@ -63,7 +62,7 @@ namespace MarketPage.Repository
             };
         }
 
-        public void PutCodPromocao(CodPromocao cod)
+        public void Put(CodPromocao cod)
         {
             var codLast = GetCodPromocao(cod);
             cod = AlteraValores(cod, codLast);
@@ -74,9 +73,9 @@ namespace MarketPage.Repository
             };
         }
 
-        public void DeleteCodPromocao(string cod)
+        public void Delete(long id)
         {
-            var data = GetCodPromocao(cod);
+            var data = GetCodPromocaoId(id);
             using (var context = new ContextEF())
             {
                 context.CodPromocoes.Remove(data);
@@ -93,6 +92,14 @@ namespace MarketPage.Repository
             };
         }
 
+        private CodPromocao GetCodPromocaoId(long id)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.CodPromocoes.Where(c => c.Id == id).FirstOrDefault();
+            };
+        }
+
         private static CodPromocao AlteraValores(CodPromocao cod, CodPromocao codLast)
         {
             return new CodPromocao
@@ -106,5 +113,6 @@ namespace MarketPage.Repository
                 Utilizacoes = cod.Utilizacoes
             };
         }
+
     }
 }

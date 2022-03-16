@@ -20,7 +20,7 @@
     <div class="card shadow">
         <div class="card-body">
             <div class="row float-right mr-1">
-                <a class="btn btn-success" asp-area="" asp-controller="Admin" asp-action="AddCodPromo"><i class="fas fa-tag mr-1"></i>Adicionar</a>
+                <a class="btn btn-success" asp-area="" asp-controller="CodPromo" asp-action="Adicionar"><i class="fas fa-tag mr-1"></i>Adicionar</a>
             </div>
             <table class="table table-striped table-bordered table-hover" id="myTable">
                 <thead>
@@ -37,6 +37,7 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        string id = @item.Id.ToString();
                         var desconto = @item.Desconto.ToString();
                         <tr>
                             <td class="text-center">@item.Codigo</td>
@@ -46,8 +47,14 @@
                             <td class="text-center" title="Sim">@item.Ativo</td>
                             <td class="text-center">@item.Utilizacoes</td>
                             <td class="col-3 text-center">
-                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("EditarCodPromo", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Editar</a>
-                                <a class="btn btn-danger btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("DeletarCodPromo", "Admin",item) + "'");"><i class="far fa-trash-alt  mr-1"></i>Deletar</a>
+                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Editar","CodPromo",new{id=item.Id}) + "'");">
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Editar
+                                </a>
+                                <a class="btn btn-danger btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Deletar","CodPromo",new{id=item.Id}) + "'");">
+                                    <i class="far fa-trash-alt  mr-1"></i>
+                                    Deletar
+                                </a>
                             </td>
                         </tr>
                     }

@@ -13,7 +13,7 @@
                 @TempData["Message"].ToString()
             </div>
         }
-        @using (Html.BeginForm("PostProduto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2", @novalidate = true }))
+        @using (Html.BeginForm("PostProduto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation mt-3 ml-2 mr-2" }))
         {
             <div class="row mb-3">
                 <div class="col">
@@ -89,21 +89,3 @@
         }
     </div>
 </div>
-
-<script>
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            var forms = document.getElementsByClassName('needs-validation');
-            var validation = Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        }, false);
-    })();
-</script>
