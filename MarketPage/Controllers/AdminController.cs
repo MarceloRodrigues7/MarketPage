@@ -13,16 +13,16 @@ namespace MarketPage.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ICategoriaRepository _Categoria;
+        private readonly ICategoriaRepository _categoria;
         private readonly IItemRepository _Item;
-        private readonly IImagemRepository _ImgItem;        
+        private readonly IImagemRepository _ImgItem;
         private readonly IMessagesContatoRepository _messagesContato;
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
 
         public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
         {
-            _Categoria = categoria;
+            _categoria = categoria;
             _Item = item;
             _ImgItem = imgItem;
             _messagesContato = messagesContato;
@@ -31,130 +31,29 @@ namespace MarketPage.Controllers
         }
 
         [Authorize]
-        public IActionResult Categoria()
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View(_Categoria.GetCategorias());
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
-        [Authorize]
-        public IActionResult AdicionarCategoria()
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View();
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult EditarCategoria(Categoria item)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View(item);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult DeletarCategoria(Categoria item)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                return View(item);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult PostCategoria(Categoria categoria)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    _Categoria.PostCategoria(categoria);
-                    return RedirectToAction("Categoria", "Admin");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("AdicionarCategoria", "Admin");
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult PutCategoria(Categoria categoria)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    _Categoria.PutCategoria(categoria);
-                    return RedirectToAction("Categoria", "Admin");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("EditarCategoria", "Admin", categoria);
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        [Authorize]
-        public IActionResult DeleteCategoria(Categoria categoria)
-        {
-            if (User.IsInRole("Admin"))
-            {
-                try
-                {
-                    _Categoria.DeleteCategoria(categoria);
-                    return RedirectToAction("Categoria", "Admin");
-                }
-                catch (Exception e)
-                {
-                    TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
-                    return RedirectToAction("DeleteCategoria", "Admin");
-                }
-            }
-            return RedirectToAction("Index", "Home");
-        }
-        
-        
-        
-        
-        
-        [Authorize]
         public IActionResult Produto()
         {
             if (User.IsInRole("Admin"))
             {
-                var categorias = _Categoria.GetCategorias();
+                var categorias = _categoria.GetCategorias();
                 var itens = _Item.GetItens();
                 var data = NovoItemViewAdmin(itens, categorias);
                 return View(data);
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult AdicionarProduto()
         {
             if (User.IsInRole("Admin"))
             {
-                ViewBag.Categorias = _Categoria.GetCategorias();
+                ViewBag.Categorias = _categoria.GetCategorias();
                 return View();
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult EditarProduto(ItemViewAdmin item)
         {
@@ -173,12 +72,12 @@ namespace MarketPage.Controllers
                     IdCategoria = produto.IdCategoria,
                     PesoString = produto.Peso.ToString()
                 };
-                ViewBag.Categorias = _Categoria.GetCategorias();
+                ViewBag.Categorias = _categoria.GetCategorias();
                 return View(itemImg);
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult DeletarProduto(ItemViewAdmin item)
         {
@@ -197,7 +96,7 @@ namespace MarketPage.Controllers
                     IdCategoria = produto.IdCategoria,
                     Peso = produto.Peso
                 };
-                ViewBag.Categorias = _Categoria.GetCategorias();
+                ViewBag.Categorias = _categoria.GetCategorias();
                 return View(itemImg);
             }
             return RedirectToAction("Index", "Home");
@@ -219,11 +118,14 @@ namespace MarketPage.Controllers
                         var novaImagem = _ImgItem.GeraImgItemPrincipal(idProduto);
                         novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
                         _ImgItem.PostImgItem(novaImagem);
-                        foreach (var img in produto.ImageUpload)
+                        if (produto.ImageUpload != null)
                         {
-                            var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(idProduto);
-                            novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
-                            _ImgItem.PostImgItem(novaImagemPadrao);
+                            foreach (var img in produto.ImageUpload)
+                            {
+                                var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(idProduto);
+                                novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
+                                _ImgItem.PostImgItem(novaImagemPadrao);
+                            }
                         }
                         return RedirectToAction("Produto", "Admin");
                     }
@@ -238,7 +140,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult DeleteProduto(ItemViewAdmin item)
         {
@@ -259,7 +161,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult PutProduto(ViewItemAdmAddEEdit produto)
         {
@@ -295,7 +197,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult Painel()
         {
@@ -309,7 +211,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public ActionResult MensagensContato()
         {
@@ -320,7 +222,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public ActionResult Pedidos(string status)
         {
@@ -334,7 +236,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult DescPedido(Pedido pedido)
         {
@@ -347,7 +249,7 @@ namespace MarketPage.Controllers
                     var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
                     foreach (var item in carrinho)
                     {
-                       
+
                         var i = _Item.GetItem(item.IdItem);
                         var tamanho = item.Tamanhos;
                         items.Add(new ItemViewDescAdmin
@@ -372,7 +274,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public IActionResult PutPedido(Pedido pedido)
         {
@@ -392,7 +294,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public ActionResult MensageContato(long Id)
         {
@@ -403,7 +305,7 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        
+
         [Authorize]
         public ActionResult ConfirmaVisualizacaoMensageContato(MessageContato message)
         {
@@ -440,7 +342,7 @@ namespace MarketPage.Controllers
             }
             return list;
         }
-        
+
         private static List<int> ResumoTotalPedidos(List<Pedido> pedidos)
         {
             var pedidosPendentes = pedidos.Where(p => p.StatusAtual == "Pendente").Count();
@@ -449,7 +351,7 @@ namespace MarketPage.Controllers
             var pedidosEmProcesso = pedidos.Where(p => p.StatusAtual == "Em Processo").Count();
             var pedidosEmMediacao = pedidos.Where(p => p.StatusAtual == "Em Mediação").Count();
             var pedidosRejeitado = pedidos.Where(p => p.StatusAtual == "Rejeitado").Count();
-            var pedidosCancelado = pedidos.Where(p => p.StatusAtual == "Cancelado").Count();
+            var pedidosCancelado = pedidos.Where(p => p.StatusAtual == "cancelado").Count();
             var pedidosDevolvido = pedidos.Where(p => p.StatusAtual == "Devolvido").Count();
             var pedidosCobradoVolta = pedidos.Where(p => p.StatusAtual == "Cobrado de Volta").Count();
             var pedidosFinalizado = pedidos.Where(p => p.StatusAtual == "Finalizado").Count();

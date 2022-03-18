@@ -18,7 +18,7 @@
     <div class="card shadow">
         <div class="card-body">
             <div class="row float-right mr-1">
-                <a class="btn btn-success" asp-area="" asp-controller="Admin" asp-action="AdicionarCategoria"><i class="fas fa-tag mr-1"></i>Adicionar</a>
+                <a class="btn btn-success" asp-area="" asp-controller="Categoria" asp-action="Adicionar"><i class="fas fa-tag mr-1"></i>Adicionar</a>
             </div>
             <table class="table table-striped table-bordered table-hover" id="myTable">
                 <thead>
@@ -45,8 +45,8 @@
 
                             <td class="text-center">@item.DataAdicao</td>
                             <td class="col-3 text-center">
-                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("EditarCategoria", "Admin",item) + "'");"><i class="fas fa-edit mr-1"></i>Editar</a>
-                                <a class="btn btn-danger btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("DeletarCategoria", "Admin",item) + "'");"><i class="far fa-trash-alt  mr-1"></i>Deletar</a>
+                                <a class="btn btn-warning btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Editar", "Categoria",item) + "'");"><i class="fas fa-edit mr-1"></i>Editar</a>
+                                <a class="btn btn-danger btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Deletar", "Categoria",item) + "'");"><i class="far fa-trash-alt  mr-1"></i>Deletar</a>
                             </td>
                         </tr>
                     }
