@@ -36,7 +36,7 @@
                             <td class="text-center">R$@pedido.ValorTotal</td>
                             <td class="text-center">@pedido.StatusAtual</td>
                             <td class="text-center">
-                                <a class="btn btn-info btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("DescPedido", "Login",pedido) + "'");"><i class="fas fa-eye  mr-2"></i>Visualizar</a>
+                                <a class="btn btn-info btn-sm" style="cursor:pointer" onclick="@("window.location.href='" + @Url.Action("Desc", "Pedidos",pedido) + "'");"><i class="fas fa-eye  mr-2"></i>Visualizar</a>
                             </td>
                         </tr>
                     }

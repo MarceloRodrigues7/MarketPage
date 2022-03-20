@@ -8,6 +8,7 @@ namespace MarketPage.Repository
 {
     public interface IEnderecoRepository
     {
-        Endereco GetEndereco(int idUsuario); 
+        Endereco GetEndereco(int idUsuario);
+        void InsertOrUpdate(Endereco endereco);
     }
 }

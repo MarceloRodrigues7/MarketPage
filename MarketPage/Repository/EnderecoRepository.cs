@@ -16,5 +16,28 @@ namespace MarketPage.Repository
                 return context.EnderecosUsuario.Where(e => e.IdUsuario == idUsuario).FirstOrDefault();
             };
         }
+
+        public void InsertOrUpdate(Endereco endereco)
+        {
+            using (var context = new ContextEF())
+            {
+                var res = context.EnderecosUsuario.Where(u => u.IdUsuario == endereco.IdUsuario).FirstOrDefault();
+                if (res == null)
+                {
+                    context.EnderecosUsuario.Add(endereco);
+                }
+                else
+                {
+                    res.Pais = endereco.Pais;
+                    res.Estado = endereco.Estado;
+                    res.Cidade = endereco.Cidade;
+                    res.Bairro = endereco.Bairro;
+                    res.Numero = endereco.Numero;
+                    res.Cep = endereco.Cep;
+                    context.EnderecosUsuario.Update(res);
+                }
+                context.SaveChanges();
+            };
+        }
     }
 }

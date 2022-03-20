@@ -15,7 +15,6 @@
                 </div>
             }
             <div class="row">
-
             </div>
         </div>
         <div class="card-body">
@@ -68,8 +67,6 @@
                             @Html.TextBoxFor(model => model.PrazoEntrega, new { @type = "text", @class = "form-control", @id = "txtPrazoEntrega", @readonly = true })
                         </div>
                     }
-
-
                 </div>
                 <hr />
 
@@ -101,11 +98,14 @@
                 <hr />
 
                 <div class="row justify-content-center mt-4">
+                    <a type="button" class="btn btn-secondary mr-1" href="javascript:history.back()">
+                        <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                    </a>
                     @if (Model.StatusAtual == "Pendente")
                     {
-                        <div id="btnPagar">
+                        <a id="btnPagar">
                             @* Btn MercadoPago *@
-                        </div>
+                        </a>
                     }
                 </div>
                 <hr />
@@ -146,20 +146,20 @@
 @if (Model.StatusAtual == "Pendente")
 {
     <script>
-        const mp = new MercadoPago('APP_USR-8824013a-f82d-4879-a34a-634eaac91242', {
-        locale: 'pt-BR'
-    });
-    mp.checkout({
-        preference: {
-            id: '@ViewBag.IdMp'
-        },
-        theme: {
-            elementsColor: '#5cb85c'
-        },
-        render: {
-            container: '#btnPagar',
-            label: 'Pagar',
-        }
-    });
+            const mp = new MercadoPago('APP_USR-8824013a-f82d-4879-a34a-634eaac91242', {
+            locale: 'pt-BR'
+        });
+        mp.checkout({
+            preference: {
+                id: '@ViewBag.IdMp'
+            },
+            theme: {
+                elementsColor: '#5cb85c'
+            },
+            render: {
+                container: '#btnPagar',
+                label: 'Pagar',
+            }
+        });
     </script>
 }

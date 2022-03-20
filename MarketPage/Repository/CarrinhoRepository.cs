@@ -16,6 +16,14 @@ namespace MarketPage.Repository
                 return context.CarrinhoItem.Where(c => c.IdPedido == idPedido).ToList();
             };
         }
+        public List<Carrinho> GetCarrinho(int idUsuario)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.CarrinhoItem.Where(c => c.IdUsuario == idUsuario && c.IdPedido == null).ToList();
+            };
+        }
+
         public List<ItemViewProduto> GetItensCarrinhoView(int idUsuario)
         {
             var data = new List<Carrinho>();
@@ -54,11 +62,33 @@ namespace MarketPage.Repository
             return lista;
         }
 
+        public void UpdateItensCarrinhoRealizado(long idPedido, List<Carrinho> carrinho)
+        {
+            using (var context = new ContextEF())
+            {
+                foreach (var item in carrinho)
+                {
+                    item.IdPedido = idPedido;
+                    context.CarrinhoItem.Update(item);
+                }
+                context.SaveChanges();
+            };
+        }
+
+        public void DeleteItemCarrinho(long item)
+        {
+            using (var context = new ContextEF())
+            {
+                context.CarrinhoItem.Remove(context.CarrinhoItem.Where(c => c.Id == item).First());
+                context.SaveChanges();
+            };
+        }
+
         public void DeleteItemCarrinhoAdmin(long idItem)
         {
             using (var context = new ContextEF())
             {
-                var data = context.CarrinhoItem.Where(c => c.IdItem==idItem);
+                var data = context.CarrinhoItem.Where(c => c.IdItem == idItem);
                 context.RemoveRange(data);
                 context.SaveChanges();
             };
