@@ -1,5 +1,6 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
+using MarketPage.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,15 @@ namespace MarketPage.Controllers
 {
     public class ProdutoController : Controller
     {
+        private readonly IItemRepository _itemRepository;
+        private readonly IImagemRepository _imagemRepository;
+
+        public ProdutoController(IImagemRepository imagemRepository, IItemRepository itemRepository)
+        {
+            _imagemRepository = imagemRepository;
+            _itemRepository = itemRepository;
+        }
+
         [HttpGet]
         public IActionResult Index(long Id)
         {
@@ -17,15 +27,12 @@ namespace MarketPage.Controllers
             return View(data);
         }
 
-        private static ItemViewProduto GetProduto(long idProduto)
+        private ItemViewProduto GetProduto(long idProduto)
         {
-            using (var context = new ContextEF())
-            {
-                var item = context.Itens.Where(i => i.Id == idProduto).First();
-                var img = context.ImagensItem.Where(i => i.IdItem == idProduto && i.Principal == true).First();
-                var imgsPadrao = context.ImagensItem.Where(i => i.IdItem == idProduto && i.Principal == false).Select(i=>i.Img).Take(4).ToList();
-                return NovoItemViewProduto(item, img, imgsPadrao);
-            };
+            var item = _itemRepository.GetItem(idProduto);
+            var img = _imagemRepository.GetImgPrincipalPorId(idProduto);
+            var imgsPadrao = _imagemRepository.GetDemaisImagensPorId(idProduto);
+            return NovoItemViewProduto(item, img, imgsPadrao);
         }
 
         private static ItemViewProduto NovoItemViewProduto(Item item, ImgItem img, List<byte[]> imgsPadrao)
@@ -40,7 +47,7 @@ namespace MarketPage.Controllers
                 Quantidade = item.Quantidade,
                 IdCategoria = item.IdCategoria,
                 Img = img.Img,
-                ImgsPadrao=imgsPadrao
+                ImgsPadrao = imgsPadrao
             };
         }
     }

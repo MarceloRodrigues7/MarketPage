@@ -146,7 +146,7 @@
 @if (Model.StatusAtual == "Pendente")
 {
     <script>
-            const mp = new MercadoPago('APP_USR-8824013a-f82d-4879-a34a-634eaac91242', {
+            const mp = new MercadoPago('@ViewBag.TokenMp', {
             locale: 'pt-BR'
         });
         mp.checkout({

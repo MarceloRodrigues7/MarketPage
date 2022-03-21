@@ -27,5 +27,6 @@ namespace MarketPage.Context
         public DbSet<FretePedidoUsuario> FretesPedidosUsuarios { get; set; }
         public DbSet<FreteValores> FreteValores { get; set; }
         public DbSet<PedidoStatus> PedidosStatus { get; set; }
+        public DbSet<FormaPagamento> PlataformasAtendimento { get; set; }
     }
 }

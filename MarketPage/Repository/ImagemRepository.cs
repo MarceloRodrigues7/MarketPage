@@ -23,6 +23,23 @@ namespace MarketPage.Repository
                 return context.ImagensItem.Where(i => i.IdItem == idItem && i.Principal == true).FirstOrDefault();
             };
         }
+
+        public ImgItem GetImgPrincipalPorId(long idItem)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.ImagensItem.Where(i => i.IdItem == idItem && i.Principal == true).First();
+            };
+        }
+
+        public List<byte[]> GetDemaisImagensPorId(long idItem)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.ImagensItem.Where(i => i.IdItem == idItem && i.Principal == false).Select(i => i.Img).ToList();
+            };
+        }
+
         public void PostImgItem(ImgItem imgItem)
         {
             using (var context = new ContextEF())

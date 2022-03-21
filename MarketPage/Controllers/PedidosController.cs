@@ -20,29 +20,33 @@ namespace MarketPage.Controllers
         private readonly IFreteRepository _freteRepository;
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly ICodPromocionalRepository _codPromocional;
+        private readonly IItemRepository _itemRepository;
+        private readonly IFormaPagamentoRepository _formaPagamentoRepository;
         private readonly MercadoPagoService _mercadoPagoService;
 
-        public PedidosController(IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICodPromocionalRepository codPromocional)
+        public PedidosController(IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICodPromocionalRepository codPromocional, IItemRepository itemRepository, IFormaPagamentoRepository formaPagamentoRepository)
         {
             _pedidoRepository = pedidoRepository;
             _carrinhoRepository = carrinhoRepository;
-            _freteRepository= freteRepository;
-            _enderecoRepository= enderecoRepository;
+            _freteRepository = freteRepository;
+            _enderecoRepository = enderecoRepository;
             _codPromocional = codPromocional;
+            _itemRepository = itemRepository;
+            _formaPagamentoRepository = formaPagamentoRepository;
             _mercadoPagoService = new();
         }
 
         [Authorize]
         public IActionResult Index()
         {
+            var token = _formaPagamentoRepository.GetFormaPagamento();
             var data = _pedidoRepository.GetPedidos(int.Parse(User.Identity.Name));
             foreach (var item in data)
             {
                 List<string> StatusIgnore = new() { "aprovado", "rejeitado", "cancelado", "devolvido", "cobrado de volta", "finalizado", "preparando", "enviado", "entregue" };
                 if (!StatusIgnore.Contains(item.StatusAtual))
                 {
-                    var token = "Authorization: Bearer APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220";
-                    var res = _mercadoPagoService.GetPedidoMercadoPago(item.IdMercadoPago, token);
+                    var res = _mercadoPagoService.GetPedidoMercadoPago(item.IdMercadoPago, token.TokenService);
                     if (res.Elements != null)
                     {
                         var teste = res.Elements.First();
@@ -72,12 +76,7 @@ namespace MarketPage.Controllers
             }
             foreach (var item in carrinho)
             {
-                Item i = new();
-                using (var context = new ContextEF())
-                {
-                    i = context.Itens.Where(i => i.Id == item.IdItem).FirstOrDefault();
-                };
-                var tamanho = item.Tamanhos;
+                Item i = _itemRepository.GetItem(item.IdItem);
                 items.Add(new ItemViewDescAdmin
                 {
                     Id = i.Id,
@@ -94,6 +93,7 @@ namespace MarketPage.Controllers
                 });
             }
             ViewBag.ItensPedido = items;
+            ViewBag.TokenMp = _formaPagamentoRepository.GetFormaPagamento().TokenClient;
             return View(data);
         }
 
@@ -243,7 +243,7 @@ namespace MarketPage.Controllers
                 TempData["Alert"] = e.Message;
                 return RedirectToAction("Carrinho");
             }
-            
+
         }
 
         private List<ViewBaseValorFrete> GeraViewValorFrete(string cep)

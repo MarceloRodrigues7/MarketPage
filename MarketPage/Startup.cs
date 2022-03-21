@@ -33,6 +33,7 @@ namespace MarketPage
             services.AddSingleton<IEnderecoRepository, EnderecoRepository>();
             services.AddSingleton<IPedidoRepository, PedidoRepository>();
             services.AddSingleton<ICarrinhoRepository, CarrinhoRepository>();
+            services.AddSingleton<IFormaPagamentoRepository, FormaPagamentoRepository>();
 
             services.AddControllersWithViews();
 

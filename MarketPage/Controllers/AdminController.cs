@@ -203,8 +203,7 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole("Admin"))
             {
-                var context = new ContextEF();
-                var pedidos = context.PedidosUsuario.ToList();
+                var pedidos = _pedidoRepository.GetPedidos();
                 ViewBag.ResumoPedidos = ResumoTotalPedidos(pedidos);
 
                 return View();
@@ -242,35 +241,32 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole("Admin"))
             {
-                using (var context = new ContextEF())
+                List<ItemViewDescAdmin> items = new();
+                var data = _pedidoRepository.GetPedidos().Where(p => p.Id == pedido.Id).FirstOrDefault();
+                var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
+                foreach (var item in carrinho)
                 {
-                    List<ItemViewDescAdmin> items = new();
-                    var data = _pedidoRepository.GetPedidos().Where(p => p.Id == pedido.Id).FirstOrDefault();
-                    var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
-                    foreach (var item in carrinho)
-                    {
 
-                        var i = _Item.GetItem(item.IdItem);
-                        var tamanho = item.Tamanhos;
-                        items.Add(new ItemViewDescAdmin
-                        {
-                            Id = i.Id,
-                            DataAdicao = i.DataAdicao,
-                            Descricao = i.Descricao,
-                            Destaque = i.Destaque,
-                            IdCategoria = i.IdCategoria,
-                            Nome = i.Nome,
-                            Peso = i.Peso,
-                            Quantidade = item.Quantidade,
-                            Tamanho = item.Tamanhos,
-                            Tamanhos = i.Tamanhos,
-                            Valor = i.Valor
-                        });
-                    }
-                    ViewBag.ItensPedido = items;
-                    ViewBag.PedidosStatus = context.PedidosStatus.OrderBy(p => p.Nome).ToList();
-                    return View(data);
-                };
+                    var i = _Item.GetItem(item.IdItem);
+                    var tamanho = item.Tamanhos;
+                    items.Add(new ItemViewDescAdmin
+                    {
+                        Id = i.Id,
+                        DataAdicao = i.DataAdicao,
+                        Descricao = i.Descricao,
+                        Destaque = i.Destaque,
+                        IdCategoria = i.IdCategoria,
+                        Nome = i.Nome,
+                        Peso = i.Peso,
+                        Quantidade = item.Quantidade,
+                        Tamanho = item.Tamanhos,
+                        Tamanhos = i.Tamanhos,
+                        Valor = i.Valor
+                    });
+                }
+                ViewBag.ItensPedido = items;
+                ViewBag.PedidosStatus = _pedidoRepository.GetPedidosStatus();
+                return View(data);
             }
             return RedirectToAction("Index", "Home");
         }

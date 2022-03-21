@@ -24,12 +24,20 @@ namespace MarketPage.Repository
                 return context.PedidosUsuario.ToList();
             };
         }
-        
+
+        public List<PedidoStatus> GetPedidosStatus()
+        {
+            using (var context = new ContextEF())
+            {
+                return context.PedidosStatus.OrderBy(x => x.Nome).ToList();
+            };
+        }
+
         public List<Pedido> GetPedidos(string status)
         {
             using (var context = new ContextEF())
             {
-                return context.PedidosUsuario.Where(p=>p.StatusAtual==status).ToList();
+                return context.PedidosUsuario.Where(p => p.StatusAtual == status).ToList();
             };
         }
 

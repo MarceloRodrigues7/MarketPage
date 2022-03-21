@@ -79,8 +79,6 @@ namespace MarketPage.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-
         public IActionResult Delete(CodPromocao codPromocao)
         {
             if (User.IsInRole("Admin"))

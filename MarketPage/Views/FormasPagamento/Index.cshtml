@@ -1,0 +1,35 @@
+﻿@model FormaPagamento
+@{
+    ViewData["Title"] = "Forma de Pagamento";
+}
+
+<div class="row justify-content-center mt-3">
+    <div class="card col-8">
+        <div class="card-header">
+            <strong class="thead-dark">Mercado Pago</strong>
+        </div>
+        <div class="card-body">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["Message"].ToString()
+                </div>
+            }
+            @using (Html.BeginForm("EditarDados", "FormasPagamento", FormMethod.Post, new { @class = "needs-validation ml-2 mr-2", @novalidate = true }))
+            {
+                <div class="row ml-3 mr-3 mb-3">
+                    <label class="form-label">Token Client</label>
+                    @Html.TextBoxFor(m => m.TokenClient, new { @class = "form-control", @type = "text" })
+                    <label class="form-label mt-1">Token Server</label>
+                    @Html.TextBoxFor(m => m.TokenService, new { @class = "form-control", @type = "text" })
+                </div>
+                <div class="text-center mb-3">
+                    <a type="button" class="btn btn-secondary mr-1" href="javascript:history.back()">
+                        <i class="fas fa-arrow-circle-left mr-2"></i>Voltar
+                    </a>
+                     <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-2"></i>Editar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

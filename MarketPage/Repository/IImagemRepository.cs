@@ -8,6 +8,8 @@ namespace MarketPage.Repository
     {
         IEnumerable<ImgItem> GetImgPrincipalItens();
         ImgItem GetImgItem(long idItem);
+        ImgItem GetImgPrincipalPorId(long idItem);
+        List<byte[]> GetDemaisImagensPorId(long idItem);
         void PostImgItem(ImgItem imgItem);
         void DeleteImgItem(long idItem);
         ImgItem GeraImgItemPadrao(long idItem);

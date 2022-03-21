@@ -74,4 +74,9 @@ namespace MarketPage.Models
     {
         public string Tamanho { get; set; }
     }
+
+    public class Pesquisa
+    {
+        public string Nome { get; set; }
+    }
 }

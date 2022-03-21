@@ -22,11 +22,23 @@ namespace MarketPage.Controllers
         }
 
         [HttpGet("Shop")]
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] Pesquisa item = null)
         {
-            var itens = GetItems();
+            var itens = new List<Item>();
+            if (item == null || string.IsNullOrEmpty(item.Nome))
+            {
+                itens = GetItens();
+            }
+            else
+            {
+                itens = GetItens(item.Nome);
+            }
             var imagens = GetImgs();
             var data = GeraListaItemImagem(itens, imagens);
+            if (data.Count <= 0)
+            {
+                TempData["Message"] = "Nenhum produto localizado";
+            }
             return View(data);
         }
 
@@ -34,13 +46,13 @@ namespace MarketPage.Controllers
         public IActionResult Index(string categoria)
         {
             var idCategoria = _Categoria.GetCategoria(categoria).Id;
-            var itens = GetItems(idCategoria);
+            var itens = GetItens(idCategoria);
             var imagens = GetImgs();
             var data = GeraListaItemImagem(itens, imagens);
             return View(data);
         }
 
-        private static List<Item> GetItems()
+        private static List<Item> GetItens()
         {
             using (var context = new ContextEF())
             {
@@ -48,11 +60,18 @@ namespace MarketPage.Controllers
             };
         }
 
-        private static List<Item> GetItems(int categoria)
+        private static List<Item> GetItens(int categoria)
         {
             using (var context = new ContextEF())
             {
                 return context.Itens.Where(i => i.IdCategoria == categoria && i.Quantidade > 0).ToList();
+            };
+        }
+        private static List<Item> GetItens(string nome)
+        {
+            using (var context = new ContextEF())
+            {
+                return context.Itens.Where(i => i.Nome.Contains(nome)).ToList();
             };
         }
 
