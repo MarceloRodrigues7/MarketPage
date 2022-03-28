@@ -12,7 +12,7 @@
         </div>
         <div class="card-body">
             <div class="row d-flex justify-content-center align-items-center">
-                @using (Html.BeginForm("PutCategoria", "Admin", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
+                @using (Html.BeginForm("PutCategoria", "Categoria", FormMethod.Post, new { @class = "needs-validation", @novalidate = true }))
                 {
                     @Html.ValidationSummary()
                     @Html.AntiForgeryToken()

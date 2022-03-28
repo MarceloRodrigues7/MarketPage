@@ -135,7 +135,7 @@ namespace MarketPage.Controllers
                 {
                     IdUsuario = int.Parse(User.Identity.Name),
                     DataRealizacao = DateTime.UtcNow.AddHours(-3),
-                    StatusAtual = "Pendente"
+                    StatusAtual = "pendente"
                 };
 
                 var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);

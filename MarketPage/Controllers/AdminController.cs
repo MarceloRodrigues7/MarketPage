@@ -1,6 +1,7 @@
 ﻿using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
+using MarketPage.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ namespace MarketPage.Controllers
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
 
+        private readonly PedidoServices _pedidoServices;
         public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
         {
             _categoria = categoria;
@@ -28,6 +30,8 @@ namespace MarketPage.Controllers
             _messagesContato = messagesContato;
             _pedidoRepository = pedidoRepository;
             _carrinhoRepository = carrinhoRepository;
+
+            _pedidoServices = new();
         }
 
         [Authorize]
@@ -204,7 +208,7 @@ namespace MarketPage.Controllers
             if (User.IsInRole("Admin"))
             {
                 var pedidos = _pedidoRepository.GetPedidos();
-                ViewBag.ResumoPedidos = ResumoTotalPedidos(pedidos);
+                ViewBag.ResumoPedidos = _pedidoServices.ResumoTotalPedidos(pedidos);
 
                 return View();
             }
@@ -313,11 +317,7 @@ namespace MarketPage.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        
 
         private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
         {
@@ -339,26 +339,10 @@ namespace MarketPage.Controllers
             return list;
         }
 
-        private static List<int> ResumoTotalPedidos(List<Pedido> pedidos)
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
         {
-            var pedidosPendentes = pedidos.Where(p => p.StatusAtual == "Pendente").Count();
-            var pedidosAprovados = pedidos.Where(p => p.StatusAtual == "Aprovado").Count();
-            var pedidosAutorizado = pedidos.Where(p => p.StatusAtual == "Autorizado").Count();
-            var pedidosEmProcesso = pedidos.Where(p => p.StatusAtual == "Em Processo").Count();
-            var pedidosEmMediacao = pedidos.Where(p => p.StatusAtual == "Em Mediação").Count();
-            var pedidosRejeitado = pedidos.Where(p => p.StatusAtual == "Rejeitado").Count();
-            var pedidosCancelado = pedidos.Where(p => p.StatusAtual == "cancelado").Count();
-            var pedidosDevolvido = pedidos.Where(p => p.StatusAtual == "Devolvido").Count();
-            var pedidosCobradoVolta = pedidos.Where(p => p.StatusAtual == "Cobrado de Volta").Count();
-            var pedidosFinalizado = pedidos.Where(p => p.StatusAtual == "Finalizado").Count();
-            var pedidosPreparando = pedidos.Where(p => p.StatusAtual == "Preparando").Count();
-            var pedidosEnviado = pedidos.Where(p => p.StatusAtual == "Enviado").Count();
-            var pedidosEntregue = pedidos.Where(p => p.StatusAtual == "Entregue").Count();
-            return new List<int>
-            {
-                pedidos.Count,pedidosPendentes,pedidosAprovados,pedidosAutorizado,pedidosEmProcesso,pedidosEmMediacao,pedidosRejeitado,pedidosCancelado,pedidosDevolvido,pedidosCobradoVolta,pedidosFinalizado,pedidosPreparando,pedidosEnviado,pedidosEntregue
-            };
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }
