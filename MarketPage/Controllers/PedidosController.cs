@@ -22,7 +22,7 @@ namespace MarketPage.Controllers
         private readonly ICodPromocionalRepository _codPromocional;
         private readonly IItemRepository _itemRepository;
         private readonly IFormaPagamentoRepository _formaPagamentoRepository;
-        private readonly MercadoPagoService _mercadoPagoService;
+        private readonly MercadoPagoServices _mercadoPagoService;
 
         public PedidosController(IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICodPromocionalRepository codPromocional, IItemRepository itemRepository, IFormaPagamentoRepository formaPagamentoRepository)
         {

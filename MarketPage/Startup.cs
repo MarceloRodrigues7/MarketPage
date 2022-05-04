@@ -1,4 +1,5 @@
 using MarketPage.Repository;
+using MarketPage.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,8 @@ namespace MarketPage
             services.AddSingleton<IFormaPagamentoRepository, FormaPagamentoRepository>();
 
             services.AddControllersWithViews();
+            
+            services.AddMvcCore();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -43,7 +46,8 @@ namespace MarketPage
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => options.LoginPath = "/Home/Index");
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => options.LoginPath = "/Home/Index");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,35 +62,13 @@ namespace MarketPage
                 app.UseHsts();
             }
 
-            var newCulture = new CultureInfo("pt-BR");
-            var localizationOptions = new RequestLocalizationOptions()
-            {
-                SupportedCultures = new List<CultureInfo>()
-                {
-                    newCulture
-                },
-                SupportedUICultures = new List<CultureInfo>()
-                {
-                    newCulture
-                },
-                DefaultRequestCulture = new RequestCulture(newCulture),
-                FallBackToParentCultures = false,
-                FallBackToParentUICultures = false,
-                RequestCultureProviders = null
-            };
-
-            app.UseRequestLocalization(localizationOptions);
-
-
+            app.UseRequestLocalization(CultureServices.SetLocazationOptions("pt-BR"));
             app.UseAuthentication();
             app.UseHttpsRedirection();
-
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
+            app.UseCookiePolicy();
 
             app.UseEndpoints(endpoints =>
             {

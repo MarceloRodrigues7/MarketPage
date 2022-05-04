@@ -13,7 +13,7 @@ using static MarketPage.Models.ResponseMercadoPagoGetOrder;
 
 namespace MarketPage.Services
 {
-    public class MercadoPagoService
+    public class MercadoPagoServices
     {
         public Root GetPedidoMercadoPago(string id, string token)
         {            

@@ -49,7 +49,7 @@
                     </ul>
                     <form class="navbar-nav text-right mr-3">
                         <input class="form-control-sm mr-sm-2" type="search" placeholder="Produto" id="Pesquisa" />
-                        <a class="btn btn-sm btn-secondary my-2 my-sm-0" onclick="pesquisa()">Buscar</a>
+                        <a class="btn btn-sm btn-secondary my-2 my-sm-0" id="btnPesquisa" onclick="pesquisa()">Buscar</a>
                     </form>
                     @if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
                     {
