@@ -19,6 +19,107 @@ namespace MarketPage.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("ADO.Item", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("DataAdicao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Destaque")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IdCategoria")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Peso")
+                        .HasColumnType("real");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tamanhos")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Itens");
+                });
+
+            modelBuilder.Entity("ADO.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("ConcordaRegras")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DataNascimento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PermiteEmail")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RoleAcess")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sobrenome")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("StatusAtivo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Telefone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConcordaRegras = true,
+                            DataNascimento = new DateTime(1990, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@marketpage.com",
+                            Nome = "Admin",
+                            Password = "mudar123",
+                            PermiteEmail = true,
+                            RoleAcess = "Admin",
+                            Sobrenome = "teste",
+                            StatusAtivo = true,
+                            Telefone = "10203040",
+                            Username = "admin"
+                        });
+                });
+
             modelBuilder.Entity("MarketPage.Models.Carrinho", b =>
                 {
                     b.Property<long>("Id")
@@ -71,6 +172,15 @@ namespace MarketPage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ativo = true,
+                            DataAdicao = new DateTime(2022, 5, 27, 17, 40, 14, 86, DateTimeKind.Local).AddTicks(4481),
+                            Nome = "Destaques"
+                        });
                 });
 
             modelBuilder.Entity("MarketPage.Models.CodPromocao", b =>
@@ -167,6 +277,9 @@ namespace MarketPage.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Nome")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("TokenClient")
                         .HasColumnType("nvarchar(max)");
 
@@ -175,7 +288,16 @@ namespace MarketPage.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlataformasAtendimento");
+                    b.ToTable("PlataformasPagamento");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "MercadoPago",
+                            TokenClient = "APP_USR-8824013a-f82d-4879-a34a-634eaac91242",
+                            TokenService = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220"
+                        });
                 });
 
             modelBuilder.Entity("MarketPage.Models.FretePedidoUsuario", b =>
@@ -236,6 +358,32 @@ namespace MarketPage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FreteValores");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CepFinal = 9223372036854775807L,
+                            CepInicio = 0L,
+                            PesoMax = 999,
+                            PesoMin = 0,
+                            PrazoMax = 999,
+                            PrazoMin = 0,
+                            PrecoFrete = 10m,
+                            Servico = "PAC"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CepFinal = 9223372036854775807L,
+                            CepInicio = 0L,
+                            PesoMax = 999,
+                            PesoMin = 0,
+                            PrazoMax = 999,
+                            PrazoMin = 0,
+                            PrecoFrete = 15m,
+                            Servico = "SEDEX"
+                        });
                 });
 
             modelBuilder.Entity("MarketPage.Models.ImgItem", b =>
@@ -263,45 +411,6 @@ namespace MarketPage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ImagensItem");
-                });
-
-            modelBuilder.Entity("MarketPage.Models.Item", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("DataAdicao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Descricao")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Destaque")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("IdCategoria")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Peso")
-                        .HasColumnType("real");
-
-                    b.Property<int>("Quantidade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Tamanhos")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Itens");
                 });
 
             modelBuilder.Entity("MarketPage.Models.MessageContato", b =>
@@ -404,51 +513,6 @@ namespace MarketPage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PedidosStatus");
-                });
-
-            modelBuilder.Entity("MarketPage.Models.Usuario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("ConcordaRegras")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PermiteEmail")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RoleAcess")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Sobrenome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("StatusAtivo")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Telefone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }

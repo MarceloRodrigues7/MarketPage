@@ -1,4 +1,5 @@
-﻿@model Pedido
+﻿@using ADO
+@model Pedido
 @{
     ViewData["Title"] = "Pedido " + Model.Id;
     var codPedido = $"{Model.IdUsuario}{Model.Id}";

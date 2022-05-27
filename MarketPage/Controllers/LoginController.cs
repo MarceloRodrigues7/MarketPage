@@ -1,4 +1,5 @@
-﻿using MarketPage.Context;
+﻿using ADO;
+using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
 using MarketPage.Services;
@@ -22,7 +23,7 @@ namespace MarketPage.Controllers
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEnderecoRepository _enderecoRepository;
 
-        public LoginController(IUsuarioRepository usuarioRepository, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository)
+        public LoginController(IUsuarioRepository usuarioRepository, IEnderecoRepository enderecoRepository)
         {
             _usuarioRepository = usuarioRepository;
             _enderecoRepository = enderecoRepository;
@@ -99,10 +100,10 @@ namespace MarketPage.Controllers
         {
             try
             {
-                var validaCep = new Endereco().ValidaCEP(endereco.Cep);
+                var validaCep = ADO.Endereco.ValidaCEP(endereco.Cep);
                 if (validaCep)
                 {
-                    endereco.Cep = new Endereco().FormataCEP(endereco.Cep);
+                    endereco.Cep = ADO.Endereco.FormataCEP(endereco.Cep);
                     endereco.IdUsuario = int.Parse(User.Identity.Name);
                     _enderecoRepository.InsertOrUpdate(endereco);
                     return RedirectToAction("Usuario");

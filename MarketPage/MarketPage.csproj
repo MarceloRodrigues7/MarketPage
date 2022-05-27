@@ -22,4 +22,8 @@
     <PackageReference Include="Refit" Version="6.0.94" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ADO\ADO.csproj" />
+  </ItemGroup>
+
 </Project>
