@@ -10,20 +10,11 @@ namespace MarketPage.Context
 {
     public class ContextEF : DbContext
     {
-        private readonly static string StringConnectionDbTeste = @"Data Source=ACER;Initial Catalog=MarketPage;User ID='sa';Password='p@ssword';Connect Timeout=999899999";
-        //private readonly static string StringConnectionDbProd = @"Data Source=143.244.190.244;Initial Catalog=MarketPage;User ID='sa';Password='P@ssword';Connect Timeout=999899999";
+        private readonly static string StringConnectionDbTeste = String.Empty;//<- add
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(StringConnectionDbTeste);
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            modelBuilder.Entity<FormaPagamento>().HasData(new FormaPagamento
-            {
-                Id = 1,
-                Nome = "MercadoPago",
-                TokenClient = "APP_USR-8824013a-f82d-4879-a34a-634eaac91242",
-                TokenService = "APP_USR-1223540178250481-092615-8aee4b2461ec8e00fd5f066bcbd83d26-194500220"
-            });
 
             #region Usuario admin padrão
             modelBuilder.Entity<Usuario>().HasData(new Usuario
