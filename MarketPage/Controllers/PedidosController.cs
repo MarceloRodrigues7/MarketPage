@@ -25,6 +25,7 @@ namespace MarketPage.Controllers
         private readonly IFormaPagamentoRepository _formaPagamentoRepository;
 
         private readonly MercadoPagoServices _mercadoPagoService;
+        private readonly List<string> _statusIgnore;
 
         public PedidosController(IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository, IFreteRepository freteRepository, IEnderecoRepository enderecoRepository, ICodPromocionalRepository codPromocional, IItemRepository itemRepository, IFormaPagamentoRepository formaPagamentoRepository)
         {
@@ -36,6 +37,7 @@ namespace MarketPage.Controllers
             _itemRepository = itemRepository;
             _formaPagamentoRepository = formaPagamentoRepository;
             _mercadoPagoService = new();
+            _statusIgnore = new() { "aprovado", "rejeitado", "cancelado", "devolvido", "cobrado de volta", "finalizado", "preparando", "enviado", "entregue" };
         }
 
         [Authorize]
@@ -45,17 +47,24 @@ namespace MarketPage.Controllers
             var data = _pedidoRepository.GetPedidos(int.Parse(User.Identity.Name));
             foreach (var item in data)
             {
-                List<string> StatusIgnore = new() { "aprovado", "rejeitado", "cancelado", "devolvido", "cobrado de volta", "finalizado", "preparando", "enviado", "entregue" };
-                if (!StatusIgnore.Contains(item.StatusAtual))
+                if (!_statusIgnore.Contains(item.StatusAtual))
                 {
-                    var res = _mercadoPagoService.GetPedidoMercadoPago(item.IdMercadoPago, token.TokenService);
-                    if (res.Elements != null)
+                    try
                     {
-                        var teste = res.Elements.First();
-                        item.StatusAtual = teste.Payments.Last().Status;
+                        var res = _mercadoPagoService.GetPedidoMercadoPago(item.IdMercadoPago, token.TokenService);
+                        if (res.Elements != null)
+                        {
+                            var pedido = res.Elements.First();
+                            item.StatusAtual = pedido.Payments.Last().Status;
 
-                        item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
-                        _pedidoRepository.PutStatusPedido(item);
+                            item.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+                            _pedidoRepository.PutStatusPedido(item);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return View(data);
+                        throw;
                     }
                 }
             }
@@ -66,38 +75,20 @@ namespace MarketPage.Controllers
         public IActionResult Desc(Pedido pedido)
         {
             List<ItemViewDescAdmin> items = new();
-            var token = _formaPagamentoRepository.GetFormaPagamento();
+            var token = _formaPagamentoRepository.GetFormaPagamentoTeste();
             var data = _pedidoRepository.GetPedido(pedido.Id);
             var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
 
-            if (data.IdMercadoPago == null)
+            ViewBag.IdMp = _mercadoPagoService.GetIdPedido(data, token.TokenService);
+
+            foreach (var itemCarrinho in carrinho)
             {
-                ViewBag.IdMp = _mercadoPagoService.MercadoPagoRequest(data, token.TokenService);
-            }
-            else
-            {
-                ViewBag.IdMp = data.IdMercadoPago;
-            }
-            foreach (var item in carrinho)
-            {
-                Item i = _itemRepository.GetItem(item.IdItem);
-                items.Add(new ItemViewDescAdmin
-                {
-                    Id = i.Id,
-                    DataAdicao = i.DataAdicao,
-                    Descricao = i.Descricao,
-                    Destaque = i.Destaque,
-                    IdCategoria = i.IdCategoria,
-                    Nome = i.Nome,
-                    Peso = i.Peso,
-                    Quantidade = item.Quantidade,
-                    Tamanho = item.Tamanhos,
-                    Tamanhos = i.Tamanhos,
-                    Valor = i.Valor
-                });
+                Item item = _itemRepository.GetItem(itemCarrinho.IdItem);
+                var itemViewDescAdmin = ItemViewDescAdmin.GeraObj(item, itemCarrinho);
+                items.Add(itemViewDescAdmin);
             }
             ViewBag.ItensPedido = items;
-            ViewBag.TokenMp = _formaPagamentoRepository.GetFormaPagamento().TokenClient;
+            ViewBag.TokenMp = _formaPagamentoRepository.GetFormaPagamentoTeste().TokenClient;
             return View(data);
         }
 
@@ -120,47 +111,42 @@ namespace MarketPage.Controllers
             var carrinho = _carrinhoRepository.GetCarrinho(int.Parse(User.Identity.Name));
             var codPromo = _codPromocional.GetPromocaoUtilizada(carrinho.FirstOrDefault().Id);
             var frete = _freteRepository.GetFretePedido(int.Parse(User.Identity.Name), carrinho.FirstOrDefault().Id);
+            var endereco = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+
             if (frete == null)
             {
                 TempData["Message"] = "Selecione o tipo de frete";
                 return RedirectToAction("Carrinho");
             }
-            else
+
+            if (endereco == null)
             {
-                var end = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
-                if (end == null)
-                {
-                    TempData["Message"] = "Realize o cadastro do endereço antes de finalizar sua compra.";
-                    return RedirectToAction("Endereco");
-                }
-
-                Pedido pedido = new()
-                {
-                    IdUsuario = int.Parse(User.Identity.Name),
-                    DataRealizacao = DateTime.UtcNow.AddHours(-3),
-                    StatusAtual = "Pendente"
-                };
-                var token = _formaPagamentoRepository.GetFormaPagamento();
-                var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);
-                if (codPromo != null)
-                {
-                    valorCarrinho -= valorCarrinho * codPromo.Desconto;
-                }
-                pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
-                pedido.Pais = end.Pais;
-                pedido.Estado = end.Estado;
-                pedido.Cidade = end.Cidade;
-                pedido.Bairro = end.Bairro;
-                pedido.Numero = end.Numero;
-                var idMercadoLivre = _mercadoPagoService.MercadoPagoRequest(pedido, token.TokenService);
-                pedido.IdMercadoPago = idMercadoLivre;
-                var idPedido = _pedidoRepository.PostPedido(pedido);
-
-                _carrinhoRepository.UpdateItensCarrinhoRealizado(idPedido, carrinho);
-                return RedirectToAction("Index");
+                TempData["Message"] = "Realize o cadastro do endereço antes de finalizar sua compra.";
+                return RedirectToAction("Endereco");
             }
 
+            Pedido pedido = Pedido.GerarObj(int.Parse(User.Identity.Name));
+            var token = _formaPagamentoRepository.GetFormaPagamentoTeste();
+            var valorCarrinho = carrinho.Sum(c => c.Valor * c.Quantidade);
+            if (codPromo != null)
+            {
+                valorCarrinho -= valorCarrinho * codPromo.Desconto;
+            }
+            pedido.ValorTotal = valorCarrinho + frete.ValorTotal;
+            pedido.Pais = endereco.Pais;
+            pedido.Estado = endereco.Estado;
+            pedido.Cidade = endereco.Cidade;
+            pedido.Bairro = endereco.Bairro;
+            pedido.Numero = endereco.Numero;
+            var idMercadoLivre = _mercadoPagoService.MercadoPagoRequest(pedido, token.TokenService);
+            pedido.IdMercadoPago = idMercadoLivre;
+            var idPedido = _pedidoRepository.PostPedido(pedido);
+
+            _carrinhoRepository.UpdateItensCarrinhoRealizado(idPedido, carrinho);
+            return RedirectToAction("Index");
+
         }
+
         [HttpPost]
         public IActionResult ValidarCodPromo(string CodPromocional)
         {
@@ -173,13 +159,8 @@ namespace MarketPage.Controllers
             var carrinho = _carrinhoRepository.GetCarrinho(int.Parse(User.Identity.Name));
             foreach (var item in carrinho)
             {
-                _codPromocional.PostCodPromoUsuario(new CodPromocaoUtilizado
-                {
-                    IdUsuario = int.Parse(User.Identity.Name),
-                    IdCarrinho = item.Id,
-                    IdCodPromocao = data.Id,
-                    DataUtilizacao = DateTime.UtcNow.AddHours(-3),
-                });
+                var codPromoUtilizado = CodPromocaoUtilizado.GeraObj(data, item, int.Parse(User.Identity.Name));
+                _codPromocional.PostCodPromoUsuario(codPromoUtilizado);
             }
             data.Utilizacoes++;
             _codPromocional.Put(data);
@@ -198,39 +179,19 @@ namespace MarketPage.Controllers
             var carrinho = _carrinhoRepository.GetCarrinho(int.Parse(User.Identity.Name));
             foreach (var item in carrinho)
             {
-                var frete = new FretePedidoUsuario
-                {
-                    IdUsuario = int.Parse(User.Identity.Name),
-                    IdCarrinho = item.Id,
-                    TipoFrete = valorFrete[0],
-                    ValorTotal = decimal.Parse(valorFrete[1].Replace("R$", ""))
-                };
+                var frete = FretePedidoUsuario.GeraObj(valorFrete, item, int.Parse(User.Identity.Name));
                 _freteRepository.PostFrete(frete);
             }
             return RedirectToAction("Carrinho");
         }
 
+        [Authorize]
         public IActionResult PostItemCarrinho(ItemViewProduto item)
         {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
-            {
-                using (var context = new ContextEF())
-                {
-                    var i = new Carrinho
-                    {
-                        IdItem = item.Id,
-                        IdUsuario = int.Parse(User.Identity.Name),
-                        Quantidade = item.Quantidade,
-                        Tamanhos = item.Tamanhos,
-                        Valor = item.Valor,
-                        DataHora = DateTime.Now
-                    };
-                    context.CarrinhoItem.Add(i);
-                    context.SaveChanges();
-                    return RedirectToAction("Carrinho");
-                };
-            }
-            return RedirectToAction("Index", "Login", new object());
+            var i = item.GeraItem();
+            var carrinho = ADO.Carrinho.GeraObj(i, int.Parse(User.Identity.Name));
+            _carrinhoRepository.PostItemCarrinho(carrinho);
+            return RedirectToAction("Carrinho");
         }
 
         public IActionResult DeleteItemCarrinho(long item)

@@ -47,7 +47,7 @@ namespace MarketPage
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => options.LoginPath = "/Home/Index");
+                .AddCookie(options => options.LoginPath = "/Login/Index");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

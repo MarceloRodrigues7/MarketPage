@@ -12,7 +12,14 @@ namespace MarketPage.Repository
         {
             using (var context = new ContextEF())
             {
-                return context.PlataformasPagamento.First();
+                return context.PlataformasPagamento.First(p => p.Nome == "MercadoPago");
+            };
+        }
+        public FormaPagamento GetFormaPagamentoTeste()
+        {
+            using (var context = new ContextEF())
+            {
+                return context.PlataformasPagamento.First(p => p.Nome == "Teste");
             };
         }
 

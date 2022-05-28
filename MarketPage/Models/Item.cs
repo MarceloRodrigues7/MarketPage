@@ -36,6 +36,17 @@ namespace MarketPage.Models
         public decimal? ValorFrete { get; set; }
         public string CodPromocional { get; set; }
         public decimal? ValorDesconto { get; set; }
+
+        public Item GeraItem()
+        {
+            return new Item
+            {
+                Id = this.Id,
+                Quantidade = this.Quantidade,
+                Tamanhos = this.Tamanhos,
+                Valor = this.Valor
+            };
+        }
     }
 
     public class ItemViewAdmin
@@ -60,6 +71,24 @@ namespace MarketPage.Models
     public class ItemViewDescAdmin : Item
     {
         public string Tamanho { get; set; }
+
+        public static ItemViewDescAdmin GeraObj(Item item, Carrinho carrinho)
+        {
+            return new ItemViewDescAdmin
+            {
+                Id = item.Id,
+                DataAdicao = item.DataAdicao,
+                Descricao = item.Descricao,
+                Destaque = item.Destaque,
+                IdCategoria = item.IdCategoria,
+                Nome = item.Nome,
+                Peso = item.Peso,
+                Quantidade = carrinho.Quantidade,
+                Tamanho = carrinho.Tamanhos,
+                Tamanhos = item.Tamanhos,
+                Valor = item.Valor
+            };
+        }
     }
 
     public class Pesquisa

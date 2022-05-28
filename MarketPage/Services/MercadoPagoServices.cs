@@ -16,7 +16,7 @@ namespace MarketPage.Services
 {
     public class MercadoPagoServices
     {
-        private string _urlMercadoPago = $"https://api.mercadopago.com/merchant_orders/search?preference_id=";
+        private readonly string _urlMercadoPago = $"https://api.mercadopago.com/merchant_orders/search?preference_id=";
 
         public Root GetPedidoMercadoPago(string id, string token)
         {
@@ -41,6 +41,18 @@ namespace MarketPage.Services
             var preference = GeraPreference(request);
 
             return preference.Id;
+        }
+
+        public string GetIdPedido(Pedido pedido, string token)
+        {
+            if (pedido.IdMercadoPago == null)
+            {
+                return MercadoPagoRequest(pedido, token);
+            }
+            else
+            {
+                return pedido.IdMercadoPago;
+            }
         }
 
         private static WebHeaderCollection GeraWebHeaderCollection(string token)
@@ -70,7 +82,7 @@ namespace MarketPage.Services
             };
         }
 
-        private List<PreferenceItemRequest> GeraItem(Pedido pedido)
+        private static List<PreferenceItemRequest> GeraItem(Pedido pedido)
         {
             List<PreferenceItemRequest> itens = new();
 
@@ -86,7 +98,7 @@ namespace MarketPage.Services
             return itens;
         }
 
-        private Preference GeraPreference(PreferenceRequest preferenceRequest)
+        private static Preference GeraPreference(PreferenceRequest preferenceRequest)
         {
             var client = new PreferenceClient();
             return client.Create(preferenceRequest);

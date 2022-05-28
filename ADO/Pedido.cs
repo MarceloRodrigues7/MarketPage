@@ -23,5 +23,15 @@ namespace ADO
         public string IdMercadoPago { get; set; }
         public string CodRastreio { get; set; }
         public int PrazoEntrega { get; set; }
+
+        public static Pedido GerarObj(int idUsuario)
+        {
+            return new Pedido()
+            {
+                IdUsuario = idUsuario,
+                DataRealizacao = DateTime.UtcNow.AddHours(-3),
+                StatusAtual = "Pendente"
+            };
+        }
     }
 }

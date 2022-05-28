@@ -63,6 +63,15 @@ namespace MarketPage.Repository
             return lista;
         }
 
+        public void PostItemCarrinho(Carrinho carrinho)
+        {
+            using (var context = new ContextEF())
+            {
+                context.CarrinhoItem.Add(carrinho);
+                context.SaveChanges();
+            };
+        }
+
         public void UpdateItensCarrinhoRealizado(long idPedido, List<Carrinho> carrinho)
         {
             using (var context = new ContextEF())

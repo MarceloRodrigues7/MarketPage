@@ -16,5 +16,18 @@ namespace ADO
         public int Quantidade { get; set; }
         public DateTime DataHora { get; set; }
         public long? IdPedido { get; set; }
+
+        public static Carrinho GeraObj(Item item, int idUsuario)
+        {
+            return new Carrinho
+            {
+                IdItem = item.Id,
+                IdUsuario = idUsuario,
+                Quantidade = item.Quantidade,
+                Tamanhos = item.Tamanhos,
+                Valor = item.Valor,
+                DataHora = DateTime.Now
+            };
+        }
     }
 }
