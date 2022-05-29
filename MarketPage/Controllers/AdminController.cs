@@ -1,5 +1,4 @@
 ﻿using ADO;
-using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
 using MarketPage.Services;
@@ -21,6 +20,7 @@ namespace MarketPage.Controllers
         private readonly IMessagesContatoRepository _messagesContato;
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
+        private const string _scopeRequired = "Admin";
 
         private readonly PedidoServices _pedidoServices;
         public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
@@ -38,7 +38,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Produto()
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 var categorias = _categoria.GetCategorias();
                 var itens = _Item.GetItens();
@@ -51,7 +51,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult AdicionarProduto()
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 ViewBag.Categorias = _categoria.GetCategorias();
                 return View();
@@ -62,21 +62,11 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult EditarProduto(ItemViewAdmin item)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
-                var produto = _Item.GetItem(item.Id);
-                var itemImg = new ViewItemAdmAddEEdit
-                {
-                    Id = produto.Id,
-                    Nome = produto.Nome,
-                    Descricao = produto.Descricao,
-                    ValorString = produto.Valor.ToString(),
-                    Tamanhos = produto.Tamanhos,
-                    Quantidade = produto.Quantidade,
-                    Destaque = produto.Destaque,
-                    IdCategoria = produto.IdCategoria,
-                    PesoString = produto.Peso.ToString()
-                };
+                var itemDb = _Item.GetItem(item.Id);
+                var itemImg = ViewItemAdmAddEEdit.GeraObj(itemDb);
+
                 ViewBag.Categorias = _categoria.GetCategorias();
                 return View(itemImg);
             }
@@ -86,21 +76,10 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult DeletarProduto(ItemViewAdmin item)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
-                var produto = _Item.GetItem(item.Id);
-                var itemImg = new ViewItemAdmAddEEdit
-                {
-                    Id = produto.Id,
-                    Nome = produto.Nome,
-                    Descricao = produto.Descricao,
-                    Valor = produto.Valor,
-                    Tamanhos = produto.Tamanhos,
-                    Quantidade = produto.Quantidade,
-                    Destaque = produto.Destaque,
-                    IdCategoria = produto.IdCategoria,
-                    Peso = produto.Peso
-                };
+                var itemDb = _Item.GetItem(item.Id);
+                var itemImg = ViewItemAdmAddEEdit.GeraObj(itemDb);
                 ViewBag.Categorias = _categoria.GetCategorias();
                 return View(itemImg);
             }
@@ -110,7 +89,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult PostProduto(ViewItemAdmAddEEdit produto)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 try
                 {
@@ -149,7 +128,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult DeleteProduto(ItemViewAdmin item)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 try
                 {
@@ -170,7 +149,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult PutProduto(ViewItemAdmAddEEdit produto)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 try
                 {
@@ -206,7 +185,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult Painel()
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 var pedidos = _pedidoRepository.GetPedidos();
                 ViewBag.ResumoPedidos = _pedidoServices.ResumoTotalPedidos(pedidos);
@@ -219,7 +198,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public ActionResult MensagensContato()
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 var data = _messagesContato.GetMessageContatos();
                 return View(data);
@@ -230,7 +209,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public ActionResult Pedidos(string status)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 if (status == null)
                 {
@@ -244,7 +223,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult DescPedido(Pedido pedido)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 List<ItemViewDescAdmin> items = new();
                 var data = _pedidoRepository.GetPedidos().Where(p => p.Id == pedido.Id).FirstOrDefault();
@@ -279,7 +258,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult PutPedido(Pedido pedido)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 var data = _pedidoRepository.GetPedido(pedido.Id);
                 data.StatusAtual = pedido.StatusAtual;
@@ -299,7 +278,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public ActionResult MensageContato(long Id)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 var data = _messagesContato.GetMessageContatos(Id);
                 return View(data);
@@ -310,7 +289,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public ActionResult ConfirmaVisualizacaoMensageContato(MessageContato message)
         {
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole(_scopeRequired))
             {
                 _messagesContato.PutConfirmaVisualizacao(message);
                 return RedirectToAction("MensagensContato");
@@ -318,24 +297,15 @@ namespace MarketPage.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        
+
 
         private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
         {
             List<ItemViewAdmin> list = new();
             foreach (var i in item)
             {
-                list.Add(new ItemViewAdmin
-                {
-                    Id = i.Id,
-                    Nome = i.Nome,
-                    Descricao = i.Descricao,
-                    Valor = i.Valor,
-                    Quantidade = i.Quantidade,
-                    Destaque = i.Destaque,
-                    DataAdicao = i.DataAdicao,
-                    Categoria = categoria.Where(c => c.Id == i.IdCategoria).First().Nome
-                });
+                var itemViewAdmin = ItemViewAdmin.GeraObj(i, categoria);
+                list.Add(itemViewAdmin);
             }
             return list;
         }

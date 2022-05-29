@@ -1,5 +1,3 @@
-using System;
-
 namespace MarketPage.Models
 {
     public class ErrorViewModel

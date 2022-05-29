@@ -1,15 +1,11 @@
 ﻿using ADO;
-using MarketPage.Models;
 using MercadoPago.Client.Preference;
 using MercadoPago.Config;
 using MercadoPago.Resource.Preference;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Refit;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using static MarketPage.Models.ResponseMercadoPagoGetOrder;
 
 namespace MarketPage.Services

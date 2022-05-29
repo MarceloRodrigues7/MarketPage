@@ -1,7 +1,5 @@
 ﻿using ADO;
 using MarketPage.Context;
-using MarketPage.Models;
-using System;
 using System.Linq;
 
 namespace MarketPage.Repository

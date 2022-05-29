@@ -1,18 +1,12 @@
 ﻿using ADO;
-using MarketPage.Context;
-using MarketPage.Models;
 using MarketPage.Repository;
 using MarketPage.Services;
-using MercadoPago.Client.Preference;
-using MercadoPago.Config;
-using MercadoPago.Resource.Preference;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -22,11 +16,14 @@ namespace MarketPage.Controllers
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEnderecoRepository _enderecoRepository;
+        private readonly AuthService _authService;
 
         public LoginController(IUsuarioRepository usuarioRepository, IEnderecoRepository enderecoRepository)
         {
             _usuarioRepository = usuarioRepository;
             _enderecoRepository = enderecoRepository;
+
+            _authService = new AuthService();
         }
 
         public IActionResult Index()
@@ -54,25 +51,6 @@ namespace MarketPage.Controllers
             return View();
         }
 
-        [Authorize]
-        public IActionResult Endereco()
-        {
-            var data = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
-            return View(data);
-        }
-
-        [Authorize]
-        public IActionResult Usuario()
-        {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
-            {
-                var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
-                ViewBag.Endereco = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
-                return View(data);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
         public IActionResult PostUsuario(Usuario usuario)
         {
             try
@@ -90,35 +68,8 @@ namespace MarketPage.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + ex.Message;
                 return View("Cadastrar");
-            }
-        }
-
-        public IActionResult PostEndereco(Endereco endereco)
-        {
-            try
-            {
-                var validaCep = ADO.Endereco.ValidaCEP(endereco.Cep);
-                if (validaCep)
-                {
-                    endereco.Cep = ADO.Endereco.FormataCEP(endereco.Cep);
-                    endereco.IdUsuario = int.Parse(User.Identity.Name);
-                    _enderecoRepository.InsertOrUpdate(endereco);
-                    return RedirectToAction("Usuario");
-                }
-                else
-                {
-                    TempData["Message"] = "Cep inválido, tente novamente!";
-                    return RedirectToAction("Endereco");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + ex.Message;
-                return RedirectToAction("Usuario");
             }
         }
 
@@ -126,10 +77,10 @@ namespace MarketPage.Controllers
         {
             try
             {
-                var res = _usuarioRepository.GetUsuario(usuario.Username, usuario.Password);
-                if (res != null)
+                usuario = _usuarioRepository.GetUsuario(usuario.Username, usuario.Password);
+                if (usuario != null)
                 {
-                    GeraIdentity(res);
+                    _authService.GeraIdentity(usuario, HttpContext);
                     return RedirectToAction("Index", "Home");
                 }
                 TempData["Message"] = "Login Falhou. Username ou Senha inválido";
@@ -140,24 +91,6 @@ namespace MarketPage.Controllers
                 TempData["Message"] = "Ocorreu algum erro, tente novamente! " + e.Message;
                 return View("Index");
             }
-        }
-
-        [Authorize]
-        public IActionResult Editar()
-        {
-            if (User.IsInRole("Usuario_Comum") || User.IsInRole("Admin"))
-            {
-                var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
-                return View(data);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
-        [Authorize]
-        public IActionResult PutUsuario(Usuario usuario)
-        {
-            _usuarioRepository.PutUsuario(usuario);
-            return RedirectToAction("Usuario");
         }
 
         public IActionResult ResetarSenha(Usuario usuario)
@@ -189,18 +122,60 @@ namespace MarketPage.Controllers
             }
         }
 
-        private void GeraIdentity(Usuario usuario)
+        [Authorize]
+        public IActionResult Endereco()
         {
-            var claims = new List<Claim> { new(ClaimTypes.Name, usuario.Id.ToString()), new(ClaimTypes.Role, usuario.RoleAcess) };
-            var identidadeDeUsuario = new ClaimsIdentity(claims, "Login");
-            ClaimsPrincipal claimPrincipal = new(identidadeDeUsuario);
-            var propriedadesDeAutenticacao = new AuthenticationProperties
+            var data = _enderecoRepository.GetEndereco(int.Parse(User.Identity.Name));
+            return View(data);
+        }
+
+        [Authorize]
+        public IActionResult Usuario()
+        {
+            var idUsuario = int.Parse(User.Identity.Name);
+            var data = _usuarioRepository.GetUsuario(idUsuario);
+            ViewBag.Endereco = _enderecoRepository.GetEndereco(idUsuario);
+            return View(data);
+        }
+
+        [Authorize]
+        public IActionResult PostEndereco(Endereco endereco)
+        {
+            try
             {
-                AllowRefresh = true,
-                ExpiresUtc = DateTime.Now.ToLocalTime().AddHours(2),
-                IsPersistent = true,
-            };
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimPrincipal, propriedadesDeAutenticacao);
+                var validaCep = ADO.Endereco.ValidaCEP(endereco.Cep);
+                if (validaCep)
+                {
+                    endereco.Cep = ADO.Endereco.FormataCEP(endereco.Cep);
+                    endereco.IdUsuario = int.Parse(User.Identity.Name);
+                    _enderecoRepository.InsertOrUpdate(endereco);
+                    return RedirectToAction("Usuario");
+                }
+                else
+                {
+                    TempData["Message"] = "Cep inválido, tente novamente!";
+                    return RedirectToAction("Endereco");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Ocorreu algum erro, tente novamente! " + ex.Message;
+                return RedirectToAction("Usuario");
+            }
+        }
+
+        [Authorize]
+        public IActionResult Editar()
+        {
+            var data = _usuarioRepository.GetUsuario(int.Parse(User.Identity.Name));
+            return View(data);
+        }
+
+        [Authorize]
+        public IActionResult PutUsuario(Usuario usuario)
+        {
+            _usuarioRepository.PutUsuario(usuario);
+            return RedirectToAction("Usuario");
         }
     }
 }

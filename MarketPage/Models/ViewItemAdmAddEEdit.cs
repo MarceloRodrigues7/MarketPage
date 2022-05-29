@@ -1,10 +1,6 @@
 ﻿using ADO;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Models
 {
@@ -16,5 +12,21 @@ namespace MarketPage.Models
         public IFormFile[] ImageUpload { get; set; }
         public string ValorString { get; set; }
         public string PesoString { get; set; }
+
+        public static ViewItemAdmAddEEdit GeraObj(ADO.Item item)
+        {
+            return new ViewItemAdmAddEEdit
+            {
+                Id = item.Id,
+                Nome = item.Nome,
+                Descricao = item.Descricao,
+                ValorString = item.Valor.ToString(),
+                Tamanhos = item.Tamanhos,
+                Quantidade = item.Quantidade,
+                Destaque = item.Destaque,
+                IdCategoria = item.IdCategoria,
+                PesoString = item.Peso.ToString()
+            };
+        }
     }
 }

@@ -1,11 +1,7 @@
 ﻿using ADO;
-using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
 using MarketPage.Services;
-using MercadoPago.Client.Preference;
-using MercadoPago.Config;
-using MercadoPago.Resource.Preference;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -188,7 +184,7 @@ namespace MarketPage.Controllers
         [Authorize]
         public IActionResult PostItemCarrinho(ItemViewProduto item)
         {
-            var i = item.GeraItem();
+            var i = item.GeraObj();
             var carrinho = ADO.Carrinho.GeraObj(i, int.Parse(User.Identity.Name));
             _carrinhoRepository.PostItemCarrinho(carrinho);
             return RedirectToAction("Carrinho");

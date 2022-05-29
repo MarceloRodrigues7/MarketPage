@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using ADO;
+﻿using ADO;
 using MarketPage.Models;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace MarketPage.Repository
 {

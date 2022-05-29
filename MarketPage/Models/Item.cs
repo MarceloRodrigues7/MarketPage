@@ -1,12 +1,7 @@
 ﻿using ADO;
-using MarketPage.Context;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Models
 {
@@ -37,7 +32,7 @@ namespace MarketPage.Models
         public string CodPromocional { get; set; }
         public decimal? ValorDesconto { get; set; }
 
-        public Item GeraItem()
+        public Item GeraObj()
         {
             return new Item
             {
@@ -60,6 +55,21 @@ namespace MarketPage.Models
         public DateTime DataAdicao { get; set; }
         public string Categoria { get; set; }
         public decimal Peso { get; set; }
+
+        public static ItemViewAdmin GeraObj(Item item, List<Categoria> categorias)
+        {
+            return new ItemViewAdmin
+            {
+                Id = item.Id,
+                Nome = item.Nome,
+                Descricao = item.Descricao,
+                Valor = item.Valor,
+                Quantidade = item.Quantidade,
+                Destaque = item.Destaque,
+                DataAdicao = item.DataAdicao,
+                Categoria = categorias.Where(c => c.Id == item.IdCategoria).First().Nome
+            };
+        }
     }
 
     public class ItemMercadoPago

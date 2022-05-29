@@ -1,5 +1,4 @@
 ﻿using ADO;
-using MarketPage.Models;
 
 namespace MarketPage.Repository
 {

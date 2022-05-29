@@ -1,10 +1,8 @@
 ﻿using ADO;
 using MarketPage.Context;
-using MarketPage.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Repository
 {
@@ -33,7 +31,7 @@ namespace MarketPage.Repository
         {
             using (var context = new ContextEF())
             {
-                return context.MessagesContato.Where(c=>c.Id==id).First();
+                return context.MessagesContato.Where(c => c.Id == id).First();
             };
         }
 

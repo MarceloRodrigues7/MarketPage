@@ -2,14 +2,9 @@
 using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Controllers
 {

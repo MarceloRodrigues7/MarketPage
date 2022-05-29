@@ -1,10 +1,7 @@
 ﻿using ADO;
 using MarketPage.Context;
-using MarketPage.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MarketPage.Repository
 {
@@ -14,7 +11,7 @@ namespace MarketPage.Repository
         {
             using (var context = new ContextEF())
             {
-                return context.FretesPedidosUsuarios.Where(f=>f.IdUsuario==idUsuario && f.IdCarrinho==idCarrinho).FirstOrDefault();
+                return context.FretesPedidosUsuarios.Where(f => f.IdUsuario == idUsuario && f.IdCarrinho == idCarrinho).FirstOrDefault();
             };
         }
 
@@ -32,7 +29,7 @@ namespace MarketPage.Repository
             var cepLong = long.Parse(cep);
             using (var context = new ContextEF())
             {
-                var data = context.FreteValores.Where(f=>cepLong<=f.CepFinal && cepLong>=f.CepInicio).ToList();
+                var data = context.FreteValores.Where(f => cepLong <= f.CepFinal && cepLong >= f.CepInicio).ToList();
                 return data;
             };
         }
