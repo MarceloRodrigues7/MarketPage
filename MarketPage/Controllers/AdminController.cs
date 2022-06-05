@@ -155,7 +155,7 @@ namespace MarketPage.Controllers
                 {
                     if (produto.ImageUploadMain != null)
                     {
-                        _ImgItem.DeletaItemImgMain(produto);
+                        _ImgItem.DeletaItemImgMain(produto.Id);
                         var novaImagem = _ImgItem.GeraImgItemPrincipal(produto.Id);
                         novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
                         _ImgItem.PostImgItem(novaImagem);

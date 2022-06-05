@@ -1,8 +1,8 @@
 ﻿using ADO;
-using MarketPage.Context;
 using MarketPage.Models;
 using MarketPage.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,11 +10,15 @@ namespace MarketPage.Controllers
 {
     public class ShopController : Controller
     {
-        private readonly ICategoriaRepository _Categoria;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IItemRepository _itemRepository;
+        private readonly IImagemRepository _imagemRepository;
 
-        public ShopController(ICategoriaRepository categoria)
+        public ShopController(ICategoriaRepository categoria, IItemRepository itemRepository, IImagemRepository imagemRepository)
         {
-            _Categoria = categoria;
+            _categoriaRepository = categoria;
+            _itemRepository = itemRepository;
+            _imagemRepository = imagemRepository;
         }
 
         [HttpGet("Shop")]
@@ -29,7 +33,7 @@ namespace MarketPage.Controllers
             {
                 itens = GetItens(item.Nome);
             }
-            var imagens = GetImgs();
+            var imagens = GetImgs(itens.Select(i => i.Id));
             var data = GeraListaItemImagem(itens, imagens);
             if (data.Count <= 0)
             {
@@ -41,42 +45,67 @@ namespace MarketPage.Controllers
         [HttpGet("Shop/{categoria}")]
         public IActionResult Index(string categoria)
         {
-            var idCategoria = _Categoria.GetCategoria(categoria).Id;
+            var idCategoria = _categoriaRepository.GetCategoria(categoria).Id;
             var itens = GetItens(idCategoria);
-            var imagens = GetImgs();
+            var imagens = GetImgs(itens.Select(i => i.Id));
             var data = GeraListaItemImagem(itens, imagens);
             return View(data);
         }
 
-        private static List<Item> GetItens()
+        private List<Item> GetItens()
         {
-            using (var context = new ContextEF())
+            try
             {
-                return context.Itens.Where(i => i.Quantidade > 0).ToList();
-            };
+                var itens = _itemRepository.GetItens().Where(i => i.Quantidade > 0);
+                return itens.ToList();
+            }
+            catch (Exception)
+            {
+                return new List<Item>();
+            }
         }
 
-        private static List<Item> GetItens(int categoria)
+        private List<Item> GetItens(int categoria)
         {
-            using (var context = new ContextEF())
+            try
             {
-                return context.Itens.Where(i => i.IdCategoria == categoria && i.Quantidade > 0).ToList();
-            };
+                var itens = _itemRepository.GetItens().Where(i => i.IdCategoria == categoria && i.Quantidade > 0);
+                return itens.ToList();
+            }
+            catch (Exception)
+            {
+                return new List<Item>();
+            }
         }
-        private static List<Item> GetItens(string nome)
+        private List<Item> GetItens(string nome)
         {
-            using (var context = new ContextEF())
+            try
             {
-                return context.Itens.Where(i => i.Nome.Contains(nome)).ToList();
-            };
+                var itens = _itemRepository.GetItens().Where(i => i.Nome.Contains(nome));
+                return itens.ToList();
+            }
+            catch (Exception)
+            {
+                return new List<Item>();
+            }
         }
 
-        private static List<ImgItem> GetImgs()
+        private List<ImgItem> GetImgs(IEnumerable<long> listIdItens)
         {
-            using (var context = new ContextEF())
+            try
             {
-                return context.ImagensItem.ToList();
-            };
+                var newList = new List<ImgItem>();
+                foreach (var idItem in listIdItens)
+                {
+                    var img = _imagemRepository.GetImgPrincipalPorId(idItem);
+                    newList.Add(img);
+                }
+                return newList;
+            }
+            catch (Exception)
+            {
+                return new List<ImgItem>();
+            }
         }
 
         private static List<ItemView> GeraListaItemImagem(List<Item> items, List<ImgItem> imgs)
@@ -90,7 +119,7 @@ namespace MarketPage.Controllers
                     Nome = item.Nome,
                     Valor = item.Valor,
                     Tamanhos = item.Tamanhos,
-                    Img = imgs.First(i => i.IdItem == item.Id && i.Principal == true).Img
+                    Img = imgs.First(i => i.IdItem == item.Id).Img
                 };
                 lista.Add(itemViewShop);
             }

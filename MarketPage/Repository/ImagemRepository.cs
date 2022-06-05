@@ -1,5 +1,4 @@
 ﻿using ADO;
-using MarketPage.Context;
 using MarketPage.Models;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -81,15 +80,12 @@ namespace MarketPage.Repository
             return res.ReadBytes((int)formFile.Length);
         }
 
-        public void DeletaItemImgMain(ViewItemAdmAddEEdit produto)
+        public void DeletaItemImgMain(long idItem)
         {
             using (var context = new ContextEF())
             {
-                if (produto.ImageUpload != null)
-                {
-                    var img = context.ImagensItem.Where(i => i.IdItem == produto.Id && i.Principal == true);
-                    context.ImagensItem.RemoveRange(img);
-                }
+                var img = context.ImagensItem.Where(i => i.IdItem == idItem && i.Principal == true);
+                context.ImagensItem.RemoveRange(img);
                 context.SaveChanges();
             };
         }

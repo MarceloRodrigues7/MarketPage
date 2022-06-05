@@ -16,7 +16,7 @@ namespace MarketPage.Repository
         ImgItem GeraImgItemPadrao(long idItem);
         ImgItem GeraImgItemPrincipal(long idItem);
         byte[] GeraImgByte(IFormFile formFile);
-        void DeletaItemImgMain(ViewItemAdmAddEEdit produto);
+        void DeletaItemImgMain(long idItem);
         void DeletaItemImgPadrao(ViewItemAdmAddEEdit produto);
     }
 }

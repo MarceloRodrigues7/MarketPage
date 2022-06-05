@@ -64,7 +64,7 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         $.noConflict();
         var table = $('#myTable').DataTable({
             "order": [[3, "asc"]],
@@ -75,6 +75,10 @@
                 "infoEmpty": "Nenhum registro disponível",
                 "infoFiltered": "(filtrado de _MAX_ registros no total)"
             },
+            lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, 'All'],
+            ],
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
