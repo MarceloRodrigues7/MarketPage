@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketPage", "MarketPage\Ma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ADO", "ADO\ADO.csproj", "{4D7FB200-902A-4E04-9029-2FD3B41325FC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMarketPage", "TestMarketPage\TestMarketPage.csproj", "{7B35D221-E1B0-4649-9DCC-B326B0EB4661}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4D7FB200-902A-4E04-9029-2FD3B41325FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D7FB200-902A-4E04-9029-2FD3B41325FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D7FB200-902A-4E04-9029-2FD3B41325FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B35D221-E1B0-4649-9DCC-B326B0EB4661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B35D221-E1B0-4649-9DCC-B326B0EB4661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B35D221-E1B0-4649-9DCC-B326B0EB4661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B35D221-E1B0-4649-9DCC-B326B0EB4661}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

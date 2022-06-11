@@ -24,7 +24,7 @@ namespace MarketPage.Services
         private static AuthenticationProperties GeraAuthProperties() => new()
         {
             AllowRefresh = true,
-            ExpiresUtc = DateTime.Now.ToLocalTime().AddHours(2),
+            ExpiresUtc = DateTime.UtcNow.AddHours(2),
             IsPersistent = true
         };
 
@@ -41,5 +41,9 @@ namespace MarketPage.Services
             return claims;
         }
 
+        #region Testes Unitarios
+        public AuthenticationProperties TestGeraAuthProperties() => GeraAuthProperties();
+        public List<Claim> TesteGeraListClaim(string idUsuario, string roleAcessUsuario) => GeraListClaim(idUsuario, roleAcessUsuario);
+        #endregion
     }
 }
