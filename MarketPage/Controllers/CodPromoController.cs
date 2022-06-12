@@ -8,12 +8,16 @@ namespace MarketPage.Controllers
 {
     public class CodPromoController : Controller
     {
+        #region Propriedades
         private readonly ICodPromocionalRepository _codPromocional;
+        #endregion
 
+        #region Construtores
         public CodPromoController(ICodPromocionalRepository codPromocional)
         {
             _codPromocional = codPromocional;
         }
+        #endregion
 
         [Authorize]
         public IActionResult Index()
@@ -66,8 +70,7 @@ namespace MarketPage.Controllers
             {
                 try
                 {
-                    codPromocao.Desconto *= 0.01m;
-                    _codPromocional.Put(codPromocao);
+                    AtualizarCodPromocao(codPromocao);
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
@@ -104,9 +107,7 @@ namespace MarketPage.Controllers
             {
                 try
                 {
-                    codPromocao.Utilizacoes = 0;
-                    codPromocao.Desconto *= 0.01m;
-                    _codPromocional.Post(codPromocao);
+                    AdicionarCodPromocao(codPromocao);
                     return RedirectToAction("Index");
                 }
                 catch (Exception e)
@@ -117,5 +118,19 @@ namespace MarketPage.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        private void AtualizarCodPromocao(CodPromocao codPromocao)
+        {
+            codPromocao.Desconto *= 0.01m;
+            _codPromocional.Put(codPromocao);
+        }
+
+        private void AdicionarCodPromocao(CodPromocao codPromocao)
+        {
+            codPromocao.Utilizacoes = 0;
+            codPromocao.Desconto *= 0.01m;
+            _codPromocional.Post(codPromocao);
+        }
+
     }
 }

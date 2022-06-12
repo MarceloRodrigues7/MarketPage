@@ -28,13 +28,11 @@ namespace MarketPage.Services
         public string MercadoPagoRequest(Pedido pedido, string token)
         {
             MercadoPagoConfig.AccessToken = token;
+            PreferenceRequest request = new();
+            Preference preference;
 
-            var request = new PreferenceRequest
-            {
-                Items = GeraItem(pedido)
-            };
-
-            var preference = GeraPreference(request);
+            request.Items = GeraPedido(pedido);
+            preference = GeraPreference(request);
 
             return preference.Id;
         }
@@ -60,38 +58,36 @@ namespace MarketPage.Services
 
         private static Root GetPedido(WebRequest webRequest)
         {
-            using (var resposta = webRequest.GetResponse())
+            using (var webResponse = webRequest.GetResponse())
             {
-                var streamDados = resposta.GetResponseStream();
+                var responseStream = webResponse.GetResponseStream();
                 try
                 {
-                    StreamReader reader = new(streamDados);
-                    object objResponse = reader.ReadToEnd();
-                    var post = JsonConvert.DeserializeObject<Root>(objResponse.ToString());
-                    return post;
+                    StreamReader reader = new(responseStream);
+                    object response = reader.ReadToEnd();
+                    return JsonConvert.DeserializeObject<Root>(response.ToString());
                 }
                 finally
                 {
-                    streamDados.Close();
-                    resposta.Close();
+                    responseStream.Close();
+                    webResponse.Close();
                 }
             };
         }
 
-        private static List<PreferenceItemRequest> GeraItem(Pedido pedido)
+        private static List<PreferenceItemRequest> GeraPedido(Pedido pedido)
         {
-            List<PreferenceItemRequest> itens = new();
-
-            itens.Add(new PreferenceItemRequest
+            return new List<PreferenceItemRequest>()
             {
-                Title = $"Pedido nº{pedido.IdUsuario}{pedido.Id}",
-                Quantity = 1,
-                CurrencyId = "BRL",
-                UnitPrice = pedido.ValorTotal,
-                Id = pedido.Id.ToString()
-            });
-
-            return itens;
+                new PreferenceItemRequest
+                {
+                    Title = $"Pedido nº{pedido.IdUsuario}{pedido.Id}",
+                    Quantity = 1,
+                    CurrencyId = "BRL",
+                    UnitPrice = pedido.ValorTotal,
+                    Id = pedido.Id.ToString()
+                }
+            };
         }
 
         private static Preference GeraPreference(PreferenceRequest preferenceRequest)

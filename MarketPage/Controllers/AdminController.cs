@@ -14,15 +14,20 @@ namespace MarketPage.Controllers
 {
     public class AdminController : Controller
     {
+        #region Propriedades
         private readonly ICategoriaRepository _categoria;
         private readonly IItemRepository _Item;
         private readonly IImagemRepository _ImgItem;
         private readonly IMessagesContatoRepository _messagesContato;
         private readonly IPedidoRepository _pedidoRepository;
         private readonly ICarrinhoRepository _carrinhoRepository;
+        
         private const string _scopeRequired = "Admin";
-
+        
         private readonly PedidoServices _pedidoServices;
+        #endregion
+
+        #region Construtores
         public AdminController(ICategoriaRepository categoria, IItemRepository item, IImagemRepository imgItem, IMessagesContatoRepository messagesContato, IPedidoRepository pedidoRepository, ICarrinhoRepository carrinhoRepository)
         {
             _categoria = categoria;
@@ -34,6 +39,7 @@ namespace MarketPage.Controllers
 
             _pedidoServices = new();
         }
+        #endregion
 
         [Authorize]
         public IActionResult Produto()
@@ -96,21 +102,7 @@ namespace MarketPage.Controllers
                     var validaNome = _Item.GetIdItem(produto.Nome);
                     if (validaNome == 0)
                     {
-                        var novoProduto = _Item.GeraItem(produto);
-                        var idProduto = _Item.PostItem(novoProduto);
-
-                        var novaImagem = _ImgItem.GeraImgItemPrincipal(idProduto);
-                        novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
-                        _ImgItem.PostImgItem(novaImagem);
-                        if (produto.ImageUpload != null)
-                        {
-                            foreach (var img in produto.ImageUpload)
-                            {
-                                var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(idProduto);
-                                novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
-                                _ImgItem.PostImgItem(novaImagemPadrao);
-                            }
-                        }
+                        AdicionarProduto(produto);
                         return RedirectToAction("Produto", "Admin");
                     }
                     TempData["Message"] = "Já existe um produto com esse mesmo nome, tente novamente!";
@@ -155,20 +147,11 @@ namespace MarketPage.Controllers
                 {
                     if (produto.ImageUploadMain != null)
                     {
-                        _ImgItem.DeletaItemImgMain(produto.Id);
-                        var novaImagem = _ImgItem.GeraImgItemPrincipal(produto.Id);
-                        novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
-                        _ImgItem.PostImgItem(novaImagem);
+                        AtualizarImagemPrincipal(produto);
                     }
                     if (produto.ImageUpload != null)
                     {
-                        _ImgItem.DeletaItemImgPadrao(produto);
-                        foreach (var img in produto.ImageUpload)
-                        {
-                            var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(produto.Id);
-                            novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
-                            _ImgItem.PostImgItem(novaImagemPadrao);
-                        }
+                        AtualizarDemaisImagens(produto);
                     }
                     _Item.AtualizaItem(produto);
                     return RedirectToAction("Produto");
@@ -225,30 +208,11 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole(_scopeRequired))
             {
-                List<ItemViewDescAdmin> items = new();
+                List<ItemViewDescAdmin> itens = new();
                 var data = _pedidoRepository.GetPedidos().Where(p => p.Id == pedido.Id).FirstOrDefault();
                 var carrinho = _carrinhoRepository.GetCarrinhos(pedido.Id);
-                foreach (var item in carrinho)
-                {
-
-                    var i = _Item.GetItem(item.IdItem);
-                    var tamanho = item.Tamanhos;
-                    items.Add(new ItemViewDescAdmin
-                    {
-                        Id = i.Id,
-                        DataAdicao = i.DataAdicao,
-                        Descricao = i.Descricao,
-                        Destaque = i.Destaque,
-                        IdCategoria = i.IdCategoria,
-                        Nome = i.Nome,
-                        Peso = i.Peso,
-                        Quantidade = item.Quantidade,
-                        Tamanho = item.Tamanhos,
-                        Tamanhos = i.Tamanhos,
-                        Valor = i.Valor
-                    });
-                }
-                ViewBag.ItensPedido = items;
+                itens = GerarListaItensDeCarrinhos(carrinho);
+                ViewBag.ItensPedido = itens;
                 ViewBag.PedidosStatus = _pedidoRepository.GetPedidosStatus();
                 return View(data);
             }
@@ -260,16 +224,9 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole(_scopeRequired))
             {
-                var data = _pedidoRepository.GetPedido(pedido.Id);
-                data.StatusAtual = pedido.StatusAtual;
-                data.CodRastreio = pedido.CodRastreio;
-                data.PrazoEntrega = pedido.PrazoEntrega;
-                data.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
-                if (data.StatusAtual == "Finalizado")
-                {
-                    data.DateFinalizacao = DateTime.UtcNow.AddHours(-3);
-                }
-                _pedidoRepository.PutPedido(data);
+                var pedidoDb = _pedidoRepository.GetPedido(pedido.Id);
+                pedidoDb = AtualizarDadosPedido(pedido, pedidoDb);
+                _pedidoRepository.PutPedido(pedidoDb);
                 return RedirectToAction("Pedidos");
             }
             return RedirectToAction("Index", "Home");
@@ -280,8 +237,8 @@ namespace MarketPage.Controllers
         {
             if (User.IsInRole(_scopeRequired))
             {
-                var data = _messagesContato.GetMessageContatos(Id);
-                return View(data);
+                var message = _messagesContato.GetMessageContatos(Id);
+                return View(message);
             }
             return RedirectToAction("Index", "Home");
         }
@@ -297,7 +254,30 @@ namespace MarketPage.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
 
+        private void AtualizarDemaisImagens(ViewItemAdmAddEEdit produto)
+        {
+            _ImgItem.DeletaItemImgPadrao(produto);
+            foreach (var img in produto.ImageUpload)
+            {
+                var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(produto.Id);
+                novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
+                _ImgItem.PostImgItem(novaImagemPadrao);
+            }
+        }
+
+        private void AtualizarImagemPrincipal(ViewItemAdmAddEEdit produto)
+        {
+            _ImgItem.DeletaItemImgMain(produto.Id);
+            var novaImagem = _ImgItem.GeraImgItemPrincipal(produto.Id);
+            novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
+            _ImgItem.PostImgItem(novaImagem);
+        }
 
         private static List<ItemViewAdmin> NovoItemViewAdmin(List<Item> item, List<Categoria> categoria)
         {
@@ -310,10 +290,72 @@ namespace MarketPage.Controllers
             return list;
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        private void AdicionarProduto(ViewItemAdmAddEEdit produto)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var novoProduto = _Item.GeraItem(produto);
+            var idProduto = _Item.PostItem(novoProduto);
+            AdicionarImagemPrincipal(produto, idProduto);
+            if (produto.ImageUpload != null)
+            {
+                AdicionarDemaisImagens(produto, idProduto);
+            }
         }
+
+        private void AdicionarImagemPrincipal(ViewItemAdmAddEEdit produto, long idProduto)
+        {
+            var novaImagem = _ImgItem.GeraImgItemPrincipal(idProduto);
+            novaImagem.Img = _ImgItem.GeraImgByte(produto.ImageUploadMain);
+            _ImgItem.PostImgItem(novaImagem);
+        }
+
+        private void AdicionarDemaisImagens(ViewItemAdmAddEEdit produto, long idProduto)
+        {
+            foreach (var img in produto.ImageUpload)
+            {
+                var novaImagemPadrao = _ImgItem.GeraImgItemPadrao(idProduto);
+                novaImagemPadrao.Img = _ImgItem.GeraImgByte(img);
+                _ImgItem.PostImgItem(novaImagemPadrao);
+            }
+        }
+
+        private static Pedido AtualizarDadosPedido(Pedido pedido, Pedido pedidoDb)
+        {
+            pedidoDb.StatusAtual = pedido.StatusAtual;
+            pedidoDb.CodRastreio = pedido.CodRastreio;
+            pedidoDb.PrazoEntrega = pedido.PrazoEntrega;
+            pedidoDb.DataAtualizacao = DateTime.UtcNow.AddHours(-3);
+            if (pedidoDb.StatusAtual == "Finalizado")
+            {
+                pedidoDb.DateFinalizacao = DateTime.UtcNow.AddHours(-3);
+            }
+
+            return pedidoDb;
+        }
+
+        private List<ItemViewDescAdmin> GerarListaItensDeCarrinhos(List<Carrinho> carrinhos)
+        {
+            List<ItemViewDescAdmin> itens = new();
+
+            foreach (var carrinho in carrinhos)
+            {
+                var item = _Item.GetItem(carrinho.IdItem);
+                itens.Add(new ItemViewDescAdmin
+                {
+                    Id = item.Id,
+                    DataAdicao = item.DataAdicao,
+                    Descricao = item.Descricao,
+                    Destaque = item.Destaque,
+                    IdCategoria = item.IdCategoria,
+                    Nome = item.Nome,
+                    Peso = item.Peso,
+                    Quantidade = carrinho.Quantidade,
+                    Tamanho = carrinho.Tamanhos,
+                    Tamanhos = item.Tamanhos,
+                    Valor = item.Valor
+                });
+            }
+            return itens;
+        }
+
     }
 }

@@ -8,12 +8,16 @@ namespace MarketPage.Controllers
 {
     public class CategoriaController : Controller
     {
+        #region Propriedades
         private readonly ICategoriaRepository _categoria;
+        #endregion
 
+        #region Construtores
         public CategoriaController(ICategoriaRepository categoria)
         {
             _categoria = categoria;
         }
+        #endregion
 
         [Authorize]
         public IActionResult Index()

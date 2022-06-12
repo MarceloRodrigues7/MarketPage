@@ -1,11 +1,14 @@
 ﻿using ADO;
 using System.Collections.Generic;
 using System.Linq;
+using static MarketPage.Models.ResponseMercadoPagoGetOrder;
 
 namespace MarketPage.Services
 {
     public class PedidoServices
     {
+        public readonly List<string> StatusIgnore = new() { "aprovado", "rejeitado", "cancelado", "devolvido", "cobrado de volta", "finalizado", "preparando", "enviado", "entregue" };
+
         public List<int> ResumoTotalPedidos(List<Pedido> pedidos)
         {
             var resumo = new List<int>
@@ -26,6 +29,12 @@ namespace MarketPage.Services
                 pedidos.Where(p => p.StatusAtual == "entregue").Count()
             };
             return resumo;
+        }
+
+        public string GetStatusPagamentoPedido(Root pedidoMercadoPago)
+        {
+            var statusPagamento = pedidoMercadoPago.Elements.First();
+            return statusPagamento.Payments.Last().Status;
         }
     }
 }
