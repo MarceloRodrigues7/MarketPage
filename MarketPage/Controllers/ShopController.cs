@@ -2,6 +2,7 @@
 using MarketPage.Models;
 using MarketPage.Repository;
 using Microsoft.AspNetCore.Mvc;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,10 @@ namespace MarketPage.Controllers
         }
 
         [HttpGet("Shop")]
-        public IActionResult Index([FromQuery] Pesquisa item = null)
+        public IActionResult Index(int? pagina, [FromQuery] Pesquisa item = null)
         {
             var itens = new List<Item>();
+
             if (item == null || string.IsNullOrEmpty(item.Nome))
             {
                 itens = GetItens();
@@ -33,13 +35,19 @@ namespace MarketPage.Controllers
             {
                 itens = GetItens(item.Nome);
             }
+
             var imagens = GetImgs(itens.Select(i => i.Id));
             var data = GeraListaItemImagem(itens, imagens);
+
+            int paginaTamanho = 20;
+            int paginaNumero = (pagina ?? 1);
+
             if (data.Count <= 0)
             {
                 TempData["Message"] = "Nenhum produto localizado";
             }
-            return View(data);
+
+            return View(data.ToPagedList(paginaNumero, paginaTamanho));
         }
 
         [HttpGet("Shop/{categoria}")]

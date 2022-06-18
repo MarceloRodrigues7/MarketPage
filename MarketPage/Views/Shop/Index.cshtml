@@ -1,4 +1,4 @@
-﻿@model List<ItemView>
+﻿@model PagedList.IPagedList<ItemView>
 @{
     ViewData["Title"] = "Shop";
 }
@@ -10,13 +10,12 @@
         </div>
     </div>
     @if (TempData["Message"] != null)
-        {
-            <div class="alert alert-danger" role="alert">
-                @TempData["Message"].ToString()
-            </div>
-        }
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Message"].ToString()
+        </div>
+    }
     <div class="card-deck">
-        
         @foreach (var item in Model)
         {
             <div class="col-md-3 col-sm-6 mt-1 mb-2">
@@ -59,27 +58,24 @@
                 </div>
             </div>
         }
-
     </div>
+    @*Paginação*@
+    <div class="col d-table justify-content-center align-items-center">
+        <div class="row justify-content-center">
+            Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+        </div>
+        <div class="row justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                @Html.ActionLink("Anterior", "Index", new { pagina = Model.PageNumber - 1, sortOrder = ViewBag.CurrentSort, currentFilter=ViewBag.CurrentFilter  }, new{@class="btn btn-info btn-sm mr-1 ml-1"} )
+            }
+            @if (Model.HasNextPage)
+            {
+                @Html.ActionLink("Próxima", "Index", new { pagina = Model.PageNumber + 1, sortOrder = ViewBag.CurrentSort, currentFilter=ViewBag.CurrentFilter  }, new{@class="btn btn-info btn-sm mr-1 ml-1"})
+            }
+        </div>
+    </div>
+
 </div>
 
 <hr>
-<script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-34731274-1']);
-    _gaq.push(['_trackPageview']);
-    _gaq.push(['_trackEvent', 'sharing', 'viewed full-screen', 'snippet xrXp9', 0, true]);
-    (function () {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-</script>
-<script type="text/javascript">
-    (function ($) {
-        $('#theme_chooser').change(function () {
-            whichCSS = $(this).val();
-            document.getElementById('snippet-preview').contentWindow.changeCSS(whichCSS);
-        });
-    })(jQuery);
-</script>
